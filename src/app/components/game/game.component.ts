@@ -14,6 +14,7 @@ import { QrCodeComponent } from 'ng-qrcode';
 // user
 import { User } from '../../models/game';
 import { ScoreComponent } from '../score/score.component';
+import { LlmsService } from '../../services/llms/llms.service';
 
 @Component({
   selector: 'app-game',
@@ -35,7 +36,8 @@ export class GameComponent implements OnInit, OnDestroy {
   constructor(
     private readonly socketService: SocketService,
     private readonly httpService: HttpService,
-    private readonly gameService: GameService
+    private readonly gameService: GameService,
+    private readonly llmsService: LlmsService
   ) {}
 
   ngOnInit(): void {
@@ -84,6 +86,10 @@ export class GameComponent implements OnInit, OnDestroy {
     const link = `${location.protocol}//${location.host}/controller`;
     // console.log(link);
     return link;
+  }
+
+  _development_generatePost(): void {
+    this.llmsService.generatePost();
   }
 
   private socketMessageHandler(e: SocketEvent): void {

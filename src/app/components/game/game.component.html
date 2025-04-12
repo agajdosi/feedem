@@ -11,6 +11,7 @@
 @if (controllable) {
     <qr-code [value]="getControllerLink()"></qr-code>
     <button (click)="requestGameControl()">Request Game Control</button>
+    <button (click)="_development_generatePost()">Generate Post</button>
 }
 
 
