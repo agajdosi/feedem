@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 
 const environment = {
-  aigenburgAPI: 'http://localhost:8888'
+  aigenburgAPI: 'https://aigenburg.lab.gajdosik.org'
+  // aigenburgAPI: 'http://localhost:8888' // for local development
+  // TODO: make this switch automatically based on the environment
 };
 
 @Injectable({
