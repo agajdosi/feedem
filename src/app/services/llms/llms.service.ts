@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 const environment = {
-  aigenburgAPI: 'https://aigenburg.lab.gajdosik.org'
+  aigenburgAPI: 'https://aigenburg.lab.gajdosik.org' // -> uses prompts defined at https://phoenix.lab.gajdosik.org
   // aigenburgAPI: 'http://localhost:8888' // for local development
   // TODO: make this switch automatically based on the environment
 };
@@ -12,6 +12,10 @@ const environment = {
 export class LlmsService {
   constructor() { }
 
+  /** DUMMY Generate a new post for social network.
+   * TODO: implement the proper prompt and generation.
+   * Define the prompts at: https://phoenix.lab.gajdosik.org
+   */
   async generatePost() {
     const response = await fetch(`${environment.aigenburgAPI}/generate`, {
       method: 'POST',
