@@ -10,7 +10,6 @@ import { Subject } from 'rxjs';
 })
 
 export class GameService {
-
   game: Subject<Game> = new Subject();
   // TODO -> USERS TO USERS.SERVICE
   private users: User[] = [];
