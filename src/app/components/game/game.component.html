@@ -11,9 +11,12 @@
 @if (controllable) {
     <qr-code [value]="getControllerLink()"></qr-code>
     <button (click)="requestGameControl()">Request Game Control</button>
-    <button (click)="_development_generatePost()">Generate Post</button>
 }
 
+<div class="dev">
+    <button (click)="_development_generatePost()">Generate Post</button>
+    <button (click)="_development_ratePost()">Rate Post</button>
+</div>
 
 <footer>
     <app-score></app-score>
