@@ -27,13 +27,19 @@ export interface User {
     gender: string,
     age: number,
     occupation: string,
-    nationality: string,
-    city: string,
+    location: Location,
+    residence: Location,
+    hometown: Location,
     bio: string,
     traits: string[],
     profile_picture: string,
     role: string
-    // posts: string[]
+}
+
+// TODO: add support for mountains, lakes, rivers, etc. not just cities. add name and type of location.
+export interface Location {
+    city: string,
+    country: string,
 }
 
 export interface Reaction {
