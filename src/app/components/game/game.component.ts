@@ -7,25 +7,34 @@ import { Game } from '../../models/game';
 import { SocketService, SocketEvent } from '../../services/socket/socket.service';
 import { HttpService } from '../../services/http/http.service';
 import { GameService } from '../../services/game/game.service';
+import { GraphService } from '../../services/graph/graph.service';
 // rxjs
 import { Subscription } from 'rxjs';
 // qr
 import { QrCodeComponent } from 'ng-qrcode';
 // user
-import { User } from '../../models/game';
 import { ScoreComponent } from '../score/score.component';
 import { LlmsService } from '../../services/llms/llms.service';
+// graph
+import {
+  GraphViewerComponent,
+  GraphLayoutSettings,
+  GraphData
+} from '@tomaszatoo/graph-viewer';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [ UserComponent, QrCodeComponent, ScoreComponent],
+  imports: [ UserComponent, QrCodeComponent, ScoreComponent, GraphViewerComponent],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
 })
 export class GameComponent implements OnInit, OnDestroy {
   
   controllable: boolean = false;
+
+  graphLayoutSettings!: GraphLayoutSettings
+  graphData!: GraphData;
 
   game!: Game;
 
@@ -37,8 +46,11 @@ export class GameComponent implements OnInit, OnDestroy {
     private readonly socketService: SocketService,
     private readonly httpService: HttpService,
     private readonly gameService: GameService,
-    private readonly llmsService: LlmsService
-  ) {}
+    private readonly llmsService: LlmsService,
+    private readonly graphService: GraphService
+  ) {
+    this.graphLayoutSettings = this.graphService.layoutSettings;
+  }
 
   ngOnInit(): void {
     // subscribe game json
@@ -47,9 +59,12 @@ export class GameComponent implements OnInit, OnDestroy {
         if (game && game.uuid) {
           if (this.game && game.updated > this.game.updated || !this.game) {
             this.game = game;
+            // build user graph
+            console.log('this.game', this.game);
+            const graphData = this.graphService.buildGraph(this.game.users, this.game.relationships);
+            if (graphData) this.graphData = graphData;
           } 
         }
-        console.log('this.game', this.game);
       }
     })
     // get initial game json
@@ -106,6 +121,10 @@ export class GameComponent implements OnInit, OnDestroy {
   saveGame(): void {
 
   }
+
+  
+
+  
 
   private sendSocketMessage(message: any): void {
     this.socketService.sendSocketMessage(message);
