@@ -16,7 +16,7 @@ enum TaskType {
     ShowAd = 'showAd',
 }
 
-enum Relationship {
+export enum Relationship {
     Follow = 'follow'
 }
 
@@ -70,6 +70,7 @@ export interface Game {
     created: number,
     updated: number,
     time: string,
+    hero: string,
     users: User[],
     posts: Post[],
     views: View[],
