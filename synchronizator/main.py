@@ -128,9 +128,9 @@ async def message(sid, data):
         return
 
     # DISTRIBUTE DATA
-    print(f"🔄 received data from controller {sid}: {data}")
+    print(f"🔄 received message data from controller {sid}: {data}")
     lookers = subscribers + controllers[1:]
-    await sio.emit('data_update', data, room=lookers)
+    await sio.emit('message', data, room=lookers)
 
 @sio.event
 async def save_game(sid, data: dict[str, Any]):

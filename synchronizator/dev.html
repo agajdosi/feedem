@@ -122,7 +122,7 @@
       function sendMessage() {
         const message = document.getElementById('message').value;
         if (message.trim()) {
-          socket.emit('update_data', { message: message });
+          socket.emit('message', { message: message });
           document.getElementById('message').value = '';
         }
       }
