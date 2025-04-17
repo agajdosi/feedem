@@ -55,7 +55,7 @@ async def connect(sid, environ):
     if len(controllers) > 0:
         controller = controllers[0]
     else:
-        controller = ""
+        controller = None
     
     await sio.emit('controller', {'controller_id': controller}, room=sid)
     await sio.emit('game', game, room=sid)
@@ -78,7 +78,11 @@ async def disconnect(sid):
     if sid == controllers[0]:
         print(f"👑 main controller removed: {sid}")
         controllers.remove(sid)
-        if len(controllers) > 0: # Immediately assign NEW MAIN CONTROLLER
+        if len(controllers) == 0: # No controllers left, inform all subscribers
+            print("   -> 🪑 no controller left")
+            await sio.emit('controller', {'controller_id': None})
+        else: # Immediately assign NEW MAIN CONTROLLER
+            print(f"   -> 👑 new main controller: {controllers[0]}")
             await sio.emit('controller', {'controller_id': controllers[0]})
 
     # Emit warning to those who are waiting for the controller role
@@ -143,7 +147,8 @@ async def save_game(sid, data: dict[str, Any]):
 
     game = data
     print(f"💾 received game save from controller {sid}: {data}")
-    
+    # TODO: distribute game save to all subscribers?
+    # await sio.emit('game', game, room=controllers[1:])
 
 if __name__ == "__main__":
     app.listen(PORT)
