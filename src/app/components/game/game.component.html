@@ -1,13 +1,28 @@
+<!-- SOCIAL GRAPH -->
 @if(graphData) {
     <graph-viewer
         [graphData]="graphData"
         [animate]="true"
         [layoutSettings]="graphLayoutSettings"
+        [nodeRenderer]="renderNode"
+        [edgeRenderer]="renderEdge"
     ></graph-viewer>
 }
+<!-- HEROS' PROFILE --> 
+@if(game) {
+    <div class="hero">
+        <p>hero works!</p>
+        @if(game.hero) {
+            <app-user [user]="getUserById(game.hero)"></app-user>
+        }
+    </div>
+}  
+
+<!-- HEROS' FEED --> 
+<app-feed></app-feed>
 
 
-@if (game && game.users && game.users.length) {
+<!-- @if (game && game.users && game.users.length) {
     <div class="users">
         <div class="users-container">
             @for (user of game.users; track user.uuid) {
@@ -15,18 +30,20 @@
             }
         </div>
     </div>
-}
+} -->
 
-@if (controllable) {
-    <qr-code [value]="getControllerLink()"></qr-code>
-    <button (click)="requestGameControl()">Request Game Control</button>
-}
-
-<div class="dev">
-    <button (click)="_development_generatePost()">Generate Post</button>
-    <button (click)="_development_ratePost()">Rate Post</button>
+<div class="controls">
+    @if (controllable) {
+        <qr-code [value]="getControllerLink()" (click)="openController()"></qr-code>
+        <!-- <button (click)="requestGameControl()">Request Game Control</button> -->
+    }
+    
+   <!--  <div class="dev">
+        <button (click)="_development_generatePost()">Generate Post</button>
+        <button (click)="_development_ratePost()">Rate Post</button>
+    </div> -->
+    
+    <footer>
+        <app-score></app-score>
+    </footer>
 </div>
-
-<footer>
-    <app-score></app-score>
-</footer>
