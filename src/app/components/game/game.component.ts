@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 // components
 import { UserComponent } from '../user/user.component';
+import { FeedComponent } from '../feed/feed.component';
 // models
-import { Game } from '../../models/game';
+import { Game, User } from '../../models/game';
+import { GraphNode } from '../../models/graph-node';
+import { GraphEdge } from '../../models/graph-edge';
 // services
 import { SocketService, SocketEvent } from '../../services/socket/socket.service';
 import { HttpService } from '../../services/http/http.service';
@@ -25,7 +28,13 @@ import {
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [ UserComponent, QrCodeComponent, ScoreComponent, GraphViewerComponent],
+  imports: [
+    UserComponent,
+    QrCodeComponent,
+    ScoreComponent,
+    GraphViewerComponent,
+    FeedComponent
+  ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
 })
@@ -41,6 +50,9 @@ export class GameComponent implements OnInit, OnDestroy {
   private socketSub: Subscription = new Subscription();
   private gameControllableSub: Subscription = new Subscription();
   private gameSub: Subscription = new Subscription();
+
+  renderNode = this.createNodeRenderer();
+  renderEdge = this.createEdgeRenderer();
 
   constructor(
     private readonly socketService: SocketService,
@@ -61,19 +73,20 @@ export class GameComponent implements OnInit, OnDestroy {
             this.game = game;
             // build user graph
             console.log('this.game', this.game);
-            const graphData = this.graphService.buildGraph(this.game.users, this.game.relationships);
-            if (graphData) this.graphData = graphData;
+            this.graphService.buildGraph(this.game.users, this.game.relationships, this.game.posts).then((graphData: GraphData | undefined) => {
+              if (graphData) this.graphData = graphData;
+            }).catch((e: any) => console.error(e));
           } 
         }
       }
     })
     // get initial game json
-    this.httpService.get<Game>('/initial-game.json').subscribe({
-      next: (game: Game) => {
-        // console.log('initial game', game);
-        if (game && game.uuid) this.gameService.game.next(game);
-      }
-    });
+    // this.httpService.get<Game>('/initial-game.json').subscribe({
+    //   next: (game: Game) => {
+    //     // console.log('initial game', game);
+    //     if (game && game.uuid) this.gameService.game.next(game);
+    //   }
+    // });
     // listen to all client messages
     this.socketSub = this.socketService.socketMessage.subscribe({
       next: (e: SocketEvent) => this.socketMessageHandler(e)
@@ -84,6 +97,13 @@ export class GameComponent implements OnInit, OnDestroy {
         this.controllable = controllable;
       }
     })
+  }
+
+  getUserById(id: string): User | undefined {
+    for (const user of this.game.users) {
+      if (user.uuid === id) return user;
+    }
+    return undefined;
   }
 
   ngOnDestroy(): void {
@@ -101,6 +121,23 @@ export class GameComponent implements OnInit, OnDestroy {
     const link = `${location.protocol}//${location.host}/controller`;
     // console.log(link);
     return link;
+  }
+
+  openController(): void {
+    const link = this.getControllerLink();
+    window.open(link, '_blank');
+  }
+
+  private createNodeRenderer() {
+    return ({ attributes, position }: any) => {
+      return new GraphNode(position, attributes);
+    };
+  }
+
+  private createEdgeRenderer() {
+    return ({attributes, targetSize}: any) => {
+      return new GraphEdge({source: {x: 1, y: 1}, target: {x: 1, y: 1}}, attributes, targetSize);
+    }
   }
 
   _development_generatePost(): void {
