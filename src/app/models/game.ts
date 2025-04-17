@@ -10,7 +10,7 @@ export enum React {
  * - ShowPost: Choose which post will be shown to managed user
  * - ShowAd: Choose which ad will be shown to managed user
  */
-enum TaskType {
+export enum TaskType {
     DistributePost = 'distributePost',
     ShowPost = 'showPost',
     ShowAd = 'showAd',

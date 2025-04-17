@@ -19,7 +19,7 @@ export class LlmsService {
    * TODO: also add previous users posts to the prompt
    * Define the prompts at: https://phoenix.lab.gajdosik.org
    */
-  async generatePost(user: User) {
+  async generatePost(user: User): Promise<Post> {
     const response = await fetch(`${environment.aigenburgAPI}/generate`, {
       method: 'POST',
       headers: {
@@ -51,7 +51,16 @@ export class LlmsService {
 
     const post_text = parsedData.choices[0].message.content;
     console.log('Response message:', post_text);
-    return post_text;
+
+    const post: Post = {
+      uuid: uuidv4(),
+      author: user.uuid,
+      text: post_text,
+      reasoning: '', // This will be filled when the post is viewed
+      created: Date.now()
+    };
+
+    return post;
   }
 
   /**
