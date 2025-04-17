@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User } from '../../models/game';
-// models
-import { Game } from '../../models/game';
+import { User, Post, Game } from '../../models/game';
 // http client
 import { HttpClient } from '@angular/common/http';
 // rxjs
@@ -12,45 +10,42 @@ import { Subject } from 'rxjs';
 })
 
 export class GameService {
-  game: Subject<Game> = new Subject();
-  private _game!: Game;
-  // TODO -> USERS TO USERS.SERVICE
-  private users: User[] = [];
+  gameSubject: Subject<Game> = new Subject();
+  private game!: Game;
 
   constructor(
     private readonly http: HttpClient
   ) {
-    this.game.subscribe({
-      next: (game: Game) => {
-        if (!this._game) this._game = game;
-        if (game.users) this.users = game.users;
+    this.gameSubject.subscribe({
+      next: (g: Game) => {
+        if (!this.game) this.game = g;
       }
     });
     // get initial game json
     const initialGameSub = this.http.get<Game>('/initial-game.json').subscribe({
-      next: (game: Game) => {
-        // console.log('initial game', game);
-        if (!this._game && game && game.uuid) {
-          this.game.next(game);
+      next: (g: Game) => {
+        // console.log('initial game', g);
+        if (!this.game && g && g.uuid) {
+          this.gameSubject.next(g);
           initialGameSub.unsubscribe();
         }
       }
     });
   }
 
-  getUsers(): User[] {
-    return this.users;
-  }
+  // MARK: USER
 
-  updateUser(userId: string, updates: Partial<User>): void {
-    this.users = this.users.map(user => 
-      user.uuid === userId ? { ...user, ...updates } : user
-    );
+  getHero(): User {
+    return this.game.users.find(user => this.game.hero === user.uuid)!;
   }
 
   getUserById(userId: string): User | undefined {
-    return this.users.find(user => user.uuid === userId);
+    return this.game.users.find(user => user.uuid === userId);
   }
   
+  // MARK: POSTS
 
+  getPostsByUser(userId: string): Post[] {
+    return this.game.posts.filter(post => post.author === userId);
+  }
 }

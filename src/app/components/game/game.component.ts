@@ -66,7 +66,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // subscribe game json
-    this.gameService.game.subscribe({
+    this.gameService.gameSubject.subscribe({
       next: (game: Game) => {
         if (game && game.uuid) {
           if (this.game && game.updated > this.game.updated || !this.game) {
@@ -152,7 +152,7 @@ export class GameComponent implements OnInit, OnDestroy {
     switch (e.type) {
       case 'game':
         console.log('game from server', e.data);
-        if (e.data && e.data.uuid) this.gameService.game.next(e.data);
+        if (e.data && e.data.uuid) this.gameService.gameSubject.next(e.data);
         break;
       default:
         console.log('recieved socket event', e);

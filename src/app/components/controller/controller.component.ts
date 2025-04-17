@@ -49,7 +49,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
       }
     });
     // subscribe game
-    this.gameSub = this.gameService.game.subscribe({
+    this.gameSub = this.gameService.gameSubject.subscribe({
       next: (game: Game) => {
         if (game && game.uuid) {
           if (!this.game || this.game.updated < game.updated) {
