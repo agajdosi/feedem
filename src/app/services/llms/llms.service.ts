@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { User, Post} from '../../models/game';
-
+import { User, Post, View, React, Reaction } from '../../models/game';
+import { GameService } from '../game/game.service';
+import { v4 as uuidv4 } from 'uuid';
 const environment = {
   aigenburgAPI: 'https://aigenburg.lab.gajdosik.org' // -> uses prompts defined at https://phoenix.lab.gajdosik.org
   //aigenburgAPI: 'http://localhost:8888' // for local development
@@ -11,7 +12,7 @@ const environment = {
   providedIn: 'root'
 })
 export class LlmsService {
-  constructor() { }
+  constructor(private gameService: GameService) { }
 
   /** DUMMY Generate a new post for social network.
    * TODO: implement the proper prompt and generation.
@@ -106,9 +107,36 @@ export class LlmsService {
     return rating;
   }
 
+  /**
+   * Decide which reaction the User will make under the post they have just seen.
+   * We take only the reaction type with the highest urge and ignore all others. Then weroll a random number.
+   * @param view - The view of the post.
+   * @returns The reaction or null if the user will not react.
+   */
+  decideReaction(view: View): Reaction | null {
+    const max = Math.max(view.reactionLikeUrge, view.reactionDislikeUrge, view.reactionHateUrge, view.reactionLoveUrge);
+    const roll = Math.random();
+    if (roll > max) {
+      return null;
+    }
 
-  async decideReaction() {
-
+    // if two urges are completely equal, we prefer the extremes and negations ;)
+    let reactionType: React;
+    if (max === view.reactionHateUrge) reactionType = React.Hate;
+    else if (max === view.reactionLoveUrge) reactionType = React.Love;
+    else if (max === view.reactionLikeUrge) reactionType = React.Like;
+    else if (max === view.reactionDislikeUrge) reactionType = React.Dislike;
+    else {
+      throw new Error('Invalid reaction type');
+    }
+    
+    const reaction: Reaction = {
+      value: reactionType,
+      author: view.user,
+      post: view.post,
+      uuid: uuidv4()
+    };
+    return reaction;
   }
 
   async decideComment() {
