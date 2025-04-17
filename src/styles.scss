@@ -15,6 +15,7 @@ html, body {
     margin: 0;
     padding: 0;
     font-size: small;
+    // overflow: hidden;
 }
 
 button {
@@ -61,4 +62,80 @@ app-main-menu {
         margin-top: 2rem;
         button { width: 100%;}
     }
+}
+
+app-game {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    graph-viewer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+    }
+    app-feed {
+        position: absolute;
+        width: 30%;
+        height: 100%;
+        right: 0;
+        top: 0;
+    }
+
+    .hero {
+        position: absolute;
+        width: 30%;
+        height: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    qr-code {
+        position: absolute;
+        left: 50%;
+        bottom: $space;
+        transform: translateX(-50%);
+    }
+
+    .controls {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+}
+
+app-controller {
+    display: block;
+    width: 100%;
+    // height: 100%;
+    overflow: auto;
+    padding-bottom: calc($space * 10);
+}
+
+app-user {
+    display: block;
+    &.highlight {
+        .user-card {
+            border: 3px solid #ddd;
+        }
+    }
+    .user-card {
+        padding: $space;
+        border: 1px solid #ddd;
+        // margin: $space;
+        margin-bottom: $space;
+        img.profile-picture {
+            width: calc($space * 7);
+            height: auto;
+        }
+    }
+}
+
+app-on-screen {
+    display: block;
 }
