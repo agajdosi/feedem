@@ -1,1 +1,9 @@
-<p>controller works!</p>
+@if(game) {
+    @if(!game.hero) {
+        <h2>Choose Hero</h2>
+        @for(hero of game.users; track hero.uuid) {
+            <app-on-screen [data]="hero.uuid" (onScreen)="userIsOnScreen($event)"></app-on-screen>
+            <app-user [user]="hero" [class]="{'highlight': highlightedUser === hero.uuid}"></app-user>
+        }
+    }
+}
