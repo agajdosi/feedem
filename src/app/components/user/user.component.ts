@@ -9,5 +9,5 @@ import { User } from '../../models/game';
   styleUrl: './user.component.scss'
 })
 export class UserComponent {
-  @Input() user!: User;
+  @Input() user!: User | undefined;
 }
