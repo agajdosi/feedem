@@ -1,4 +1,4 @@
-enum React {
+export enum React {
     Love = '♥️',
     Like = '👍🏿',
     Dislike = '👎🏻',
@@ -90,9 +90,14 @@ export interface Game {
  * - reasoning is what LLM thought about the post
  * - rating JSONified reasoning
  * - joyScore - how much LLM enjoyed the post
- * - reactionUrge - how much LLM wants to react to the post
  * - commentUrge - how much LLM wants to comment on the post
  * - shareUrge - how much LLM wants to share the post
+ * 
+ * REACTION URGES, based on enum React
+ * - reactionLikeUrge - how much LLM wants to like the post
+ * - reactionDislikeUrge - how much LLM wants to dislike the post
+ * - reactionLoveUrge - how much LLM wants to love the post
+ * - reactionHateUrge - how much LLM wants to hate the post
 */
 export interface View {
     uuid: string,
@@ -101,9 +106,12 @@ export interface View {
     reasoning: string,
     rating: number,
     joyScore: number,
-    reactionUrge: number,
     commentUrge: number,
     shareUrge: number,
+    reactionLikeUrge: number,
+    reactionDislikeUrge: number,
+    reactionLoveUrge: number,
+    reactionHateUrge: number,
     time: number
 }
 
