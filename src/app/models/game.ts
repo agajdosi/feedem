@@ -42,11 +42,17 @@ export interface Location {
     country: string,
 }
 
+export enum ReactionParentType {
+    Post = 'post',
+    Comment = 'comment',
+}
+
 export interface Reaction {
     uuid: string,
-    value: React, 
+    parent: string,
+    parent_type: ReactionParentType,
     author: string,
-    post: string
+    value: React,
 }
 
 export interface Post {
@@ -57,11 +63,17 @@ export interface Post {
     created: number
 }
 
+export enum CommentParentType {
+    Post = 'post',
+    Comment = 'comment',
+}
+
 export interface Comment {
     uuid: string,
+    parent: string,
+    parent_type: CommentParentType,
     author: string,
-    post: string,
-    parent: string
+    text: string,
 }
 
 export interface Relation {
@@ -103,8 +115,8 @@ export interface View {
     uuid: string,
     user: string,
     post: string,
-    reasoning: string,
-    rating: number,
+    _reasoning: string,
+    _rating: number,
     joyScore: number,
     commentUrge: number,
     shareUrge: number,

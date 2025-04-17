@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User, Post, View, React, Reaction } from '../../models/game';
+import { User, Post, View, React, Reaction, Comment, ReactionParentType, CommentParentType } from '../../models/game';
 import { GameService } from '../game/game.service';
 import { v4 as uuidv4 } from 'uuid';
 const environment = {
@@ -48,8 +48,10 @@ export class LlmsService {
     if (!parsedData?.choices?.[0]?.message?.content) {
       throw new Error('Invalid response format from API');
     }
-    console.log('Response message:', parsedData.choices[0].message.content);
-    return parsedData.choices[0].message.content;
+
+    const post_text = parsedData.choices[0].message.content;
+    console.log('Response message:', post_text);
+    return post_text;
   }
 
   /**
@@ -133,23 +135,92 @@ export class LlmsService {
     const reaction: Reaction = {
       value: reactionType,
       author: view.user,
-      post: view.post,
+      parent: view.post,
+      parent_type: ReactionParentType.Post,
       uuid: uuidv4()
     };
     return reaction;
   }
 
-  async decideComment() {
-
-  }
-
-
-  /** DUMMY!
-   * Generate a comment by user under a post, based on the previously generated reflection and rating of the post by the user.
-   * TODO: implement the proper prompt and generation.
+  /**
+   * Decide whether the user will comment on the post they have just seen.
    */
-  async generateComment(user: User, post: Post, rating: any) {
-    return 'This is a dummy comment';
+  async decideComment(view: View, user: User, post: Post): Promise<Comment | null> {
+    const roll = Math.random();
+    if (roll > view.commentUrge) {
+      return null;
+    }
+
+    const comment = await this.generateCommentUnderPost(user, post, view);
+    return comment;
   }
 
+
+  /** Generate a comment by user under a post, based on the previously generated reflection and rating of the post by the user. 
+   * TODO: provide info if Reaction was done by the user or not. Actually provide also info about other users reactions.
+  */
+  async generateCommentUnderPost(user: User, post: Post, view: View): Promise<Comment> {
+    const genURL  = `${environment.aigenburgAPI}/generate`;
+    // 1. REFLECT - think about the post
+    const response = await fetch(genURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ // https://phoenix.lab.gajdosik.org/prompts/UHJvbXB0Ojc=
+        prompt_identifier: "feedem_generate_comment",
+        prompt_variables: {
+          user_bio: user.bio,
+          author_name: post.author,
+          author_surname: post.author,
+          post_text: post.text,
+          reasoning: view._reasoning,
+        }
+      })
+    })
+
+    const commentData = await response.json();
+    console.log('Raw API Response:', commentData);
+    
+    const parsedComment = typeof commentData === 'string' ? JSON.parse(commentData) : commentData;
+    console.log('Parsed Comment Data:', parsedComment);
+    
+    if (!parsedComment?.choices?.[0]?.message?.content) {
+      console.error('Invalid response structure:', {
+        hasChoices: !!parsedComment?.choices,
+        choicesLength: parsedComment?.choices?.length,
+        hasMessage: !!parsedComment?.choices?.[0]?.message,
+        hasContent: !!parsedComment?.choices?.[0]?.message?.content
+      });
+      throw new Error('Invalid response format from API');
+    }
+
+    const comment_text = parsedComment.choices[0].message.content;
+    console.log(`Got comment for post (${post.uuid}): ${comment_text}`);
+    
+    const comment: Comment = {
+      uuid: uuidv4(),
+      author: user.uuid,
+      parent: post.uuid,
+      parent_type: CommentParentType.Post,
+      text: comment_text,
+    };
+    return comment;
+  }
+
+
+
+  /** TOTAL DUMMY!
+   * TODO: implement in v2.
+   */
+  async generateCommentUnderComment(user: User, comment: Comment, view: View): Promise<Comment> {
+    const c: Comment = {
+      uuid: uuidv4(),
+      author: user.uuid,
+      parent: comment.uuid,
+      parent_type: CommentParentType.Comment,
+      text: 'This is a dummy comment',
+    };
+    return c;
+  }
 }
