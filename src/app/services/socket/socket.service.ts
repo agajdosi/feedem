@@ -66,7 +66,7 @@ export class SocketService {
   }
 
   sendSocketMessage(value: any): void {
-    this.socket.emit(value);
+    this.socket.emit('message', value);
     console.log('send message', value);
   }
 
