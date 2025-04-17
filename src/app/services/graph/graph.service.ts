@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { User, Relation } from '../../models/game';
+import { User, Relation, Post } from '../../models/game';
+import { GraphNode } from '../../models/graph-node';
 import { GraphData, GraphLayoutSettings } from '@tomaszatoo/graph-viewer';
+import { Assets } from 'pixi.js';
 
 @Injectable({
   providedIn: 'root'
@@ -26,18 +28,31 @@ export class GraphService {
 
   constructor() { }
 
-  buildGraph(users: User[], edges: Relation[], maxEdgesPerNode: number = 5): GraphData | undefined {
+  async buildGraph(users: User[], edges: Relation[], posts: Post[], maxEdgesPerNode: number = 5): Promise<GraphData | undefined> {
     if  (!users || users.length === 0) return undefined;  
     const graphData: GraphData = {
       nodes: [],
       edges: []
     }
+    // users
     for (const user of users) {
+      const texture = await Assets.load(`${user.profile_picture}`);
       graphData.nodes.push({
-        id: user.uuid, attributes: {
+        id: user.uuid,
+        attributes: {
           label: `${user.name} ${user.surname}`,
           type: 'user',
-          image: user.profile_picture
+          image: texture,
+          // radius: 150
+        }
+      });
+    }
+    // posts
+    for (const post of posts) {
+      graphData.nodes.push({
+        id: post.uuid,
+        attributes: {
+          type: 'post'
         }
       });
     }
@@ -48,7 +63,13 @@ export class GraphService {
           source: edge.source,
           target: edge.target,
           attributes: {
-            label: edge.label
+            label: edge.label,
+            strokeWidth: 6,
+            colors: {
+              stroke: 0xffffff,
+              label: 0xffffff,
+              highlight: 0xff0000
+            } 
           }
         });
       }
@@ -76,7 +97,13 @@ export class GraphService {
             source: user.uuid,
             target: connection.uuid,
             attributes: {
-              label: "follow"
+              label: "follow",
+              strokeWidth: 1,
+              colors: {
+                stroke: 0xffffff,
+                label: 0xffffff,
+                highlight: 0xff0000
+              } 
             }
           });
         }
@@ -84,6 +111,7 @@ export class GraphService {
     }
     return graphData;
   }
+
 
   private randomIntFromInterval(min: number, max: number) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min);
