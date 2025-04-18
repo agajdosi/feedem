@@ -15,6 +15,8 @@ import { GraphService } from '../../services/graph/graph.service';
 import { Subscription } from 'rxjs';
 // qr
 import { QrCodeComponent } from 'ng-qrcode';
+// utils
+import * as utils from '../../shared/utils';
 // user
 import { ScoreComponent } from '../score/score.component';
 import { LlmsService } from '../../services/llms/llms.service';
@@ -100,10 +102,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   getUserById(id: string): User | undefined {
-    for (const user of this.game.users) {
-      if (user.uuid === id) return user;
-    }
-    return undefined;
+    return utils.getUserById(id, this.game.users);
   }
 
   ngOnDestroy(): void {

@@ -52,8 +52,13 @@ export function filterSeenPosts(user: User, views: View[], posts: Post[]): Post[
 }
 
 
-// MARK: COMMENTS
+// MARK: USERS
+export function getUserById(uuid: string, users: User[]): User | undefined {
+  return users.find(user => user.uuid === uuid)!;
+}
 
+
+// MARK: COMMENTS
 export function getCommentsByUser(comments: Comment[], user: User): Comment[] {
   return comments.filter(comment => comment.author === user.uuid);
 }
@@ -64,7 +69,6 @@ export function getCommentsUnderPost(comments: Comment[], post: Post): Comment[]
 
 
 // MARK: REACTIONS
-
 export function getReactionsByUser(reactions: Reaction[], user: User): Reaction[] {
   return reactions.filter(reaction => reaction.author === user.uuid);
 }

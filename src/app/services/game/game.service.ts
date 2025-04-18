@@ -75,7 +75,4 @@ export class GameService {
     return users[Math.floor(Math.random() * users.length)];
   }
 
-  getUserById(userId: string): User | undefined {
-    return this.game.users.find(user => user.uuid === userId);
-  }
 }

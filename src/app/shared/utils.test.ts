@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getLimit, getAvgEngagement, filterSeenPosts, getPostsByAuthor, getPostsByAuthorSeenByUser, getReactionsByUser, getCommentsByUser, getCommentsUnderPost, getReactionsUnderPost } from './utils';
+import { getLimit, getAvgEngagement, filterSeenPosts, getPostsByAuthor, getPostsByAuthorSeenByUser, getReactionsByUser, getCommentsByUser, getCommentsUnderPost, getReactionsUnderPost, getUserById } from './utils';
 import { User, Post, View, Reaction, React, ReactionParentType, Comment, CommentParentType } from '../models/game';
 
 describe('getLimit', () => {
@@ -682,5 +682,80 @@ describe('getReactionsUnderPost', () => {
         const result = getReactionsUnderPost(mockReactions, mockPost);
         expect(result[0].uuid).toBe('reaction1');
         expect(result[1].uuid).toBe('reaction3');
+    });
+});
+
+describe('getUserById', () => {
+    const mockUsers: User[] = [
+        {
+            uuid: 'user1',
+            name: 'Alice',
+            surname: 'Smith',
+            gender: 'female',
+            age: 25,
+            occupation: 'developer',
+            location: { city: 'New York', country: 'USA' },
+            residence: { city: 'New York', country: 'USA' },
+            hometown: { city: 'Boston', country: 'USA' },
+            bio: 'Software developer',
+            traits: ['friendly', 'hardworking'],
+            profile_picture: 'alice.jpg',
+            role: 'user',
+            memory: {
+                shortTerm: '',
+                shortRelevancy: 0,
+                longTerm: ''
+            }
+        },
+        {
+            uuid: 'user2',
+            name: 'Bob',
+            surname: 'Johnson',
+            gender: 'male',
+            age: 30,
+            occupation: 'designer',
+            location: { city: 'Los Angeles', country: 'USA' },
+            residence: { city: 'Los Angeles', country: 'USA' },
+            hometown: { city: 'San Francisco', country: 'USA' },
+            bio: 'UI/UX designer',
+            traits: ['creative', 'organized'],
+            profile_picture: 'bob.jpg',
+            role: 'user',
+            memory: {
+                shortTerm: '',
+                shortRelevancy: 0,
+                longTerm: ''
+            }
+        }
+    ];
+
+    it('should return undefined when users array is empty', () => {
+        expect(getUserById('user1', [])).toBeUndefined();
+    });
+
+    it('should return undefined when user is not found', () => {
+        expect(getUserById('nonexistent', mockUsers)).toBeUndefined();
+    });
+
+    it('should return the correct user when found', () => {
+        const result = getUserById('user1', mockUsers);
+        expect(result).toBeDefined();
+        expect(result?.uuid).toBe('user1');
+        expect(result?.name).toBe('Alice');
+    });
+
+    it('should return the correct user regardless of position in array', () => {
+        const result = getUserById('user2', mockUsers);
+        expect(result).toBeDefined();
+        expect(result?.uuid).toBe('user2');
+        expect(result?.name).toBe('Bob');
+    });
+
+    it('should return undefined for empty string UUID', () => {
+        expect(getUserById('', mockUsers)).toBeUndefined();
+    });
+
+    it('should be case sensitive for UUID matching', () => {
+        expect(getUserById('USER1', mockUsers)).toBeUndefined();
     });
 });
