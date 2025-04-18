@@ -20,6 +20,13 @@ export enum RelationType {
     Follow = 'follow',
 }
 
+/**
+ * User is a person in the game.
+ * 
+ * _memory is a string that contains all the information about the user.
+ * It is used to store the user's memory of the game.
+ * It is used to store the user's memory of the game.
+ */
 export interface User {
     uuid: string,
     name: string,
@@ -33,7 +40,8 @@ export interface User {
     bio: string,
     traits: string[],
     profile_picture: string,
-    role: string
+    role: string,
+    memory: Memory
 }
 
 // TODO: add support for mountains, lakes, rivers, etc. not just cities. add name and type of location.
@@ -137,4 +145,23 @@ export interface Task {
     completed: boolean,
     type: TaskType,
     time: number
+}
+
+// MARK: MEMORY
+
+/**
+ * Memory is a string that contains all the information the LLM has about itself, others and their interactions.
+ */
+export interface Memory {
+    shortTerm: string,
+    shortRelevancy: number,
+    longTerm: string,
+}
+
+/** DUMMY - just an idea for now
+ * InterPersonalMemory is a string that contains all the information about the user's memory of another user.
+ */
+export interface InterPersonalMemory {
+    aboutUser: string,
+    aboutAnotherUser: string,
 }
