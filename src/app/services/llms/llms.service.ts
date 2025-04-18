@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { User, Post, View, React, Reaction, Comment, ReactionParentType, CommentParentType } from '../../models/game';
-import { GameService } from '../game/game.service';
 import { v4 as uuidv4 } from 'uuid';
 const environment = {
   aigenburgAPI: 'https://aigenburg.lab.gajdosik.org' // -> uses prompts defined at https://phoenix.lab.gajdosik.org
@@ -12,7 +11,6 @@ const environment = {
   providedIn: 'root'
 })
 export class LlmsService {
-  constructor(private gameService: GameService) { }
 
   /** DUMMY Generate a new post for social network.
    * TODO: implement the proper prompt and generation.
