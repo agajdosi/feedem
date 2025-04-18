@@ -37,6 +37,46 @@ export function describeRelationship(thisUser: User, thatUser: User, relations: 
 }
 
 
+/** Return a description of the interactions between two users.
+ * Finds all posts thisUser has seen that were written by thatUser.
+ * Then finds all comments under those posts.
+ * Then finds all reactions to those posts and comments.
+ * Also finds all comments and reactions done by thatUser on posts written by thisUser.
+ * Then it converts it into a LLM-friendly text description.
+*/
+export function describeInteractions(thisUser: User, thatUser: User, allViews: View[], allPosts: Post[], allComments: Comment[], allReactions: Reaction[]): string {
+    const postsOfThatSeenByThis = utils.getPostsByAuthorSeenByUser(thisUser, thatUser, allViews, allPosts);
+    const postsOfThis = utils.getPostsByAuthor(thisUser, allPosts);
+    const postsOfThisWhereThatInteracted = utils.getPostsWhereUserInteracted(thatUser, allComments, allReactions, postsOfThis);
+
+    let description = '';
+
+    // Posts seen by thisUser
+    if (postsOfThatSeenByThis.length > 0) {
+        description += `# Recently, you have seen these posts by ${thatUser.name} ${thatUser.surname}:\n`;
+        for (const post of postsOfThatSeenByThis) {
+            const text = postToText(post, allComments, allReactions, [thisUser, thatUser]);
+            description += `${text}\n\n`;
+        }
+    } else {
+        description += `# You have not seen any posts by ${thatUser.name} ${thatUser.surname}.\n`;
+    }
+
+    // Posts where thatUser has interacted with posts of thisUser
+    if (postsOfThisWhereThatInteracted.length > 0) {
+        description += `# Recently, ${thatUser.name} ${thatUser.surname} has interacted with your posts:\n`;
+        for (const post of postsOfThisWhereThatInteracted) {
+            const text = postToText(post, allComments, allReactions, [thisUser, thatUser]);
+            description += `${text}\n\n`;
+        }
+    } else {
+        description += `# ${thatUser.name} ${thatUser.surname} has not interacted with any of your posts.\n`;
+    }
+
+    return description;
+}
+
+
 /** Return a LLM-friendly description of a post. 
  * TODO: order by time when time is implemented
  * TODO: add time of post, comments and reactions when time is implemented

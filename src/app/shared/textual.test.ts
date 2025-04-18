@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { describeRelationship, postToText } from './textual';
-import { User, Relation, RelationType, Post, Comment, Reaction, React, ReactionParentType, CommentParentType } from '../models/game';
+import { describeRelationship, postToText, describeInteractions } from './textual';
+import { User, Relation, RelationType, Post, Comment, Reaction, React, ReactionParentType, CommentParentType, View } from '../models/game';
 
 describe('describeRelationship', () => {
     const mockUser1: User = {
@@ -245,5 +245,184 @@ describe('postToText', () => {
         expect(result).toContain('### Reactions:');
         expect(result).toContain('- Bob Johnson reacted: 👍🏿');
         expect(result).toContain('- Alice Smith reacted: ♥️');
+    });
+});
+
+describe('describeInteractions', () => {
+    const mockThisUser: User = {
+        uuid: 'user1',
+        name: 'Alice',
+        surname: 'Smith',
+        gender: 'female',
+        age: 25,
+        occupation: 'developer',
+        location: { city: 'New York', country: 'USA' },
+        residence: { city: 'New York', country: 'USA' },
+        hometown: { city: 'Boston', country: 'USA' },
+        bio: 'Software developer',
+        traits: ['friendly', 'hardworking'],
+        profile_picture: 'alice.jpg',
+        role: 'user',
+        memory: {
+            shortTerm: '',
+            shortRelevancy: 0,
+            longTerm: ''
+        }
+    };
+
+    const mockThatUser: User = {
+        uuid: 'user2',
+        name: 'Bob',
+        surname: 'Johnson',
+        gender: 'male',
+        age: 30,
+        occupation: 'designer',
+        location: { city: 'Los Angeles', country: 'USA' },
+        residence: { city: 'Los Angeles', country: 'USA' },
+        hometown: { city: 'San Francisco', country: 'USA' },
+        bio: 'UI/UX designer',
+        traits: ['creative', 'organized'],
+        profile_picture: 'bob.jpg',
+        role: 'user',
+        memory: {
+            shortTerm: '',
+            shortRelevancy: 0,
+            longTerm: ''
+        }
+    };
+
+    const mockPosts: Post[] = [
+        {
+            uuid: 'post1',
+            author: 'user2', // Bob's post
+            text: 'Hello everyone!',
+            reasoning: 'Greeting',
+            created: Date.now()
+        },
+        {
+            uuid: 'post2',
+            author: 'user1', // Alice's post
+            text: 'Working on a new project',
+            reasoning: 'Status update',
+            created: Date.now()
+        },
+        {
+            uuid: 'post3',
+            author: 'user1', // Alice's post
+            text: 'This is not for Bob.',
+            reasoning: 'Design update',
+            created: Date.now()
+        },
+        {
+            uuid: 'post4',
+            author: 'user2', // Bob's post
+            text: 'This is not for Alice.',
+            reasoning: 'Design update',
+            created: Date.now()
+        }
+    ];
+
+    const mockViews: View[] = [
+        {
+            uuid: 'view1',
+            user: 'user1', // Alice viewed Bob's post
+            post: 'post1',
+            _reasoning: '',
+            _rating: 0,
+            joyScore: 0,
+            commentUrge: 0,
+            shareUrge: 0,
+            reactionLikeUrge: 0,
+            reactionDislikeUrge: 0,
+            reactionLoveUrge: 0,
+            reactionHateUrge: 0,
+            time: Date.now()
+        }
+    ];
+
+    const mockComments: Comment[] = [
+        {
+            uuid: 'comment1',
+            parent: 'post2', // Bob commented on Alice's post
+            parent_type: CommentParentType.Post,
+            author: 'user2',
+            text: 'Sounds interesting!'
+        }
+    ];
+
+    const mockReactions: Reaction[] = [
+        {
+            uuid: 'reaction1',
+            parent: 'post2', // Bob reacted to Alice's post
+            parent_type: ReactionParentType.Post,
+            author: 'user2',
+            value: React.Like
+        }
+    ];
+
+    it('should handle no interactions between users', () => {
+        const result = describeInteractions(mockThisUser, mockThatUser, [], [], [], []);
+        expect(result).toContain(`# You have not seen any posts by Bob Johnson.`);
+        expect(result).toContain(`# Bob Johnson has not interacted with any of your posts.`);
+    });
+
+    it('should describe posts seen by this user', () => {
+        const result = describeInteractions(mockThisUser, mockThatUser, mockViews, mockPosts, [], []);
+        expect(result).toContain(`# Recently, you have seen these posts by Bob Johnson:`);
+        expect(result).toContain('Hello everyone!');
+    });
+
+    it('should describe interactions on this user\'s posts', () => {
+        const result = describeInteractions(mockThisUser, mockThatUser, [], mockPosts, mockComments, mockReactions);
+        expect(result).toContain(`# Recently, Bob Johnson has interacted with your posts:`);
+        expect(result).toContain('Working on a new project');
+    });
+
+    it('should handle both seen posts and interactions', () => {
+        const result = describeInteractions(mockThisUser, mockThatUser, mockViews, mockPosts, mockComments, mockReactions);
+        expect(result).toContain(`# Recently, you have seen these posts by Bob Johnson:`);
+        expect(result).toContain('Hello everyone!');
+        expect(result).toContain(`# Recently, Bob Johnson has interacted with your posts:`);
+        expect(result).toContain('Working on a new project');
+    });
+
+    it('should handle multiple interactions on the same post', () => {
+        const multipleInteractions: Comment[] = [
+            ...mockComments,
+            {
+                uuid: 'comment2',
+                parent: 'post2',
+                parent_type: CommentParentType.Post,
+                author: 'user2',
+                text: 'Keep up the good work!'
+            }
+        ];
+        const result = describeInteractions(mockThisUser, mockThatUser, [], mockPosts, multipleInteractions, mockReactions);
+        expect(result).toContain('Working on a new project');
+    });
+
+    it('should handle multiple reactions on the same post', () => {
+        const multipleReactions: Reaction[] = [
+            ...mockReactions,
+            {
+                uuid: 'reaction2',
+                parent: 'post2',
+                parent_type: ReactionParentType.Post,
+                author: 'user2',
+                value: React.Love
+            }
+        ];
+        const result = describeInteractions(mockThisUser, mockThatUser, [], mockPosts, mockComments, multipleReactions);
+        expect(result).toContain('Working on a new project');
+    });
+
+    it('should exclude uninteracted posts from thisUser', () => {
+        const result = describeInteractions(mockThisUser, mockThatUser, mockViews, mockPosts, mockComments, mockReactions);
+        expect(result).not.toContain('This is not for Bob.');
+    });
+
+    it('should exclude unseen posts from thatUser', () => {
+        const result = describeInteractions(mockThisUser, mockThatUser, mockViews, mockPosts, mockComments, mockReactions);
+        expect(result).not.toContain('This is not for Alice.');
     });
 });
