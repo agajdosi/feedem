@@ -5,9 +5,17 @@ Implemented in Angular as a browser game.
 
 ## Design decisions
 
+### Task
+
+In targeting task there could be two phases:
+1. Algorithm chooses set of users, those will then generate reactions and comments,
+2. Additionaly Algorithm could add more users to the interaction, to balance the comments section and reactions.
+
+
+### Meeting 31.3.2025:
 Few design decisions from meeting on 31.3.2025:
 
-### HERO 
+#### HERO 
 To keep things simple and narrative/touching/personal, the Player/Algorithm manages a single user - Hero.
 Player manages the Hero in two ways:
 - *targeting* other users with Hero's posts
@@ -17,11 +25,11 @@ In the game narrative it is explained that every AI algorithm has its own Hero (
 The algorithms' ability is to recommend posts of their Hero to other instances of AI algorithm.
 The Instance of AI algorithm takes the recommendation and decides whether to show the post to Hero or not.
 
-### Users
+#### Users
 Users are LLM simulated persons using the simulated social network.
 Identities of users are prewritten.
 
-### Screen Saver Gallery
+#### Screen Saver Gallery
 For Screen Saver Gallery the game will be modified a little bit.
 All visitors will see just a single game.
 There will be a QR to start playing the game.
@@ -70,23 +78,19 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-### Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Running tests
 
 ```bash
 ng test
 ```
 
-### Running end-to-end tests
+### Unit test 
 
-For end-to-end (e2e) testing, run:
+This will test the /lib folder.
 
-```bash
-ng e2e
 ```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+npm run vitest
+```
 
 ### Additional Resources
 
