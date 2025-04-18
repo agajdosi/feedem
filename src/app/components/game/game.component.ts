@@ -73,7 +73,7 @@ export class GameComponent implements OnInit, OnDestroy {
             this.game = game;
             // build user graph
             console.log('this.game', this.game);
-            this.graphService.buildGraph(this.game.users, this.game.relationships, this.game.posts).then((graphData: GraphData | undefined) => {
+            this.graphService.buildGraph(this.game.users, this.game.relations, this.game.posts).then((graphData: GraphData | undefined) => {
               if (graphData) this.graphData = graphData;
             }).catch((e: any) => console.error(e));
           } 
