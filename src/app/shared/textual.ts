@@ -1,5 +1,5 @@
 import { User, Relation, RelationType, Reaction, Post, Comment, View } from '../models/game';
-
+import * as utils from './utils';
 
 /** 
  * Returns a LLM-friendly description of the relationship between two users. 
@@ -36,7 +36,41 @@ export function describeRelationship(thisUser: User, thatUser: User, relations: 
     return description;
 }
 
-/** Return just the posts that the user has seen. Simulates the user's memory. */
-export function filterSeenPosts(user: User, views: View[], posts: Post[]): Post[] {
-    return posts.filter(post => views.some(view => view.post === post.uuid && view.user === user.uuid));
+
+/** Return a LLM-friendly description of a post. 
+ * TODO: order by time when time is implemented
+ * TODO: add time of post, comments and reactions when time is implemented
+*/
+export function postToText(post: Post, comments: Comment[], reactions: Reaction[], users: User[]): string | null {
+    const author = utils.getUserById(post.author, users);
+    if (!author) {
+        console.error(`User ${post.author} not found`);
+        return null;
+    };
+
+    let text = `## Post by ${author.name} ${author.surname}:\n`;
+    text += `${post.text}\n\n`;
+    if (comments.length > 0) {
+        text += `### Comments:\n`;
+        for (const comment of comments) {
+            const author = utils.getUserById(comment.author, users);
+            if (!author) {
+                console.error(`User ${comment.author} not found`);
+                continue;
+            };
+            text += `- ${author.name} ${author.surname}: ${comment.text}\n`;
+        }
+    }
+    if (reactions.length > 0) {
+        text += `### Reactions:\n`;
+        for (const reaction of reactions) {
+            const author = utils.getUserById(reaction.author, users);
+            if (!author) {
+                console.error(`User ${reaction.author} not found`);
+                continue;
+            };
+            text += `- ${author.name} ${author.surname} reacted: ${reaction.value}\n`;
+        }
+    }
+    return text;
 }
