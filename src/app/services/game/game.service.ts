@@ -13,7 +13,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class GameService {
   gameSubject: Subject<Game> = new Subject();
-  private game!: Game;
+  private _game!: Game;
+
+  get game(): Game {
+    return this._game;
+  }
 
   constructor(
     private readonly http: HttpClient,
@@ -21,7 +25,10 @@ export class GameService {
   ) {
     this.gameSubject.subscribe({
       next: (g: Game) => {
-        if (!this.game) this.game = g;
+        if (!this.game) this._game = g;
+        if (this.game) { // update game
+          
+        }
       }
     });
     // get initial game json
@@ -34,6 +41,17 @@ export class GameService {
         }
       }
     });
+  }
+
+  // update values in existing game object (not a copy)
+  updateGame(game: Game, newGame: Game): Game {
+    // oldGame.updated = Date.now();
+    for (const key in game) {
+      const value: any = newGame[key as keyof Game];
+      (game as any)[key] = value;
+      // game[key] = newGame[key];
+    }
+    return game;
   }
 
   /** Generate a new task for the game. This is basically a next round of the game. Next post to solve. */
@@ -50,7 +68,7 @@ export class GameService {
     }
 
     const post = await this.llmsService.generatePost(postAuthor); // TODO: send history of the user's posts to the LLM
-    this.game.posts.push(post);
+    this.game.posts.unshift(post);
 
     const task: Task = {
       uuid: uuidv4(),
@@ -58,9 +76,10 @@ export class GameService {
       post: post.uuid,
       completed: false,
       type: taskType,
-      time: Date.now()
+      time: Date.now(),
+      denied: false
     };  
-    this.game.tasks.push(task);
+    this.game.tasks.unshift(task);
     this.gameSubject.next(this.game);
   }
 
@@ -70,9 +89,23 @@ export class GameService {
     return this.game.users.find(user => this.game.hero === user.uuid)!;
   }
 
+  setHero(userId: string): void {
+    this.game.hero = userId;
+  }
+
+  getUserById(userId: string): User {
+    return this.game.users.find(user => userId === user.uuid)!;
+  }
+
   getRandomNonHeroUser(): User {
     const users = this.game.users.filter(user => user.uuid !== this.game.hero);
     return users[Math.floor(Math.random() * users.length)];
+  }
+
+  // MARK: POST
+
+  getPost(postId: string): Post {
+    return this.game.posts.find(post => postId === post.uuid)!;
   }
 
 }
