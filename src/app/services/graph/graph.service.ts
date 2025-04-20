@@ -3,6 +3,8 @@ import { User, Relation, Post } from '../../models/game';
 import { GraphNode } from '../../models/graph-node';
 import { GraphData, GraphLayoutSettings } from '@tomaszatoo/graph-viewer';
 import { Assets } from 'pixi.js';
+import Graph from 'graphology';
+import { singleSourceLength } from 'graphology-shortest-path/unweighted';
 
 @Injectable({
   providedIn: 'root'
@@ -112,6 +114,12 @@ export class GraphService {
     return graphData;
   }
 
+
+  getUserPaths(graph: Graph, userId: string): any {
+    console.log('paths of user', userId);
+    const paths = singleSourceLength(graph, userId);
+    console.log('paths', paths);
+  }
 
   private randomIntFromInterval(min: number, max: number) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min);
