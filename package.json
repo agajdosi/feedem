@@ -23,6 +23,7 @@
     "@angular/router": "^19.0.0",
     "@tomaszatoo/graph-viewer": "^2.2.1",
     "@tomaszatoo/ngx-timer": "^1.1.0",
+    "graphology-shortest-path": "^2.1.0",
     "ng-qrcode": "^19.0.1",
     "rxjs": "~7.8.0",
     "socket.io-client": "^4.8.1",
