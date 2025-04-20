@@ -9,6 +9,11 @@ export interface SocketEvent {
   data: any
 }
 
+export interface SocketCommand {
+  command: string,
+  data: any
+}
+
 interface SocketMessage {
   message: any
 }
@@ -27,6 +32,11 @@ export class SocketService {
   });
 
   socketMessage: Subject<SocketEvent> = new Subject();
+
+  get socketId(): string | undefined {
+    if (this.socket) return this.socket.id;
+    return '';
+  }
 
   constructor() {
     this.socket.onAny((event, ...args) => {
@@ -67,7 +77,7 @@ export class SocketService {
 
   sendSocketMessage(value: any): void {
     this.socket.emit('message', value);
-    console.log('send message', value);
+    // console.log('send message', value);
   }
 
   destroy(): void {
