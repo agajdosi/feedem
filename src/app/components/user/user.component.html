@@ -2,7 +2,9 @@
     <div class="user-card">
         <div class="user-info">
             <h3>{{ user.name }} {{ user.surname }}</h3>
-            <img [src]="user.profile_picture" alt="User profile picture" class="profile-picture">
+            <div class="user-profile-picture">
+                <img [src]="user.profile_picture" alt="User profile picture" class="profile-picture">
+            </div>
             <p class="bio">{{ user.bio }}</p>
             <div class="user-details">
                 <p><strong>Age:</strong> {{ user.age }}</p>
