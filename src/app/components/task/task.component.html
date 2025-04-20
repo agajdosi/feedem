@@ -1,0 +1,38 @@
+@if(task) {
+    @if(post) {
+        <app-post [post]="post"></app-post>
+    }
+    @if(task.type === 'distributePost') {
+        <!-- 
+            // your hero post
+            1. choose who to distribute the post (select minimum two of users of users)
+            2. Distribute (button)
+            3. mark task complete 
+            4. call nextTask
+        -->
+        @if (distributeTo.length && distributeTo.length >= 2) {
+            <div class="controls">
+                <button (click)="distribute()" class="distribute">Send Post</button>
+            </div>
+        }
+        @for(user of users; track user.uuid) {
+            @if(!distributeTo.includes(user.uuid)) {
+                <app-user (click)="selectUserForPost(user.uuid)" [user]="user"></app-user>
+            }
+        }
+    }
+
+    @if(task.type === 'showPost') {
+        <!-- 
+            // someone else wrote a post, decide to show to your
+            1. accept / decline
+            2. mark task complete
+            3. call nextTask
+        -->
+        <h3>Show post to your hero?</h3>
+        <div class="controls">
+            <button (click)="accept()" class="accept">Accept</button>
+            <button (click)="deny()" class="decline">Decline</button>
+        </div>
+    }
+}
