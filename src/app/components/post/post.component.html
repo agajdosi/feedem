@@ -1,0 +1,12 @@
+@if(post) {
+    <div class="post-header">
+        <div class="created"><small>{{post.created | date: 'M/d/yy, h:mm a'}}</small></div>
+        <div class="user-profile-picture">
+            <img [src]="getPostAuthor().profile_picture" alt="">
+        </div>
+    </div>
+    <div class="post-text">
+        {{post.text}}
+    </div>
+    <div class="post-footer"></div>
+}
