@@ -6,7 +6,8 @@ $space: 1.5rem;
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     background-color: black;
     color: white;
     font-family: 'Roboto', sans-serif;
@@ -48,6 +49,7 @@ app-main-menu {
         margin-bottom: 0;
         font-size: calc(2 * $space);
     }
+
     h4 {
         margin-top: 0;
         font-weight: 300;
@@ -60,7 +62,10 @@ app-main-menu {
         justify-content: center;
         align-items: center;
         margin-top: 2rem;
-        button { width: 100%;}
+
+        button {
+            width: 100%;
+        }
     }
 }
 
@@ -70,6 +75,7 @@ app-game {
     width: 100%;
     height: 100%;
     overflow: hidden;
+
     graph-viewer {
         position: absolute;
         top: 0;
@@ -79,6 +85,7 @@ app-game {
         width: 100%;
         height: 100%;
     }
+
     app-feed {
         position: absolute;
         width: 30%;
@@ -89,7 +96,7 @@ app-game {
 
     .hero {
         position: absolute;
-        width: 30%;
+        width: 20%;
         height: 100%;
         left: 0;
         top: 0;
@@ -119,20 +126,60 @@ app-controller {
 
 app-user {
     display: block;
+
     &.highlight {
         .user-card {
-            border: 3px solid #ddd;
+            background-color: #ddd;
+            color: black;
         }
     }
+
     .user-card {
         padding: $space;
         border: 1px solid #ddd;
+        background-color: rgba(black, .5);
         // margin: $space;
         margin-bottom: $space;
-        img.profile-picture {
-            width: calc($space * 7);
-            height: auto;
+    }
+}
+
+app-feed {
+    display: block;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgba(black, .5);
+    padding: $space;
+    // app-post {
+    //     color: 
+    // }
+}
+
+app-score {
+    #score {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start; //space-between;
+        align-items: center;
+        background-color: black;
+        #engagement {
+            padding-right: 0.5rem;
         }
+        #lifes,
+        #limit {
+            padding: 0 0.5rem;
+        }
+    }
+}
+
+.user-profile-picture {
+    overflow: hidden;
+    border-radius: 50%;
+    width: calc(4 * $space);
+    height: calc(4 * $space);
+
+    img {
+        width: calc(4 * $space);
+        height: auto;
     }
 }
 
