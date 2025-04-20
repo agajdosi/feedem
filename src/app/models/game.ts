@@ -144,7 +144,8 @@ export interface Task {
     post: string,
     completed: boolean,
     type: TaskType,
-    time: number
+    time: number,
+    denied: boolean // to discuss: added for case when player deny to show post to her hero
 }
 
 // MARK: MEMORY
