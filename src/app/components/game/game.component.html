@@ -3,16 +3,25 @@
     <graph-viewer
         [graphData]="graphData"
         [animate]="true"
+        [highlightNode]="highlightUser"
+        [highlightEdge]="highlightUsersConnection"
+        [clearNodesHighlight]="clearUsersHighlight"
+        [clearEdgesHighlight]="clearConnectionsHighlight"
         [layoutSettings]="graphLayoutSettings"
         [nodeRenderer]="renderNode"
         [edgeRenderer]="renderEdge"
+        (graphInitialised)="graphUpdated($event)"
+        (graphUpdated)="graphUpdated($event)"
     ></graph-viewer>
 }
 <!-- HEROS' PROFILE --> 
 @if(game) {
     <div class="hero">
-        <p>hero works!</p>
+        @if(!game.hero) {
+            <h2>Choose Your Hero...</h2>
+        }
         @if(game.hero) {
+            <h2>Your Hero</h2>
             <app-user [user]="getUserById(game.hero)"></app-user>
         }
     </div>

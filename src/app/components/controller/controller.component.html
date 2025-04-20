@@ -3,7 +3,19 @@
         <h2>Choose Hero</h2>
         @for(hero of game.users; track hero.uuid) {
             <app-on-screen [data]="hero.uuid" (onScreen)="userIsOnScreen($event)"></app-on-screen>
-            <app-user [user]="hero" [class]="{'highlight': highlightedUser === hero.uuid}"></app-user>
+            <app-user (click)="selectHero(hero.uuid)" [user]="hero" [class]="{'highlight': highlightedUser === hero.uuid}"></app-user>
+        }
+    }
+
+    @if(game.hero) {
+        @if(!isAnyOpenTask()) {
+            Waiting for task...
+        }
+        @for(task of game.tasks; track task.uuid) {
+            @if(!task.completed) {
+                <app-task [task]="task"></app-task>
+            }
+            
         }
     }
 }

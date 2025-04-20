@@ -1,18 +1,21 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+// router
+import { ActivatedRoute } from '@angular/router';
 // models
 import { Game } from '../../models/game';
 // components
 import { UserComponent } from '../user/user.component';
 import { OnScreenComponent } from '../on-screen/on-screen.component';
+import { TaskComponent } from '../task/task.component';
 // services
-import { SocketEvent, SocketService } from '../../services/socket/socket.service';
+import { SocketEvent, SocketService, SocketCommand } from '../../services/socket/socket.service';
 import { GameService } from '../../services/game/game.service';
 // rxjs
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-controller',
-  imports: [ UserComponent, OnScreenComponent ],
+  imports: [ UserComponent, OnScreenComponent, TaskComponent ],
   templateUrl: './controller.component.html',
   styleUrl: './controller.component.scss'
 })
@@ -25,13 +28,17 @@ export class ControllerComponent implements OnInit, OnDestroy {
   controllable: boolean = false;
   game!: Game;
   highlightedUser: string = '';
+  connectedGameInstance: string | null = '';
 
   constructor(
     private readonly socketService: SocketService,
-    private readonly gameService: GameService
+    private readonly gameService: GameService,
+    private readonly route: ActivatedRoute
   ){}
 
   ngOnInit(): void {
+    // TODO: if connectedGameInstance disconnect, remove control from this controller (server side)
+    this.connectedGameInstance = this.route.snapshot.queryParams['from'];
     /* 
       1. wait for game
       2. request game control
@@ -66,6 +73,18 @@ export class ControllerComponent implements OnInit, OnDestroy {
     this.requestGameControl();
   }
 
+  selectHero(userId: string): void {
+    console.log('select HERO', userId);
+    this.gameService.setHero(userId);
+    this.socketService.sendSocketMessage({
+      command: 'select-hero',
+      data: {
+        userId: userId
+      }
+    });
+    this.gameService.nextTask();
+  }
+
   ngOnDestroy(): void {
     this.gameControlSub.unsubscribe();
     this.gameSub.unsubscribe();
@@ -76,10 +95,21 @@ export class ControllerComponent implements OnInit, OnDestroy {
     console.log(`user ${id} is on screen...`);
     // send socket message to highlight on graph
     this.highlightedUser = id;
-    this.socketService.sendSocketMessage({
-      command: "highlight-user-on-graph",
-      userId: id
-    });
+    const socketCommand: SocketCommand = {
+      command: 'highlight-user-on-graph',
+      data: {
+        userId: id
+      }
+    }
+    this.socketService.sendSocketMessage(socketCommand);
+  }
+
+  isAnyOpenTask(): boolean {
+    if (!this.game.tasks.length) return false;
+    for (const task of this.game.tasks) {
+      if (!task.completed) return true;
+    }
+    return false;
   }
 
   private requestGameControl(): void {
