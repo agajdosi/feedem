@@ -15,6 +15,8 @@ import { GraphService } from '../../services/graph/graph.service';
 import { Subscription } from 'rxjs';
 // qr
 import { QrCodeComponent } from 'ng-qrcode';
+// utils
+import * as utils from '../../shared/utils';
 // user
 import { ScoreComponent } from '../score/score.component';
 import { LlmsService } from '../../services/llms/llms.service';
@@ -66,14 +68,14 @@ export class GameComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // subscribe game json
-    this.gameService.game.subscribe({
+    this.gameService.gameSubject.subscribe({
       next: (game: Game) => {
         if (game && game.uuid) {
           if (this.game && game.updated > this.game.updated || !this.game) {
             this.game = game;
             // build user graph
             console.log('this.game', this.game);
-            this.graphService.buildGraph(this.game.users, this.game.relationships, this.game.posts).then((graphData: GraphData | undefined) => {
+            this.graphService.buildGraph(this.game.users, this.game.relations, this.game.posts).then((graphData: GraphData | undefined) => {
               if (graphData) this.graphData = graphData;
             }).catch((e: any) => console.error(e));
           } 
@@ -100,10 +102,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   getUserById(id: string): User | undefined {
-    for (const user of this.game.users) {
-      if (user.uuid === id) return user;
-    }
-    return undefined;
+    return utils.getUserById(id, this.game.users);
   }
 
   ngOnDestroy(): void {
@@ -152,7 +151,7 @@ export class GameComponent implements OnInit, OnDestroy {
     switch (e.type) {
       case 'game':
         console.log('game from server', e.data);
-        if (e.data && e.data.uuid) this.gameService.game.next(e.data);
+        if (e.data && e.data.uuid) this.gameService.gameSubject.next(e.data);
         break;
       default:
         console.log('recieved socket event', e);

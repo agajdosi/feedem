@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { User, Post, View, React, Reaction, Comment, ReactionParentType, CommentParentType } from '../../models/game';
-import { GameService } from '../game/game.service';
 import { v4 as uuidv4 } from 'uuid';
 const environment = {
   aigenburgAPI: 'https://aigenburg.lab.gajdosik.org' // -> uses prompts defined at https://phoenix.lab.gajdosik.org
@@ -12,14 +11,13 @@ const environment = {
   providedIn: 'root'
 })
 export class LlmsService {
-  constructor(private gameService: GameService) { }
 
   /** DUMMY Generate a new post for social network.
    * TODO: implement the proper prompt and generation.
    * TODO: also add previous users posts to the prompt
    * Define the prompts at: https://phoenix.lab.gajdosik.org
    */
-  async generatePost(user: User) {
+  async generatePost(user: User): Promise<Post> {
     const response = await fetch(`${environment.aigenburgAPI}/generate`, {
       method: 'POST',
       headers: {
@@ -51,7 +49,16 @@ export class LlmsService {
 
     const post_text = parsedData.choices[0].message.content;
     console.log('Response message:', post_text);
-    return post_text;
+
+    const post: Post = {
+      uuid: uuidv4(),
+      author: user.uuid,
+      text: post_text,
+      reasoning: '', // This will be filled when the post is viewed
+      created: Date.now()
+    };
+
+    return post;
   }
 
   /**

@@ -1,56 +1,78 @@
 import { Injectable } from '@angular/core';
-import { User } from '../../models/game';
-// models
-import { Game } from '../../models/game';
+import { User, Post, Game , Reaction, TaskType, Task} from '../../models/game';
+import { LlmsService } from '../llms/llms.service';
 // http client
 import { HttpClient } from '@angular/common/http';
 // rxjs
 import { Subject } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class GameService {
-  game: Subject<Game> = new Subject();
-  private _game!: Game;
-  // TODO -> USERS TO USERS.SERVICE
-  private users: User[] = [];
+  gameSubject: Subject<Game> = new Subject();
+  private game!: Game;
 
   constructor(
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly llmsService: LlmsService
   ) {
-    this.game.subscribe({
-      next: (game: Game) => {
-        if (!this._game) this._game = game;
-        if (game.users) this.users = game.users;
+    this.gameSubject.subscribe({
+      next: (g: Game) => {
+        if (!this.game) this.game = g;
       }
     });
     // get initial game json
     const initialGameSub = this.http.get<Game>('/initial-game.json').subscribe({
-      next: (game: Game) => {
-        // console.log('initial game', game);
-        if (!this._game && game && game.uuid) {
-          this.game.next(game);
+      next: (g: Game) => {
+        // console.log('initial game', g);
+        if (!this.game && g && g.uuid) {
+          this.gameSubject.next(g);
           initialGameSub.unsubscribe();
         }
       }
     });
   }
 
-  getUsers(): User[] {
-    return this.users;
+  /** Generate a new task for the game. This is basically a next round of the game. Next post to solve. */
+  async nextTask() {
+    let taskType: TaskType;
+    let postAuthor: User;
+    const rx = Math.random();
+    if (rx < 0.5) {
+      taskType = TaskType.DistributePost;
+      postAuthor = this.getHero()!;
+    } else {
+      taskType = TaskType.ShowPost;
+      postAuthor = this.getRandomNonHeroUser()!;
+    }
+
+    const post = await this.llmsService.generatePost(postAuthor); // TODO: send history of the user's posts to the LLM
+    this.game.posts.push(post);
+
+    const task: Task = {
+      uuid: uuidv4(),
+      user: postAuthor.uuid,
+      post: post.uuid,
+      completed: false,
+      type: taskType,
+      time: Date.now()
+    };  
+    this.game.tasks.push(task);
+    this.gameSubject.next(this.game);
   }
 
-  updateUser(userId: string, updates: Partial<User>): void {
-    this.users = this.users.map(user => 
-      user.uuid === userId ? { ...user, ...updates } : user
-    );
+  // MARK: USER
+
+  getHero(): User {
+    return this.game.users.find(user => this.game.hero === user.uuid)!;
   }
 
-  getUserById(userId: string): User | undefined {
-    return this.users.find(user => user.uuid === userId);
+  getRandomNonHeroUser(): User {
+    const users = this.game.users.filter(user => user.uuid !== this.game.hero);
+    return users[Math.floor(Math.random() * users.length)];
   }
-  
 
 }

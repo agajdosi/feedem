@@ -17,7 +17,7 @@ export class ScoreComponent {
   constructor(private gameService: GameService) {}
 
   ngOnInit(): void {
-    this.gameSub = this.gameService.game.subscribe((gameDataUpdate: Game) => {
+    this.gameSub = this.gameService.gameSubject.subscribe((gameDataUpdate: Game) => {
       this.gameData = gameDataUpdate;
     });
   }

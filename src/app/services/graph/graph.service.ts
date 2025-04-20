@@ -74,7 +74,7 @@ export class GraphService {
         });
       }
     } else {
-      console.log('NO RELATIONSHIPS, CREATE THEM');
+      console.log('NO RELATIONS, CREATE THEM');
       const connectionExist = (connection: {source: string, target: string}) => {
         for (const c of graphData.edges) {
           if (c.source === connection.source && c.target === connection.target) return true;
