@@ -112,8 +112,25 @@ export class LlmsService {
     }
     const rating = parsedRating.choices[0].message.content;
     console.log(`Got rating for post (${post.uuid}): ${rating}`);
+    const parsedRatingObj = JSON.parse(rating); // Parse the LLM response (expected to be JSON) from JSON to object
 
-    return rating;
+    const view: View = {
+      uuid: uuidv4(),
+      user: user.uuid,
+      post: post.uuid,
+      time: Date.now(),
+      _reasoning: reflection,
+      _rating: rating,
+      joyScore: parsedRatingObj.enjoyScore,
+      reactionLikeUrge: parsedRatingObj.reactionLikeUrge,
+      reactionDislikeUrge: parsedRatingObj.reactionDislikeUrge,
+      reactionHateUrge: parsedRatingObj.reactionHateUrge,
+      reactionLoveUrge: parsedRatingObj.reactionLoveUrge,
+      commentUrge: parsedRatingObj.commentUrge,
+      shareUrge: 0, // Not implemented
+    };
+
+    return view;
   }
 
   /**
