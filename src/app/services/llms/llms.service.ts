@@ -62,11 +62,11 @@ export class LlmsService {
   }
 
   /**
-   * Rate a post based on the user's identity.
-   * 1. generate a reflection text about the post
-   * 2. based on the reflection, create JSON with scores for each reaction type
+   * Simulate a user viewing a post and creating an opinion about it according to their identity.
+   * 1. generate a _reflection text about the post, inter step for deeper reasoning
+   * 2. based on the _reflection, create JSON with scores for each reaction type
    */
-  async ratePost(post: Post, user: User) {
+  async viewPost(post: Post, user: User): Promise<View> {
     const genURL  = `${environment.aigenburgAPI}/generate`;
     // 1. REFLECT - think about the post
     const response = await fetch(genURL, {

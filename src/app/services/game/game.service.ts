@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User, Post, Game , Reaction, TaskType, Task} from '../../models/game';
+import { User, Post, Game , Reaction, TaskType, Task, View} from '../../models/game';
 import { LlmsService } from '../llms/llms.service';
 // http client
 import { HttpClient } from '@angular/common/http';
@@ -55,7 +55,29 @@ export class GameService {
   }
 
   /** Generate a new task for the game. This is basically a next round of the game. Next post to solve. */
-  async nextTask() {
+  async nextTask(taskDone: Task | null = null) {
+    if (taskDone) {
+      for (const showTo of taskDone.showTo) {
+        const user = this.getUserById(showTo);
+        const post = this.getPost(taskDone.post);
+        console.log('showing post to user', user.name, user.surname);
+        const view = await this.llmsService.viewPost(post, user);
+        this.game.views.unshift(view);
+
+        const reaction = this.llmsService.decideReaction(view);
+        if (reaction) {
+          this.game.reactions.unshift(reaction);
+        }
+
+        const comment = await this.llmsService.decideComment(view, user, post);
+        if (comment) {
+          this.game.comments.unshift(comment);
+        }
+      }
+    }
+
+
+    // GENERATE NEW TASK
     let taskType: TaskType;
     let postAuthor: User;
     const rx = Math.random();
