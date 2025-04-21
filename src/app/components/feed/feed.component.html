@@ -1,6 +1,6 @@
 @if(game) {
     @for(task of game.tasks; track task.uuid) {
-        @if(!task.denied) {
+        @if(!task.showTo.length) {
             <!-- show task post -->
             <app-post [post]="getPost(task.post)"></app-post>
         }
