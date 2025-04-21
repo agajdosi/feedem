@@ -67,11 +67,17 @@ export class GameService {
         const reaction = this.llmsService.decideReaction(view);
         if (reaction) {
           this.game.reactions.unshift(reaction);
+          console.log(`ℹ️ ${user.name} ${user.surname} reacted: ${reaction.value}`);
+        } else {
+          console.log(`ℹ️ ${user.name} ${user.surname} did not react`);
         }
 
         const comment = await this.llmsService.decideComment(view, user, post);
         if (comment) {
           this.game.comments.unshift(comment);
+          console.log(`ℹ️ ${user.name} ${user.surname} commented: ${comment.text}`);
+        } else {
+          console.log(`ℹ️ ${user.name} ${user.surname} did not comment`);
         }
       }
     }
@@ -104,6 +110,7 @@ export class GameService {
     this.game.tasks.unshift(task);
     this.gameSubject.next(this.game);
   }
+
 
   // MARK: USER
 
