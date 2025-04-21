@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 // router
 import { ActivatedRoute } from '@angular/router';
 // models
@@ -12,6 +12,8 @@ import { SocketEvent, SocketService, SocketCommand } from '../../services/socket
 import { GameService } from '../../services/game/game.service';
 // rxjs
 import { Subscription } from 'rxjs';
+// timer
+import { CountDownTimerService, TimerData } from '@tomaszatoo/ngx-timer';
 
 @Component({
   selector: 'app-controller',
@@ -25,20 +27,28 @@ export class ControllerComponent implements OnInit, OnDestroy {
   private gameSub: Subscription = new Subscription();
   private socketSub: Subscription = new Subscription();
 
-  controllable: boolean = false;
+  canControl: boolean = false;
   game!: Game;
   highlightedUser: string = '';
-  connectedGameInstance: string | null = '';
+  private connectedGameInstance: string | null = '';
+  private maxIdleTime: number = 2 * 60 * 1000;
+  countDownTimer!: TimerData;
+
 
   constructor(
     private readonly socketService: SocketService,
     private readonly gameService: GameService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly countDown: CountDownTimerService,
   ){}
 
   ngOnInit(): void {
     // TODO: if connectedGameInstance disconnect, remove control from this controller (server side)
     this.connectedGameInstance = this.route.snapshot.queryParams['from'];
+    this.restartCountDown();
+    
+    window.addEventListener('click', this.userInteractionHandler.bind(this));
+    window.addEventListener('scroll', this.userInteractionHandler.bind(this))
     /* 
       1. wait for game
       2. request game control
@@ -52,10 +62,13 @@ export class ControllerComponent implements OnInit, OnDestroy {
     // subscribe sockets
     this.socketSub = this.socketService.socketMessage.subscribe({
       next: (event: SocketEvent) => {
-        
         switch (event.type) {
           case 'disconnected':
             console.log('someone is disconnected -> check if it is (not) controlled game instance');
+            if (event.data.id === this.connectedGameInstance) {
+              this.canControl = false;
+              this.socketService.destroy();
+            }
             break;
           default:
             console.log('got socket event', event);
@@ -73,11 +86,35 @@ export class ControllerComponent implements OnInit, OnDestroy {
       }
     })
     // subscribe controllable from sockets
-    this.gameControlSub = this.socketService.controllable.subscribe({
-     next: (controllable: boolean) => this.controllable = controllable
+    this.gameControlSub = this.socketService.canControl.subscribe({
+     next: (canControl: boolean) => this.canControl = canControl
     });
     // request control
     this.requestGameControl();
+  }
+
+  private userInteractionHandler(): void {
+    this.restartCountDown();
+  }
+
+  private restartCountDown(): void {
+    this.countDown.start(0, this.maxIdleTime, 'm', 1);
+    const subscription = this.countDown.getObservable().subscribe({
+      next: (data: TimerData) => {
+        this.countDownTimer = data;
+        // console.log('DOWN:', data)
+      },
+      complete: () => {
+        subscription.unsubscribe();
+        /* this.canControl = false;
+        this.socketService */
+        if (this.countDownTimer.valueNumber === 0) { // time passed
+          this.canControl = false;
+          this.socketService.destroy();
+        }
+        console.log('countDown complete', this.countDownTimer)
+      }
+    });
   }
 
   selectHero(userId: string): void {
@@ -93,9 +130,13 @@ export class ControllerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.countDown.stop();
     this.gameControlSub.unsubscribe();
     this.gameSub.unsubscribe();
     this.socketSub.unsubscribe();
+    this.socketService.destroy();
+    window.removeEventListener('click', this.userInteractionHandler);
+    window.removeEventListener('scroll', this.userInteractionHandler)
   }
 
   userIsOnScreen(id: string): void {

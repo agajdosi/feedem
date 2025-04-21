@@ -1,4 +1,7 @@
-@if(game) {
+@if(game && canControl) {
+    @if(countDownTimer) {
+        <div class="time-to-play">{{countDownTimer.valueString}}</div>
+    }
     @if(!game.hero) {
         <h2>Choose Hero</h2>
         @for(hero of game.users; track hero.uuid) {
@@ -18,4 +21,6 @@
             
         }
     }
+}@else {
+    <h2>Reconnect the game...</h2>
 }
