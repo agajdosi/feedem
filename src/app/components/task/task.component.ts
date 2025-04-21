@@ -44,23 +44,26 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   accept(): void {
     console.log('accept post', this.post);
-    this.task.denied = false;
+    this.task.showTo = [this.gameService.getHero().uuid];
     this.completeTask();
   }
 
   deny(): void {
     console.log('decline post', this.post);
-    this.task.denied = true;
+    this.task.showTo = [];
     this.completeTask();
   }
 
   selectUserForPost(userId: string): void {
+    // select also graph peers paths between
+    // graphology find path from to
     this.distributeTo.push(userId);
   }
 
   distribute(): void {
     console.log('distribute post to users: ', this.distributeTo);
     this.task.completed = true;
+    this.task.showTo = this.distributeTo;
     this.gameService.nextTask();
     this.notifyPeers();
 
@@ -82,6 +85,12 @@ export class TaskComponent implements OnInit, OnDestroy {
         game: this.gameService.game
       }
     })
+  }
+
+  nextTask(): void {
+    this.task.completed;
+    this.gameService.nextTask();
+    // rate post
   }
 
 }

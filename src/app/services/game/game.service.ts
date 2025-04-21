@@ -77,7 +77,7 @@ export class GameService {
       completed: false,
       type: taskType,
       time: Date.now(),
-      denied: false
+      showTo: []
     };  
     this.game.tasks.unshift(task);
     this.gameSubject.next(this.game);
