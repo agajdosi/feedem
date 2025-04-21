@@ -1,5 +1,5 @@
 import { NodeWrapper, GraphColors, GraphNodeAttributes, Point } from "@tomaszatoo/graph-viewer";
-import { Text, Graphics, Texture, Sprite } from 'pixi.js';
+import { Text, Graphics, Texture, Sprite, Container } from 'pixi.js';
 
 interface ExtendedGraphNodeAttributes extends GraphNodeAttributes {
     image?: Texture | undefined
@@ -10,6 +10,8 @@ export class GraphNode extends NodeWrapper {
 
     private profilePicture!: Sprite;
     private type: string = '';
+
+    private nodeInitialised: boolean = false;
 
     private customColors: GraphColors = {
         fill: 0xff0000,
@@ -46,17 +48,9 @@ export class GraphNode extends NodeWrapper {
         }
     }
 
-    override initLabelGraphics(t: Text): void {
-        // console.log('initLabelGraphics in custom renderer');
-        t.text = this.attributes.label && this.attributes.label ? this.attributes.label : '';
-        t.style = {
-            fontSize: 24,
-            fontFamily: 'Arial',
-            fill: this.select ? this.defaultNodeColors.selection : (this.highlight ? this.defaultNodeColors.highlight : this.defaultNodeColors.label),
-            align: 'center'
-        }
-    }
+    
 
+    /* TODO: CORRECT GRAPH-VIEWER -> IN THIS WAY, EVERY INTERACTION ADD A NEW OBJECT TO PARENT G */
     override initNodeGraphics(g: Graphics): void {
         // console.log('node type', this.type);
         if (this.type && this.type === 'user') {
@@ -65,24 +59,54 @@ export class GraphNode extends NodeWrapper {
                     color: this.select ? this.defaultNodeColors.selection : (this.highlight ? this.defaultNodeColors.highlight : this.defaultNodeColors.stroke),
                     width: this.attributes && this.attributes.strokeWidth ? this.attributes.strokeWidth : 10
                 });
-            if (this.profilePicture) {
+            if (this.highlight) {
+                g.parent.scale = 1.5;
+            } else {
+                g.parent.scale = 1;
+            }
+            if (this.profilePicture && !this.nodeInitialised) {
                 this.profilePicture.width = (this.radius() * 2) + 10;
                 this.profilePicture.height = (this.radius() * 2) + 10;
                 this.profilePicture.x = (this.radius() + 5) * (-1);
                 this.profilePicture.y = (this.radius() + 5) * (-1);
                 // this.profilePicture.position = {x: this.profilePicture.x - this.profilePicture.width / 2, y: this.profilePicture.y - this.profilePicture.height / 2}
-                g.parent.addChild(this.profilePicture);
+                const container = new Container();
+                container.width = g.parent.width;
+                container.height = g.parent.height;
+                g.parent.addChild(container);
+                
+                container.addChild(this.profilePicture);
                 const mask = new Graphics();
                 mask.circle(0, 0, this.radius() + 5)
                     .fill({
                         color: this.defaultNodeColors.fill
                     });
-                g.parent.addChild(mask);
-                g.parent.mask = mask;
+                container.addChild(mask);
+                container.mask = mask;
+                this.nodeInitialised = true; 
+                console.log('only once this should appear for', g);
             }
         }
         // TODO: type comment
         // ...
+    }
+
+    override initLabelGraphics(t: Text): void {
+        // console.log('label?', this.attributes.label);
+        t.text = this.attributes.label && this.attributes.label ? this.attributes.label : '';
+        t.style = {
+            fontSize: 20,
+            fontFamily: 'Arial',
+            fill: this.select ? this.defaultNodeColors.selection : (this.highlight ? this.defaultNodeColors.highlight : this.defaultNodeColors.label),
+            align: 'center'
+        }
+        const nodeContainer = t.parent.parent;
+        console.log('nodeContainer', nodeContainer);
+        // if (nodeContainer) {
+        t.x = this.attributes.radius ? (this.attributes.radius + 20) : 10;
+        t.y = -(t.height / 2);
+        // }
+        
     }
 
     private radius(): number {

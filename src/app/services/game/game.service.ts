@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 // rxjs
 import { Subject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import { postToText } from '../../shared/textual';
 
 @Injectable({
   providedIn: 'root'
@@ -69,7 +70,15 @@ export class GameService {
         const user = this.getUserById(showTo);
         const post = this.getPost(taskDone.showPost);
         console.log('showing post to user', user.name, user.surname);
-        const view = await this.llmsService.viewPost(post, user);
+
+        const postContext = postToText(post, this.game.comments, this.game.reactions, this.game.users);
+        if (!postContext) {
+          console.error('❌ post context is null');
+          continue;
+        }
+        console.log('nextTask - postContext for view:', postContext);
+
+        const view = await this.llmsService.viewPost(post, user, postContext);
         this.game.views.unshift(view);
 
         const reaction = this.llmsService.decideReaction(view);

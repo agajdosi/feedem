@@ -2,7 +2,13 @@
     @for(task of game.tasks; track task.uuid) {
         @if(task.type === 'showPost') {
             <!-- post selected to be shown to Hero -->
-            <app-post [post]="getPost(task.showPost)"></app-post>
+            <!--<app-post [post]="getPost(task.showPost)"></app-post>-->
+       
+        <!-- task.showTo: {{task.showTo}} -->
+        <!-- @if(task.showTo.length) { -->
+            <!-- show task post -->
+            <app-post [post]="getPost(task.post)"></app-post>
+
         }
         <!-- DISCUSS: show Hero's posts which were selected to be distributed to other users -->
     } 
