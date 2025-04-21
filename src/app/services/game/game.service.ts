@@ -55,12 +55,20 @@ export class GameService {
     return game;
   }
 
-  /** Generate a new task for the game. This is basically a next round of the game. Next post to solve. */
+  /** Generate a new task for the game. This is basically a next round of the game. Next post to solve.
+   * 1. REACT TO OLD TASK - First we take the taskDone and we ask all targeted users (taskDone.showTo) to react to the post (taskDone.showPost).
+   * If the taskDone.type is DistributePost, showPost is predefined basically and we are interested mostly in the showTo -
+   * the player has selected few users from many users to distribute the post to.
+   * If the taskDone.type is ShowPost, showTo is predefined basically (the Hero) and we are interested mostly in the showPost -
+   * the player has selected a one post of many to show to her hero.
+   * 2. GENERATE NEW TASK - Then we generate a new task, either DistributePost or ShowPost.
+   * @param taskDone - The task that was just completed, is null if we have just started the game
+  */
   async nextTask(taskDone: Task | null = null) {
-    if (taskDone) {
+    if (taskDone && taskDone.showPost) {
       for (const showTo of taskDone.showTo) {
         const user = this.getUserById(showTo);
-        const post = this.getPost(taskDone.post);
+        const post = this.getPost(taskDone.showPost);
         console.log('showing post to user', user.name, user.surname);
 
         const postContext = postToText(post, this.game.comments, this.game.reactions, this.game.users);
@@ -91,33 +99,57 @@ export class GameService {
       }
     }
 
-
     // GENERATE NEW TASK
-    let taskType: TaskType;
-    let postAuthor: User;
     const rx = Math.random();
+    let task: Task;
     if (rx < 0.5) {
-      taskType = TaskType.DistributePost;
-      postAuthor = this.getHero()!;
+      task = await this.createTaskDistributePost();
     } else {
-      taskType = TaskType.ShowPost;
-      postAuthor = this.getRandomNonHeroUser()!;
+      task = await this.createTaskShowPost();
     }
+  
+    this.game.tasks.unshift(task);
+    this.gameSubject.next(this.game);
+  }
 
+  async createTaskDistributePost(): Promise<Task> {
+    const postAuthor = this.getHero()!;
     const post = await this.llmsService.generatePost(postAuthor); // TODO: send history of the user's posts to the LLM
     this.game.posts.unshift(post);
 
     const task: Task = {
       uuid: uuidv4(),
-      user: postAuthor.uuid,
-      post: post.uuid,
+      users: [postAuthor.uuid],
+      posts: [post.uuid],
       completed: false,
-      type: taskType,
+      type: TaskType.DistributePost,
       time: Date.now(),
-      showTo: []
-    };  
-    this.game.tasks.unshift(task);
-    this.gameSubject.next(this.game);
+      showTo: [],
+      showPost: post.uuid // We can fill this right away, because there is only one post for this task type
+    };
+    return task;
+  }
+
+  async createTaskShowPost(): Promise<Task> {
+    const authors = this.getRandomNonHeroUsers(2);
+    let posts: Post[] = [];
+    for (const author of authors) {
+      const post = await this.llmsService.generatePost(author);
+      this.game.posts.unshift(post);
+      posts.push(post);
+    }
+
+    const task: Task = {
+      uuid: uuidv4(),
+      users: authors.map(author => author.uuid),
+      posts: posts.map(post => post.uuid),
+      completed: false,
+      type: TaskType.ShowPost,
+      time: Date.now(),
+      showTo: [],
+      showPost: "", // This will be filled when user selects a post to show to her hero
+    };
+    return task;
   }
 
 
@@ -135,9 +167,14 @@ export class GameService {
     return this.game.users.find(user => userId === user.uuid)!;
   }
 
-  getRandomNonHeroUser(): User {
-    const users = this.game.users.filter(user => user.uuid !== this.game.hero);
-    return users[Math.floor(Math.random() * users.length)];
+  getRandomNonHeroUsers(n: number = 1): User[] {
+    const nonHeroUsers = this.game.users.filter(user => user.uuid !== this.game.hero);
+    if (nonHeroUsers.length === 0) {
+      console.error('No non-hero users available');
+      return [];
+    }
+    const shuffled = [...nonHeroUsers].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.min(n, nonHeroUsers.length));
   }
 
   // MARK: POST

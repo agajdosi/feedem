@@ -18,11 +18,12 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   @Input() task!: Task;
 
-  post!: Post;
+  posts: Post[] = [];
   showTo: string[] = [];
+  selectedPostId: string | null = null;
 
   get users(): User[] {
-    return this.gameService.game.users.filter(user => user.uuid !== this.post.author);
+    return this.gameService.game.users.filter(user => user.uuid !== this.gameService.getHero().uuid);
   }
 
   constructor(
@@ -32,32 +33,35 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('task', this.task);
-    // get taks post
-    this.post = this.gameService.getPost(this.task.post);
-    console.log('post', this.post);
-
+    // get task posts
+    this.posts = this.task.posts.map(postId => this.gameService.getPost(postId));
+    console.log('posts', this.posts);
   }
 
   ngOnDestroy(): void {
     
   }
 
-  accept(): void {
-    console.log('accept post', this.post);
-    this.task.showTo = [this.gameService.getHero().uuid];
-    this.completeTask();
+  selectPost(postId: string): void {
+    this.selectedPostId = postId;
+    this.task.showPost = postId;
+    if (this.task.type === 'showPost') {
+      this.task.showTo = [this.gameService.getHero().uuid];
+      this.completeTask();
+    }
   }
 
-  deny(): void {
-    console.log('decline post', this.post);
+  notShowAny(): void {
+    console.log('not show any posts', this.posts);
     this.task.showTo = [];
     this.completeTask();
   }
 
   selectUserForPost(userId: string): void {
-    // select also graph peers paths between
-    // graphology find path from to
     this.showTo.push(userId);
+    if (this.showTo.length >= 2) {
+      this.distribute();
+    }
   }
 
   distribute(): void {
@@ -66,19 +70,15 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.task.showTo = this.showTo;
     this.gameService.nextTask(this.task);
     this.notifyPeers();
-
   }
 
   private completeTask(): void {
     this.task.completed = true;
     this.gameService.nextTask(this.task);
-    // update game for other users
     this.notifyPeers();
   }
 
   private notifyPeers(): void {
-    // this.gameService.updateGame(this.);
-    // update game for other users
     this.socketService.sendSocketMessage({
       command: 'update-game',
       data: {
