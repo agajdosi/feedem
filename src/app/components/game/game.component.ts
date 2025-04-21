@@ -133,7 +133,8 @@ export class GameComponent implements OnInit, OnDestroy {
   getControllerLink(): string {
     const location = window.location;
     const mySocketId = this.socketService.socketId;
-    const link = `${location.protocol}//${location.host}/controller?from=${mySocketId}`;
+    const now = Date.now();
+    const link = `${location.protocol}//${location.host}/controller?from=${mySocketId}&time=${now}`;
     // console.log(link);
     return link;
   }
