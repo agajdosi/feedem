@@ -136,16 +136,21 @@ export interface View {
 }
 
 /** Task that user has to complete in given round.
- * Beside tracking the current task, it also signifies how far we are in the game.
- */
+ * Beside tracking the current task, the history of tasks also signifies how far we are in the game.
+ * The posts parameter holds IDs of the posts that are handled in this task. For DistributePost, it is the post of the Hero (and showPost is prefilled with same ID.)
+ * For ShowPost, it is the array of posts from which the player has to select one to show to her Hero. TLDR:
+ * 1. For tasks of type DistributePost, we are interested in the showTo parameter - the player has selected few users from many users to distribute the post to.
+ * 2. For tasks of type ShowPost, we are interested in the showPost parameter - the player has selected a one post of many to show to her hero.
+*/
 export interface Task {
     uuid: string,
-    user: string,
-    post: string,
+    users: string[], // authors of the posts, can be calculated from posts - getPost(postId).author, so we can remove this parameter later
+    posts: string[], // incomming posts for this task
     completed: boolean,
     type: TaskType,
     time: number,
     showTo: string[] // to discuss: added for case when player deny to show post to her hero
+    showPost: string // post that user has selected to show to her hero
 }
 
 // MARK: MEMORY
