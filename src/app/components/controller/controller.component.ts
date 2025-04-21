@@ -52,7 +52,14 @@ export class ControllerComponent implements OnInit, OnDestroy {
     // subscribe sockets
     this.socketSub = this.socketService.socketMessage.subscribe({
       next: (event: SocketEvent) => {
-        console.log('got socket event', event);
+        
+        switch (event.type) {
+          case 'disconnected':
+            console.log('someone is disconnected -> check if it is (not) controlled game instance');
+            break;
+          default:
+            console.log('got socket event', event);
+        }
       }
     });
     // subscribe game
