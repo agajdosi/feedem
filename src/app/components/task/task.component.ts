@@ -64,14 +64,14 @@ export class TaskComponent implements OnInit, OnDestroy {
     console.log('distribute post to users: ', this.showTo);
     this.task.completed = true;
     this.task.showTo = this.showTo;
-    this.gameService.nextTask();
+    this.gameService.nextTask(this.task);
     this.notifyPeers();
 
   }
 
   private completeTask(): void {
     this.task.completed = true;
-    this.gameService.nextTask();
+    this.gameService.nextTask(this.task);
     // update game for other users
     this.notifyPeers();
   }

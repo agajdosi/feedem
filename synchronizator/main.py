@@ -67,15 +67,12 @@ async def disconnect(sid):
     if sid in subscribers:
         print(f"❌ subscriber removed: {sid}")
         subscribers.remove(sid)
-        
-    if sid not in controllers:
-        return
     
     if sid in controllers[1:]:
         print(f"❌ waiting controller removed: {sid}")
         controllers.remove(sid)
         
-    if sid == controllers[0]:
+    if len(controllers) > 0 and sid == controllers[0]:
         print(f"👑 main controller removed: {sid}")
         controllers.remove(sid)
         if len(controllers) == 0: # No controllers left, inform all subscribers
@@ -85,6 +82,10 @@ async def disconnect(sid):
             print(f"   -> 👑 new main controller: {controllers[0]}")
             await sio.emit('controller', {'controller_id': controllers[0]})
 
+    await sio.emit('disconnected', {'id': sid})
+    if sid not in controllers:
+        return
+    
     # Emit warning to those who are waiting for the controller role
     for i, controller in enumerate(controllers):
         if i == 0:

@@ -181,7 +181,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   _development_ratePost(): void {
-    this.llmsService.ratePost(this.game.posts[0], this.game.users[0]);
+    this.llmsService.viewPost(this.game.posts[0], this.game.users[0]);
   }
 
   private socketMessageHandler(e: SocketEvent): void {

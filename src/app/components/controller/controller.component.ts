@@ -126,7 +126,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
         userId: userId
       }
     });
-    this.gameService.nextTask();
+    this.gameService.nextTask(this.game.tasks[0]);
   }
 
   ngOnDestroy(): void {
