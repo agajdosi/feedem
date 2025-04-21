@@ -19,7 +19,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   @Input() task!: Task;
 
   post!: Post;
-  distributeTo: string[] = [];
+  showTo: string[] = [];
 
   get users(): User[] {
     return this.gameService.game.users.filter(user => user.uuid !== this.post.author);
@@ -57,13 +57,13 @@ export class TaskComponent implements OnInit, OnDestroy {
   selectUserForPost(userId: string): void {
     // select also graph peers paths between
     // graphology find path from to
-    this.distributeTo.push(userId);
+    this.showTo.push(userId);
   }
 
   distribute(): void {
-    console.log('distribute post to users: ', this.distributeTo);
+    console.log('distribute post to users: ', this.showTo);
     this.task.completed = true;
-    this.task.showTo = this.distributeTo;
+    this.task.showTo = this.showTo;
     this.gameService.nextTask();
     this.notifyPeers();
 
@@ -87,10 +87,10 @@ export class TaskComponent implements OnInit, OnDestroy {
     })
   }
 
-  nextTask(): void {
-    this.task.completed;
-    this.gameService.nextTask();
-    // rate post
-  }
+  // nextTask(): void {
+  //   this.task.completed;
+  //   this.gameService.nextTask();
+  //   // rate post
+  // }
 
 }

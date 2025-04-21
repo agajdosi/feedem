@@ -10,13 +10,13 @@
             3. mark task complete 
             4. call nextTask
         -->
-        @if (distributeTo.length && distributeTo.length >= 2) {
+        @if (showTo.length && showTo.length >= 2) {
             <div class="controls">
                 <button (click)="distribute()" class="distribute">Send Post</button>
             </div>
         }
         @for(user of users; track user.uuid) {
-            @if(!distributeTo.includes(user.uuid)) {
+            @if(!showTo.includes(user.uuid)) {
                 <app-user (click)="selectUserForPost(user.uuid)" [user]="user"></app-user>
             }
         }
