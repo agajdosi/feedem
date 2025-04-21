@@ -72,7 +72,7 @@ async def disconnect(sid):
         print(f"❌ waiting controller removed: {sid}")
         controllers.remove(sid)
         
-    if sid == controllers[0]:
+    if len(controllers) > 0 and sid == controllers[0]:
         print(f"👑 main controller removed: {sid}")
         controllers.remove(sid)
         if len(controllers) == 0: # No controllers left, inform all subscribers
