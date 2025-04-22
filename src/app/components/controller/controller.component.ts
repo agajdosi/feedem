@@ -90,25 +90,26 @@ export class ControllerComponent implements OnInit, OnDestroy {
     // subscribe game
     this.gameSub = this.gameService.gameSubject.subscribe({
       next: (game: Game) => {
+        console.warn('GAME UPDATE...');
         if (game && game.uuid) {
           if (!this.game) {
             this.game = game;
             // calculate graph
             console.warn('GRAPH SHOULD BE CALCULATED FROM REAL RELATIONS, NOT A RANDOM ONE...');
-            this.graphService.buildGraph(this.gameService.game.users, this.gameService.game.relations, []).then((graphData: GraphData | undefined) => {
-              if (graphData) {
-                // console.log('graphData', graphData);
-                for (const node of graphData.nodes) {
-                  // console.log('...adding node', node);
-                  this.socialGraph.addNode(node.id, node.attributes ? node.attributes : {});
-                }
-                for (const edge of graphData.edges) this.socialGraph.addEdge(edge.source, edge.target);
-              }
-            });
+            
           } else {
+            console.warn('GAME EXIST AND SHOULD BE ONLY UPDATED...');
             this.gameService.updateGame(this.game, game);
           }
         }
+        this.graphService.buildGraph(this.gameService.game.users, this.gameService.game.relations, []).then((graphData: GraphData | undefined) => {
+          if (graphData) {
+            console.log('recalculating socialGraph...', graphData);
+            this.socialGraph.clear();
+            for (const node of graphData.nodes) this.socialGraph.addNode(node.id, node.attributes ? node.attributes : {});
+            for (const edge of graphData.edges) this.socialGraph.addEdge(edge.source, edge.target);
+          }
+        });
       }
     })
     // subscribe controllable from sockets
