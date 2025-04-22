@@ -64,7 +64,7 @@ export class GraphNode extends NodeWrapper {
                     color: this.select ? this.defaultNodeColors.selection : (this.highlight ? this.defaultNodeColors.highlight : this.defaultNodeColors.stroke),
                     width: this.attributes && this.attributes.strokeWidth ? this.attributes.strokeWidth : 10
                 });
-            if (this.highlight) {
+            if (this.highlight || this.select) {
                 g.parent.scale = 1.5;
             } else {
                 g.parent.scale = 1;
