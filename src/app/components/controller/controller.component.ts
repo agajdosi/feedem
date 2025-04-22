@@ -198,7 +198,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
     // send socket message to highlight on graph
     this.highlightedUser = id;
     const socketCommand: SocketCommand = {
-      command: 'highlight-user-on-graph',
+      command: 'highlight-graph-user',
       data: {
         userId: id
       }
