@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User, Post, Game , Reaction, TaskType, Task, View} from '../../models/game';
+import { User, Post, Game , Reaction, TaskType, Task, View, Comment} from '../../models/game';
 import { LlmsService } from '../llms/llms.service';
 // http client
 import { HttpClient } from '@angular/common/http';
@@ -15,6 +15,9 @@ import { postToText } from '../../shared/textual';
 export class GameService {
   gameSubject: Subject<Game> = new Subject();
   private _game!: Game;
+
+  onReaction: Subject<Reaction> = new Subject();
+  onComment: Subject<Comment> = new Subject();
 
   get game(): Game {
     return this._game;
@@ -84,6 +87,7 @@ export class GameService {
         const reaction = this.llmsService.decideReaction(view);
         if (reaction) {
           this.game.reactions.unshift(reaction);
+          this.onReaction.next(reaction);
           console.log(`ℹ️ ${user.name} ${user.surname} reacted: ${reaction.value}`);
         } else {
           console.log(`ℹ️ ${user.name} ${user.surname} did not react`);
@@ -92,6 +96,7 @@ export class GameService {
         const comment = await this.llmsService.decideComment(view, user, post);
         if (comment) {
           this.game.comments.unshift(comment);
+          this.onComment.next(comment);
           console.log(`ℹ️ ${user.name} ${user.surname} commented: ${comment.text}`);
         } else {
           console.log(`ℹ️ ${user.name} ${user.surname} did not comment`);
