@@ -12,12 +12,13 @@ const environment = {
 })
 export class LlmsService {
 
-  /** DUMMY Generate a new post for social network.
-   * TODO: implement the proper prompt and generation.
-   * TODO: also add previous users posts to the prompt
+  /** Generate a new post for social network by the User. This
+   * @param user - The User who is generating the post.
+   * @param recentActivity - The recent activity of the User, containing recent User's posts and recent Posts under which the User has commented.
+   * TODO: implement more self-reflective memory system instead of recentActivity based on linear history.
    * Define the prompts at: https://phoenix.lab.gajdosik.org
    */
-  async generatePost(user: User): Promise<Post> {
+  async generatePost(user: User, recentActivity: string): Promise<Post> {
     const response = await fetch(`${environment.aigenburgAPI}/generate`, {
       method: 'POST',
       headers: {
@@ -36,6 +37,7 @@ export class LlmsService {
           occupation: user.occupation,
           traits: user.traits.join(', '),
           timestring: new Date().toISOString(), // TODO: use ingame fictional time
+          recent_activity: recentActivity,
           memory_string: "" // TODO: contruct memory of previous posts
         }
       })

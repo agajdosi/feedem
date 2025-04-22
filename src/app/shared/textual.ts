@@ -114,3 +114,53 @@ export function postToText(post: Post, comments: Comment[], reactions: Reaction[
     }
     return text;
 }
+
+
+/** Return a LLM-friendly description of recent user's activity.
+ * This is still a very basic form of a memory for the LLM-simulated User
+ * as the memory is ony based on last X Posts and Y Comments. THe LLM has no control
+ * over the importance of posts or anything else.
+ * 1. Takes last N-limitPosts of Posts by User and converts them into a text.
+ * 2. Takes last N-limitCommentedPosts of other users' Posts under which the User has commented and converts them into a text.
+ * 
+ * TODO: Implement a more sophisticated memory system, where the LLM can control the importance of posts,
+ * system which allows reflection and self-awareness somehow.
+*/
+export function describeRecentActivity(
+    user: User,
+    posts: Post[],
+    comments: Comment[],
+    reactions: Reaction[],
+    limitPosts: number = 10,
+    limitCommentedPosts: number = 5,
+    ): string {
+    const recentPosts = posts.filter(post => post.author === user.uuid).slice(0, limitPosts);
+    const userComments = comments.filter(comment => comment.author === user.uuid);
+
+    let description = `# Recent posts by ${user.name} ${user.surname}:\n`;
+    for (const post of recentPosts) {
+        const postText = postToText(post, comments, reactions, [user]);
+        description += `${postText}\n\n`;
+    }
+
+    description += `\n\n# Recent posts where ${user.name} ${user.surname} has commented:\n`;
+    
+    // Get unique posts from user's comments, maintaining order
+    const commentedPostIds = userComments.map(comment => comment.parent);
+    const uniqueCommentedPostIds = [...new Set(commentedPostIds)];
+    const commentedPosts = uniqueCommentedPostIds
+        .map(postId => posts.find(post => post.uuid === postId))
+        .filter((post): post is Post => post !== undefined)
+        .slice(0, limitCommentedPosts); // Limit the number of posts with comments
+    
+    for (const post of commentedPosts) {
+        // Filter comments to only show those for this specific post
+        const postComments = comments.filter(comment => comment.parent === post.uuid);
+        const postReactions = reactions.filter(reaction => reaction.parent === post.uuid);
+        const postText = postToText(post, postComments, postReactions, [user]);
+        description += `${postText}\n\n`;
+    }
+
+    return description;
+}
+

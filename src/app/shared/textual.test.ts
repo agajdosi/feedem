@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { describeRelationship, postToText, describeInteractions } from './textual';
+import { describeRelationship, postToText, describeInteractions, describeRecentActivity } from './textual';
 import { User, Relation, RelationType, Post, Comment, Reaction, React, ReactionParentType, CommentParentType, View } from '../models/game';
 
 describe('describeRelationship', () => {
@@ -424,5 +424,148 @@ describe('describeInteractions', () => {
     it('should exclude unseen posts from thatUser', () => {
         const result = describeInteractions(mockThisUser, mockThatUser, mockViews, mockPosts, mockComments, mockReactions);
         expect(result).not.toContain('This is not for Alice.');
+    });
+});
+
+describe('describeRecentActivity', () => {
+    const testUser: User = {
+        uuid: 'user1',
+        name: 'John',
+        surname: 'Doe',
+        gender: 'male',
+        age: 30,
+        occupation: 'developer',
+        location: { city: 'New York', country: 'USA' },
+        residence: { city: 'New York', country: 'USA' },
+        hometown: { city: 'Boston', country: 'USA' },
+        bio: 'Software developer',
+        traits: ['friendly', 'hardworking'],
+        profile_picture: 'john.jpg',
+        role: 'user',
+        memory: {
+            shortTerm: '',
+            shortRelevancy: 0,
+            longTerm: ''
+        }
+    };
+
+    const testPosts: Post[] = [
+        {
+            uuid: 'post1',
+            author: 'user1',
+            text: 'First post',
+            reasoning: 'Just sharing thoughts',
+            created: Date.now()
+        },
+        {
+            uuid: 'post2',
+            author: 'user1',
+            text: 'Second post',
+            reasoning: 'Another update',
+            created: Date.now()
+        }
+    ];
+
+    const testComments: Comment[] = [
+        {
+            uuid: 'comment1',
+            author: 'user1',
+            parent: 'post1',
+            parent_type: CommentParentType.Post,
+            text: 'First comment'
+        }
+    ];
+
+    const testReactions: Reaction[] = [
+        {
+            uuid: 'reaction1',
+            author: 'user1',
+            parent: 'post1',
+            parent_type: ReactionParentType.Post,
+            value: React.Like
+        }
+    ];
+
+    it('should return empty description when user has no activity', () => {
+        const result = describeRecentActivity(testUser, [], [], []);
+        expect(result).toContain('# Recent posts by John Doe:');
+        expect(result).toContain('# Recent posts where John Doe has commented:');
+    });
+
+    it('should describe user\'s recent posts', () => {
+        const result = describeRecentActivity(testUser, testPosts, [], []);
+        expect(result).toContain('First post');
+        expect(result).toContain('Second post');
+    });
+
+    it('should describe posts where user has commented', () => {
+        const result = describeRecentActivity(testUser, testPosts, testComments, []);
+        expect(result).toContain('First comment');
+    });
+
+    it('should respect post limit', () => {
+        const manyPosts = Array(15).fill(null).map((_, i) => ({
+            uuid: `post${i}`,
+            author: 'user1',
+            text: `Post ${i}`,
+            reasoning: 'Test post',
+            created: Date.now()
+        }));
+        
+        const result = describeRecentActivity(testUser, manyPosts, [], [], 5);
+        const postCount = (result.match(/Post by John Doe:/g) || []).length;
+        expect(postCount).toBe(5);
+    });
+
+    it('should respect comment limit', () => {
+        // Create 10 posts
+        const manyPosts = Array(10).fill(null).map((_, i) => ({
+            uuid: `post${i}`,
+            author: 'user1',
+            text: `Post ${i}`,
+            reasoning: 'Test post',
+            created: Date.now()
+        }));
+
+        // Create 2 comments under each post
+        const manyComments = manyPosts.flatMap((post, postIndex) => 
+            Array(2).fill(null).map((_, commentIndex) => ({
+                uuid: `comment${postIndex}-${commentIndex}`,
+                author: 'user1',
+                parent: post.uuid,
+                parent_type: CommentParentType.Post,
+                text: `Comment ${postIndex}-${commentIndex}`
+            }))
+        );
+        
+        // With limitComments=3, we should only see the first 3 posts in the comments section
+        const result = describeRecentActivity(testUser, manyPosts, manyComments, [], 10, 3);
+        
+        // Split the result into sections
+        const sections = result.split('\n\n# Recent posts where');
+        const postsSection = sections[0];
+        const commentsSection = sections[1];
+        
+        // Check that we only see the first 3 posts in the comments section
+        for (let i = 0; i < 10; i++) {
+            if (i < 3) {
+                expect(commentsSection).toContain(`Post ${i}`);
+            } else {
+                expect(commentsSection).not.toContain(`Post ${i}`);
+            }
+        }
+        
+        // Check that each post in the comments section only shows its own comments
+        for (let i = 0; i < 3; i++) {
+            const postSection = commentsSection.split('## Post by')[i + 1];
+            // Each post should only show its own 2 comments
+            const commentCount = (postSection.match(/- John Doe:/g) || []).length;
+            expect(commentCount).toBe(2);
+        }
+    });
+
+    it('should include reactions in the description', () => {
+        const result = describeRecentActivity(testUser, testPosts, testComments, testReactions);
+        expect(result).toContain(React.Like);
     });
 });
