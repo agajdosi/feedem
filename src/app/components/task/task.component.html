@@ -1,14 +1,14 @@
 @if(task) {
     @if(task.type === 'distributePost') {
         <h3>Select a post to distribute:</h3>
-        @for(post of posts; track post.uuid) {
-            <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
-                <app-post [post]="post"></app-post>
-            </div>
-        }
         @if (showTo.length && showTo.length >= 2) {
             <div class="controls">
                 <button (click)="distribute()" class="distribute">Send Post</button>
+            </div>
+        }
+        @for(post of posts; track post.uuid) {
+            <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
+                <app-post [post]="post"></app-post>
             </div>
         }
         @for(user of users; track user.uuid) {
@@ -20,13 +20,13 @@
 
     @if(task.type === 'showPost') {
         <h3>Select a post to show to your hero:</h3>
+        <div class="controls">
+            <button (click)="notShowAny()" class="decline">Not Show Any</button>
+        </div>
         @for(post of posts; track post.uuid) {
             <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
                 <app-post [post]="post"></app-post>
             </div>
         }
-        <div class="controls">
-            <button (click)="notShowAny()" class="decline">Not Show Any</button>
-        </div>
     }
 }
