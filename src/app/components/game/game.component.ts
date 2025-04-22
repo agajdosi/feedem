@@ -222,6 +222,12 @@ export class GameComponent implements OnInit, OnDestroy {
       case 'update-game':
         this.gameService.gameSubject.next(c.data.game);
         break;
+      case 'comment':
+        this.gameService.game.comments.push(c.data.comment);
+        break;
+      case 'reaction':
+        this.gameService.game.reactions.push(c.data.reaction);
+        break;
       default:
         console.log('recieved socket command', c);
     }
