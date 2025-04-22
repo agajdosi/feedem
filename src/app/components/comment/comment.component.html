@@ -1,0 +1,13 @@
+@if(comment) {
+    <div class="comment-header">
+        <div class="user-profile-picture-small">
+            <img [src]="author.profile_picture" alt="">
+        </div>
+        <div class="user-name">
+            <h4>{{author.name}} {{author.surname}}</h4>
+        </div>
+    </div>
+    <div class="comment-text">
+        {{comment.text}}
+    </div>
+}
