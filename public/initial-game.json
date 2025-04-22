@@ -34,6 +34,13 @@
             "hometown": {
                 "city": "Ostrava",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.9,
+                "conscientiousness": 0.6,
+                "extraversion": 0.3,
+                "agreeableness": 0.6,
+                "neuroticism": 0.3
             }
         },
         {
@@ -62,6 +69,13 @@
             "hometown": {
                 "city": "Olomouc",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.9,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.3,
+                "neuroticism": 0.3
             }
         },
         {
@@ -92,6 +106,13 @@
             "hometown": {
                 "city": "Pilsen",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 1.0,
+                "conscientiousness": 0.6,
+                "extraversion": 0.7,
+                "agreeableness": 0.4,
+                "neuroticism": 0.3
             }
         },
         {
@@ -122,6 +143,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.4,
+                "extraversion": 0.5,
+                "agreeableness": 0.4,
+                "neuroticism": 0.3
             }
         },
         {
@@ -154,6 +182,13 @@
             "hometown": {
                 "city": "Ústí nad Labem",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.6,
+                "extraversion": 0.3,
+                "agreeableness": 0.6,
+                "neuroticism": 0.3
             }
         },
         {
@@ -184,6 +219,13 @@
             "hometown": {
                 "city": "Brno",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.7,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.3,
+                "neuroticism": 0.3
             }
         },
         {
@@ -217,6 +259,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.9,
+                "conscientiousness": 0.4,
+                "extraversion": 0.5,
+                "agreeableness": 0.8,
+                "neuroticism": 0.3
             }
         },
         {
@@ -249,6 +298,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.8,
+                "neuroticism": 0.3
             }
         },
         {
@@ -278,6 +334,13 @@
             "hometown": {
                 "city": "Ostrava",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.7,
+                "conscientiousness": 0.4,
+                "extraversion": 0.7,
+                "agreeableness": 0.1,
+                "neuroticism": 0.3
             }
         },
         {
@@ -308,6 +371,13 @@
             "hometown": {
                 "city": "Jihlava",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.7,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.6,
+                "neuroticism": 0.6
             }
         },
         {
@@ -338,6 +408,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.4,
+                "extraversion": 0.5,
+                "agreeableness": 0.1,
+                "neuroticism": 0.3
             }
         },
         {
@@ -367,6 +444,13 @@
             "hometown": {
                 "city": "Brno",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.6,
+                "neuroticism": 0.3
             }
         },
         {
@@ -397,6 +481,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.6,
+                "extraversion": 0.3,
+                "agreeableness": 0.8,
+                "neuroticism": 0.3
             }
         },
         {
@@ -427,6 +518,13 @@
             "hometown": {
                 "city": "Brno",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.7,
+                "conscientiousness": 0.4,
+                "extraversion": 0.5,
+                "agreeableness": 0.8,
+                "neuroticism": 0.3
             }
         },
         {
@@ -458,6 +556,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.9,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.3,
+                "neuroticism": 0.6
             }
         },
         {
@@ -489,6 +594,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.7,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.6,
+                "neuroticism": 0.3
             }
         },
         {
@@ -518,6 +630,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.3,
+                "neuroticism": 0.9
             }
         },
         {
@@ -547,6 +666,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 1.0,
+                "neuroticism": 0.3
             }
         },
         {
@@ -576,6 +702,13 @@
             "hometown": {
                 "city": "Praha",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.6,
+                "extraversion": 0.5,
+                "agreeableness": 0.8,
+                "neuroticism": 0.3
             }
         },
         {
@@ -604,6 +737,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.4,
+                "extraversion": 0.3,
+                "agreeableness": 0.3,
+                "neuroticism": 0.3
             }
         },
         {
@@ -633,6 +773,13 @@
             "hometown": {
                 "city": "Prague",
                 "country": "Czechia"
+            },
+            "big_five": {
+                "openness": 0.5,
+                "conscientiousness": 0.6,
+                "extraversion": 0.5,
+                "agreeableness": 0.6,
+                "neuroticism": 0.3
             }
         }
     ],
