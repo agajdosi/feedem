@@ -90,10 +90,11 @@ export function postToText(post: Post, comments: Comment[], reactions: Reaction[
 
     let text = `## Post by ${author.name} ${author.surname}:\n`;
     text += `${post.text}\n\n`;
-    if (comments.length > 0) {
+ 
+    // Filter comments to only include those for this post
+    const postComments = comments.filter(comment => comment.parent === post.uuid);
+    if (postComments.length > 0) {
         text += `### Comments:\n`;
-        // Filter comments to only include those for this post
-        const postComments = comments.filter(comment => comment.parent === post.uuid);
         for (const comment of postComments) {
             const author = utils.getUserById(comment.author, users);
             if (!author) {
@@ -103,10 +104,11 @@ export function postToText(post: Post, comments: Comment[], reactions: Reaction[
             text += `- ${author.name} ${author.surname}: ${comment.text}\n`;
         }
     }
-    if (reactions.length > 0) {
+
+    // Filter reactions to only include those for this post
+    const postReactions = reactions.filter(reaction => reaction.parent === post.uuid);
+    if (postReactions.length > 0) {
         text += `### Reactions:\n`;
-        // Filter reactions to only include those for this post
-        const postReactions = reactions.filter(reaction => reaction.parent === post.uuid);
         for (const reaction of postReactions) {
             const author = utils.getUserById(reaction.author, users);
             if (!author) {

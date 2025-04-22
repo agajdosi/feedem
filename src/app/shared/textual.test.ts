@@ -283,6 +283,16 @@ describe('postToText', () => {
         expect(result).not.toContain('Another post');
     });
 
+    it('should not show Comments header when there are no comments', () => {
+        const result = postToText(mockPost, [], [], mockUsers);
+        expect(result).not.toContain('### Comments:');
+    });
+
+    it('should not show Reactions header when there are no reactions', () => {
+        const result = postToText(mockPost, [], [], mockUsers);
+        expect(result).not.toContain('### Reactions:');
+    });
+
     it('should format complete post with comments and reactions', () => {
         const result = postToText(mockPost, mockComments, mockReactions, mockUsers);
         expect(result).toContain('## Post by Alice Smith:');
