@@ -235,6 +235,54 @@ describe('postToText', () => {
         expect(result).not.toContain('nonexistent');
     });
 
+    it('should not include comments from other posts', () => {
+        const otherPost: Post = {
+            uuid: 'post2',
+            author: 'user2',
+            text: 'Another post',
+            reasoning: 'Different post',
+            created: Date.now()
+        };
+
+        const commentsOnOtherPost: Comment[] = [
+            {
+                uuid: 'comment3',
+                parent: 'post2',
+                parent_type: CommentParentType.Post,
+                author: 'user1',
+                text: 'Comment on other post'
+            }
+        ];
+
+        const result = postToText(mockPost, commentsOnOtherPost, [], mockUsers);
+        expect(result).not.toContain('Comment on other post');
+        expect(result).not.toContain('Another post');
+    });
+
+    it('should not include reactions from other posts', () => {
+        const otherPost: Post = {
+            uuid: 'post2',
+            author: 'user2',
+            text: 'Another post',
+            reasoning: 'Different post',
+            created: Date.now()
+        };
+
+        const reactionsOnOtherPost: Reaction[] = [
+            {
+                uuid: 'reaction3',
+                parent: 'post2',
+                parent_type: ReactionParentType.Post,
+                author: 'user1',
+                value: React.Love
+            }
+        ];
+
+        const result = postToText(mockPost, [], reactionsOnOtherPost, mockUsers);
+        expect(result).not.toContain(React.Love);
+        expect(result).not.toContain('Another post');
+    });
+
     it('should format complete post with comments and reactions', () => {
         const result = postToText(mockPost, mockComments, mockReactions, mockUsers);
         expect(result).toContain('## Post by Alice Smith:');

@@ -92,7 +92,9 @@ export function postToText(post: Post, comments: Comment[], reactions: Reaction[
     text += `${post.text}\n\n`;
     if (comments.length > 0) {
         text += `### Comments:\n`;
-        for (const comment of comments) {
+        // Filter comments to only include those for this post
+        const postComments = comments.filter(comment => comment.parent === post.uuid);
+        for (const comment of postComments) {
             const author = utils.getUserById(comment.author, users);
             if (!author) {
                 console.error(`User ${comment.author} not found`);
@@ -103,7 +105,9 @@ export function postToText(post: Post, comments: Comment[], reactions: Reaction[
     }
     if (reactions.length > 0) {
         text += `### Reactions:\n`;
-        for (const reaction of reactions) {
+        // Filter reactions to only include those for this post
+        const postReactions = reactions.filter(reaction => reaction.parent === post.uuid);
+        for (const reaction of postReactions) {
             const author = utils.getUserById(reaction.author, users);
             if (!author) {
                 console.error(`User ${reaction.author} not found`);
