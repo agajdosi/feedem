@@ -7,6 +7,11 @@ import { UserComponent } from '../user/user.component';
 // services
 import { GameService } from '../../services/game/game.service';
 import { SocketService } from '../../services/socket/socket.service';
+// graphology
+import Graph from 'graphology';
+import { bidirectional } from 'graphology-shortest-path/unweighted';
+
+
 
 @Component({
   selector: 'app-task',
@@ -17,10 +22,12 @@ import { SocketService } from '../../services/socket/socket.service';
 export class TaskComponent implements OnInit, OnDestroy {
 
   @Input() task!: Task;
+  @Input() graph!: Graph;
 
   posts: Post[] = [];
   showTo: string[] = [];
   selectedPostId: string | null = null;
+  // private graph!: Graph;
 
   get users(): User[] {
     return this.gameService.game.users.filter(user => user.uuid !== this.gameService.getHero().uuid);
@@ -36,6 +43,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     // get task posts
     this.posts = this.task.posts.map(postId => this.gameService.getPost(postId));
     console.log('posts', this.posts);
+    // this.graph = this.
   }
 
   ngOnDestroy(): void {
@@ -58,7 +66,17 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   selectUserForPost(userId: string): void {
-    this.showTo.push(userId);
+    // calculate graph path
+    if (this.graph) {
+      const path = bidirectional(this.graph, this.gameService.getHero().uuid, userId);
+      if (path) {
+        path.shift(); // remove hero from target
+        console.warn(`🔥 path from HERO ${this.gameService.getHero().uuid} to USER ${userId}`, path);
+        this.showTo = [...path];
+        // this.showTo.pop(); // remove target user from path
+      }
+    }
+    if (!this.showTo.includes(userId)) this.showTo.push(userId);
     if (this.showTo.length >= 2) {
       this.distribute();
     }
@@ -66,10 +84,8 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   distribute(): void {
     console.log('distribute post to users: ', this.showTo);
-    this.task.completed = true;
     this.task.showTo = this.showTo;
-    this.gameService.nextTask(this.task);
-    this.notifyPeers();
+    this.completeTask();
   }
 
   private completeTask(): void {
