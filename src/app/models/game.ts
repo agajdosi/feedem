@@ -18,6 +18,10 @@ export enum TaskType {
 
 export enum RelationType {
     Follow = 'follow',
+    Write = 'write',
+    Get = 'get',
+    Comment = 'comment',
+    React = 'react'
 }
 
 /**
