@@ -1,12 +1,32 @@
 @if(post) {
     <div class="post-header">
-        <div class="created"><small>{{post.created | date: 'M/d/yy, h:mm a'}}</small></div>
         <div class="user-profile-picture">
-            <img [src]="getPostAuthor().profile_picture" alt="">
+            <img [src]="author.profile_picture" alt="">
         </div>
+        <div class="post-author">
+            <h3>{{author.name}} {{author.surname}}</h3>
+        </div>
+    </div>
+    <div class="post-meta">
+        <div class="created"><small>{{post.created | date: 'M/d/yy, h:mm a'}}</small></div>
     </div>
     <div class="post-text">
         {{post.text}}
     </div>
-    <div class="post-footer"></div>
+    <div class="post-footer">
+        <div class="reactions">
+            @for(reaction of game.reactions; track reaction.uuid) {
+                @if(reaction.parent === post.uuid) {
+                    <div class="reaction">{{reaction.value}}</div>
+                }
+            }
+        </div>
+        <div class="comments">
+            @for(comment of game.comments; track comment.uuid) {
+                @if(comment.parent === post.uuid) {
+                    <app-comment [comment]="comment"></app-comment>
+                }
+            }
+        </div>
+    </div>
 }
