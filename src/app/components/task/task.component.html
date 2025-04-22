@@ -12,8 +12,13 @@
             </div>
         }
         @for(user of users; track user.uuid) {
-            @if(!showTo.includes(user.uuid)) {
-                <app-user (click)="selectUserForPost(user.uuid)" [user]="user"></app-user>
+            @if(!showTo.includes(user.uuid) && user.uuid !== hero.uuid) {
+                <app-on-screen [data]="user.uuid" (onScreen)="userIsOnScreen($event)"></app-on-screen>
+                <app-user
+                    [user]="user"
+                    [class]="{'highlight': highlightedUser === user.uuid}"
+                    (click)="selectUserForPost(user.uuid)"
+                ></app-user>
             }
         }
     }

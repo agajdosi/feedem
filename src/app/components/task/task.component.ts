@@ -4,18 +4,20 @@ import { Task, TaskType, Post, User } from '../../models/game';
 // components
 import { PostComponent } from '../post/post.component';
 import { UserComponent } from '../user/user.component';
+import { OnScreenComponent } from '../on-screen/on-screen.component';
 // services
 import { GameService } from '../../services/game/game.service';
-import { SocketService } from '../../services/socket/socket.service';
+import { SocketService, SocketCommand } from '../../services/socket/socket.service';
 // graphology
 import Graph from 'graphology';
 import { bidirectional } from 'graphology-shortest-path/unweighted';
+import { edgePathFromNodePath } from 'graphology-shortest-path/utils';
 
 
 
 @Component({
   selector: 'app-task',
-  imports: [ PostComponent, UserComponent ],
+  imports: [ PostComponent, UserComponent, OnScreenComponent ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss'
 })
@@ -27,10 +29,15 @@ export class TaskComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
   showTo: string[] = [];
   selectedPostId: string | null = null;
+  highlightedUser: string = '';
   // private graph!: Graph;
 
   get users(): User[] {
     return this.gameService.game.users.filter(user => user.uuid !== this.gameService.getHero().uuid);
+  }
+
+  get hero(): User {
+    return this.gameService.getHero();
   }
 
   constructor(
@@ -47,7 +54,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+    this.graph.clear();
   }
 
   selectPost(postId: string): void {
@@ -68,6 +75,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   selectUserForPost(userId: string): void {
     // calculate graph path
     if (this.graph) {
+      // MARK: BUG
       const path = bidirectional(this.graph, this.gameService.getHero().uuid, userId);
       if (path) {
         path.shift(); // remove hero from target
@@ -79,6 +87,31 @@ export class TaskComponent implements OnInit, OnDestroy {
     if (!this.showTo.includes(userId)) this.showTo.push(userId);
     if (this.showTo.length >= 2) {
       this.distribute();
+    }
+  }
+
+  userIsOnScreen(userId: string): void {
+    console.log(`user ${userId} is on screen...`);
+    // send socket message to highlight on graph
+    this.highlightedUser = userId;
+    // compoute path from hero to this user
+    if (this.graph) {
+      // MARK: BUG
+      const path = bidirectional(this.graph, this.gameService.getHero().uuid, userId);
+      // console.log('path from hero to user', path);
+      if (path && path.length) {
+        const edgePath = edgePathFromNodePath(this.graph, path)
+        // console.log('edgePath', edgePath);
+        if (edgePath.length) {
+          // NOTE: THIS CANNOT WORK UNTIL A SYNCHRONISATION OF GAME
+          this.socketService.sendSocketMessage({
+            command: 'highlight-graph-edges',
+            data: {
+              edges: edgePath
+            }
+          })
+        }
+      }
     }
   }
 
@@ -100,13 +133,9 @@ export class TaskComponent implements OnInit, OnDestroy {
       data: {
         game: this.gameService.game
       }
-    })
+    });
   }
 
-  // nextTask(): void {
-  //   this.task.completed;
-  //   this.gameService.nextTask();
-  //   // rate post
-  // }
+  
 
 }
