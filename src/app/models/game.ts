@@ -41,7 +41,17 @@ export interface User {
     traits: string[],
     profile_picture: string,
     role: string,
-    memory: Memory
+    memory: Memory,
+    big_five: BigFive
+}
+
+/* BigFive quantify users' psychological profile (numbers are floats 0-1) */
+export interface BigFive {
+    openness: number,
+    conscientiousness: number,
+    extraversion: number,
+    agreeableness: number,
+    neuroticism: number
 }
 
 // TODO: add support for mountains, lakes, rivers, etc. not just cities. add name and type of location.
