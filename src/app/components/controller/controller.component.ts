@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 // router
 import { ActivatedRoute } from '@angular/router';
 // models
-import { Game } from '../../models/game';
+import { Game, Reaction, Comment } from '../../models/game';
 // components
 import { UserComponent } from '../user/user.component';
 import { OnScreenComponent } from '../on-screen/on-screen.component';
@@ -10,10 +10,15 @@ import { TaskComponent } from '../task/task.component';
 // services
 import { SocketEvent, SocketService, SocketCommand } from '../../services/socket/socket.service';
 import { GameService } from '../../services/game/game.service';
+import { GraphService } from '../../services/graph/graph.service';
 // rxjs
 import { Subscription } from 'rxjs';
 // timer
 import { CountDownTimerService, TimerData } from '@tomaszatoo/ngx-timer';
+// graphology
+import Graph from 'graphology';
+import { GraphData } from '@tomaszatoo/graph-viewer';
+
 
 @Component({
   selector: 'app-controller',
@@ -26,20 +31,27 @@ export class ControllerComponent implements OnInit, OnDestroy {
   private gameControlSub: Subscription = new Subscription();
   private gameSub: Subscription = new Subscription();
   private socketSub: Subscription = new Subscription();
+  private commentsSub: Subscription = new Subscription();
+  private reactionsSub: Subscription = new Subscription();
 
   canControl: boolean = false;
   game!: Game;
   highlightedUser: string = '';
   private connectedGameInstance: string | null = '';
-  private maxIdleTime: number = 2 * 60 * 1000;
+  private maxIdleTime: number = 5 * 60 * 1000;
   countDownTimer!: TimerData;
-
+  socialGraph: Graph = new Graph({
+    multi: false,
+    allowSelfLoops: true,
+    type: 'directed'
+  });
 
   constructor(
     private readonly socketService: SocketService,
     private readonly gameService: GameService,
     private readonly route: ActivatedRoute,
     private readonly countDown: CountDownTimerService,
+    private readonly graphService: GraphService
   ){}
 
   ngOnInit(): void {
@@ -79,8 +91,22 @@ export class ControllerComponent implements OnInit, OnDestroy {
     this.gameSub = this.gameService.gameSubject.subscribe({
       next: (game: Game) => {
         if (game && game.uuid) {
-          if (!this.game || this.game.updated < game.updated) {
+          if (!this.game) {
             this.game = game;
+            // calculate graph
+            console.warn('GRAPH SHOULD BE CALCULATED FROM REAL RELATIONS, NOT A RANDOM ONE...');
+            this.graphService.buildGraph(this.gameService.game.users, this.gameService.game.relations, []).then((graphData: GraphData | undefined) => {
+              if (graphData) {
+                // console.log('graphData', graphData);
+                for (const node of graphData.nodes) {
+                  // console.log('...adding node', node);
+                  this.socialGraph.addNode(node.id, node.attributes ? node.attributes : {});
+                }
+                for (const edge of graphData.edges) this.socialGraph.addEdge(edge.source, edge.target);
+              }
+            });
+          } else {
+            this.gameService.updateGame(this.game, game);
           }
         }
       }
@@ -91,6 +117,32 @@ export class ControllerComponent implements OnInit, OnDestroy {
     });
     // request control
     this.requestGameControl();
+    // subscribe reactions
+    this.reactionsSub = this.gameService.onReaction.subscribe({
+      next: (reaction: Reaction) => {
+        // send to socket
+        console.log('got new reaction', reaction);
+        this.socketService.sendSocketMessage({
+          command: 'reaction',
+          data: {
+            reaction: reaction
+          }
+        })
+      }
+    });
+    // subscribe comments
+    this.commentsSub = this.gameService.onComment.subscribe({
+      next: (comment: Comment) => {
+        // send to socket
+        console.log('got new comment', comment);
+        this.socketService.sendSocketMessage({
+          command: 'comment',
+          data: {
+            comment: comment
+          }
+        })
+      }
+    })
   }
 
   private userInteractionHandler(): void {
@@ -112,7 +164,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
           this.canControl = false;
           this.socketService.destroy();
         }
-        console.log('countDown complete', this.countDownTimer)
+        // console.log('countDown complete', this.countDownTimer)
       }
     });
   }
@@ -136,7 +188,9 @@ export class ControllerComponent implements OnInit, OnDestroy {
     this.socketSub.unsubscribe();
     this.socketService.destroy();
     window.removeEventListener('click', this.userInteractionHandler);
-    window.removeEventListener('scroll', this.userInteractionHandler)
+    window.removeEventListener('scroll', this.userInteractionHandler);
+    this.commentsSub.unsubscribe();
+    this.reactionsSub.unsubscribe();
   }
 
   userIsOnScreen(id: string): void {

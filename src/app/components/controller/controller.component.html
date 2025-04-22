@@ -16,7 +16,7 @@
         }
         @for(task of game.tasks; track task.uuid) {
             @if(!task.completed) {
-                <app-task [task]="task"></app-task>
+                <app-task [task]="task" [graph]="socialGraph"></app-task>
             }
             
         }
