@@ -1,0 +1,38 @@
+$space: 24px;
+:host {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    color: inherit;
+    background-color: transparent;
+    // max-width: 100%;
+    // height: auto;
+    position: relative;
+    // padding: calc($space / 2);
+    .radar {
+        width: 100%;
+        height: 100%;
+
+        * {
+            user-select: none;
+        }
+
+        .data-items {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0 $space;
+            .data-item-color {
+                width: calc($space / 2);
+                height: calc($space / 2);
+                border-radius: 100%;
+                border: 2px solid white;
+            }
+            & > div {
+                margin-right: calc($space / 2);
+            }
+        }
+    }
+    
+    
+}
