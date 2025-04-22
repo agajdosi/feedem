@@ -66,11 +66,12 @@ export class GraphService {
           target: edge.target,
           attributes: {
             label: edge.label,
-            strokeWidth: 6,
+            strokeWidth: 1,
             colors: {
-              stroke: 0xffffff,
-              label: 0xffffff,
-              highlight: 0xff0000
+              stroke: 0xdddddd,
+              label: 0xdddddd,
+              highlight: 0xdddddd,
+              selection: 0xffffff
             } 
           }
         });
@@ -102,9 +103,10 @@ export class GraphService {
               label: "follow",
               strokeWidth: 1,
               colors: {
-                stroke: 0xffffff,
-                label: 0xffffff,
-                highlight: 0xff0000
+                stroke: 0xdddddd,
+                label: 0xdddddd,
+                highlight: 0xdddddd,
+                selection: 0xffffff
               } 
             }
           });
