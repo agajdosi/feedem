@@ -14,11 +14,11 @@ export class GraphNode extends NodeWrapper {
     private nodeInitialised: boolean = false;
 
     private customColors: GraphColors = {
-        fill: 0xff0000,
-        stroke: 0x000000,
-        label: 0xffffff,
-        selection: 0x2DC9DC,
-        highlight: 0x30D973
+        fill: 0xdddddd,
+        stroke: 0xdddddd,
+        label: 0xdddddd,
+        selection: 0xffffff,
+        highlight: 0xdddddd
     }
 
     constructor(
@@ -53,6 +53,11 @@ export class GraphNode extends NodeWrapper {
     /* TODO: CORRECT GRAPH-VIEWER -> IN THIS WAY, EVERY INTERACTION ADD A NEW OBJECT TO PARENT G */
     override initNodeGraphics(g: Graphics): void {
         // console.log('node type', this.type);
+        if(this.select || this.highlight) {
+            this.container.zIndex = 99999999;
+        } else {
+            this.container.zIndex = 0;
+        }
         if (this.type && this.type === 'user') {
             g.circle(0, 0, this.radius())
                 .stroke({
@@ -84,11 +89,17 @@ export class GraphNode extends NodeWrapper {
                 container.addChild(mask);
                 container.mask = mask;
                 this.nodeInitialised = true; 
-                console.log('only once this should appear for', g);
+                // console.log('only once this should appear for', g);
             }
         }
-        // TODO: type comment
+        // TODO: type comment, post
         // ...
+        if (this.type && this.type === 'post') {
+            g.circle(0, 0, this.radius() / 2)
+                .fill({
+                    color: 0xff0000,
+                });
+        }
     }
 
     override initLabelGraphics(t: Text): void {
@@ -101,7 +112,7 @@ export class GraphNode extends NodeWrapper {
             align: 'center'
         }
         const nodeContainer = t.parent.parent;
-        console.log('nodeContainer', nodeContainer);
+        // console.log('nodeContainer', nodeContainer);
         // if (nodeContainer) {
         t.x = this.attributes.radius ? (this.attributes.radius + 20) : 10;
         t.y = -(t.height / 2);
