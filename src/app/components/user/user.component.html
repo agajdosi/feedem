@@ -1,25 +1,37 @@
 @if (user) {
-    <div class="user-card">
-        <div class="user-info">
-            <h3>{{ user.name }} {{ user.surname }}</h3>
-            <div class="user-profile-picture">
+    <div class="user-header">
+        <div class="name">
+            <div class="user-profile-picture dashed">
                 <img [src]="user.profile_picture" alt="User profile picture" class="profile-picture">
             </div>
-            <p class="bio">{{ user.bio }}</p>
-            <div class="user-details">
-                <p><strong>Age:</strong> {{ user.age }}</p>
-                <p><strong>Lives in:</strong> {{ user.residence.city }}, {{ user.residence.country }}</p>
-                <p><strong>Occupation:</strong> {{ user.occupation }}</p>
-                <p><strong>Gender:</strong> {{ user.gender }}</p>
-            </div>
-            <div class="traits">
-                <h4>Traits:</h4>
-                <!-- <ul> -->
-                    @for (trait of user.traits; track trait) {
-                        <div class="trait">{{ trait }}</div>
-                    }
-                <!-- </ul> -->
-            </div>
+            <h2>{{ user.name }} {{ user.surname }}</h2>
         </div>
+        <div class="big-five">
+            @if(radarData.length) {
+                <app-radar
+                    [data]="radarData"
+                    [size]="180"
+                    [colorScheme]="{
+                        color: '#ddd',
+                        background: 'black',
+                        colors: ['#ddd', '#ddd', '#ddd']
+                    }"
+                ></app-radar>
+            }
+        </div>
+    </div>
+
+    <div class="user-details">
+        <p><strong>Age</strong> {{ user.age }}</p>
+        <p><strong>Lives in</strong> {{ user.residence.city }}, {{ user.residence.country }}</p>
+        <p><strong>Occupation</strong> {{ user.occupation }}</p>
+        <p><strong>Gender</strong> {{ user.gender }}</p>
+    </div>
+    <div class="bio">{{ user.bio }}</div>
+    <div class="traits">
+        <!-- <p>Traits:</p> -->
+            @for (trait of user.traits; track trait) {
+                <div class="trait">{{ trait.replace('.', '') }}</div>
+            }
     </div>
 }
