@@ -50,9 +50,17 @@ export class GameComponent implements OnInit, OnDestroy {
   graphData!: GraphData;
   highlightUser: string | undefined  = undefined;
   highlightUsersConnection: string | undefined = undefined;
+  selectUser: string | undefined = undefined;
   clearUsersHighlight: boolean = false;
   clearConnectionsHighlight: boolean = false;
   graph!: Graph;
+  addGraphNodes: Record<string, any> = {}
+  addGraphEdges: ReadonlyArray<{
+    source: string;
+    target: string;
+    attributes: any;
+  }> | null = null;
+
 
   game!: Game;
 
@@ -90,8 +98,51 @@ export class GameComponent implements OnInit, OnDestroy {
             // ... add posts, mainly
             //
             console.warn('GAME SHOULD BE JUST UPDATED');
+            // if length of posts
+            if (this.game.tasks.length !== game.tasks.length) {
+              console.warn('ADD POSTS, COMMENTS... TO GRAPH!!!', this.game.tasks, game.tasks);
+              for (const t of game.tasks) {
+                const taskExist = this.game.tasks.filter(task => task.uuid === t.uuid);
+                console.log('taskExist?', taskExist);
+                if (!taskExist.length) {
+                  console.log('NEW TASK', t);
+                  // 
+                  const post = game.posts.filter(post => post.uuid === t.showPost)[0];
+                  const autor = post.author;
+                  const node = {};
+                  (node as any)[post.uuid] = {type: 'post', x: 1, y: 1};
+                  this.addGraphNodes = node;
+                  // this.graph.addNode(post.uuid, {type: 'post', x: 1, y: 1});
+
+                  if (t.type === 'showPost' && t.showTo.length) {
+                    const showTo = t.showTo[0];
+                    this.addGraphEdges = [
+                      {source: autor, target: post.uuid, attributes: {label: 'sent'}},
+                      {source: post.uuid, target: showTo, attributes: {label: 'got'}}
+                    ];
+                  }
+                  if (t.type === 'distributePost') {
+                    // const tmp = [];
+                    // for (const showTo of t.showTo) {
+                    //   tmp.push(
+                    //     {source: autor, target: post.uuid, attributes: {label: 'sent'}},
+                    //     {source: post.uuid, target: showTo, attributes: {label: 'got'}}
+                    //   );                      
+                    // }
+                    // this.addGraphEdges = tmp;
+                  }                  
+                }
+                // console.log('POST TO ADD', post);
+                // const record = {};
+                // (record as any)[post.uuid as string] = {type: 'post', x: 1, y: 1};
+                // console.log('add node record', record);
+                // this.addGraphNodes = record;
+              }
+            }
             this.gameService.updateGame(this.game, game);
-            console.log('updated game', this.game);
+            console.log('some posts?', game.posts);
+            
+
           } else {
             this.game = game;
             // build user graph
@@ -193,7 +244,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private socketCommandsHandler(c: SocketCommand): void {
     console.log('socketCommand', c);
     switch (c.command) {
-      case 'highlight-user-on-graph':
+      case 'highlight-graph-user':
         // TODO: not a nice solution :/
         this.clearUsersHighlight = true;
         this.clearConnectionsHighlight = true;
@@ -216,8 +267,19 @@ export class GameComponent implements OnInit, OnDestroy {
           }
         }, 100);        
         break;
+      case 'highlight-graph-edges':
+        const edges = c.data.edges;
+        console.log('highlight-graph-edges', edges);
+        let i = 0;
+        const add = setInterval(() => {
+          if (i > edges.length) clearInterval(add);
+          this.highlightUsersConnection = edges[i];
+          i++;
+        }, 10);
+        break;
       case 'select-hero':
         this.gameService.setHero(c.data.userId);
+        this.selectUser = c.data.userId;
         break;
       case 'update-game':
         this.gameService.gameSubject.next(c.data.game);
