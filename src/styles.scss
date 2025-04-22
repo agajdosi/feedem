@@ -11,7 +11,7 @@ html,
 body {
     background-color: black;
     color: $lightColor;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Arial', sans-serif;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -81,8 +81,8 @@ app-game {
 
     .hero {
         position: absolute;
-        width: 20%;
-        height: 100%;
+        max-width: 25%;
+        // height: 100%;
         left: 0;
         top: 0;
     }
@@ -130,21 +130,60 @@ app-controller {
 
 app-user {
     display: block;
+    padding: calc($space / 2);
+    border: 1px dashed $lightColor;
+    background-color: rgba(black, .5);
+    // margin: $space;
+    margin-bottom: $space;
 
     &.highlight {
-        .user-card {
-            background-color: $lightColor;
-            color: black;
+        border: 1px solid $lightColor;
+    }
+
+    .user-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        .name {
+            padding: calc($space / 2);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
         }
     }
 
-    .user-card {
-        padding: $space;
-        border: 1px solid $lightColor;
-        background-color: rgba(black, .5);
-        // margin: $space;
-        margin-bottom: $space;
+    .user-details {
+        display: flex;
+        flex-direction: row;
+        & > p {
+            padding-right: calc($space / 4);
+            margin-right: calc($space / 4);
+            border-right: 1px solid $lightColor;
+            &:last-child {
+                margin-right: 0;
+                padding-right: 0;
+                border-right: none;
+            }
+        }
     }
+
+    .bio {
+        padding-bottom: calc($space / 2);
+        margin-bottom: calc($space / 2);
+        border-bottom: 1px solid $lightColor;
+    }
+
+    .traits {
+        .trait {
+            padding: calc($space / 4);
+            margin-bottom: calc($space / 4);
+            border: 1px solid $lightColor; 
+        }
+    }
+
+    
 }
 
 app-feed {
@@ -229,11 +268,20 @@ app-comment {
     }
 }
 
+app-on-screen {
+    display: block;
+}
+
 .user-profile-picture {
     overflow: hidden;
     border-radius: 50%;
     width: calc(3 * $space);
     height: calc(3 * $space);
+    // border: 3px solid black;    
+    &.dashed {
+        outline: 3px dashed $lightColor;
+        outline-offset: 3px;
+    }
 
     img {
         width: 100%; //calc(4 * $space);
@@ -247,6 +295,12 @@ app-comment {
     height: calc(2 * $space);
 }
 
-app-on-screen {
-    display: block;
+.column {
+    display: flex;
+    flex-direction: column;
 }
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
