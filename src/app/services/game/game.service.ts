@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 // rxjs
 import { Subject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { postToText } from '../../shared/textual';
+import { postToText, describeRecentActivity } from '../../shared/textual';
 
 @Injectable({
   providedIn: 'root'
@@ -119,7 +119,8 @@ export class GameService {
 
   async createTaskDistributePost(): Promise<Task> {
     const postAuthor = this.getHero()!;
-    const post = await this.llmsService.generatePost(postAuthor); // TODO: send history of the user's posts to the LLM
+    const recentActivity: string = describeRecentActivity(postAuthor, this.game.posts, this.game.comments, this.game.reactions);
+    const post = await this.llmsService.generatePost(postAuthor, recentActivity); // TODO: send history of the user's posts to the LLM
     this.game.posts.unshift(post);
 
     const task: Task = {
@@ -139,7 +140,8 @@ export class GameService {
     const authors = this.getRandomNonHeroUsers(2);
     let posts: Post[] = [];
     for (const author of authors) {
-      const post = await this.llmsService.generatePost(author);
+      const recentActivity: string = describeRecentActivity(author, this.game.posts, this.game.comments, this.game.reactions);
+      const post = await this.llmsService.generatePost(author, recentActivity);
       this.game.posts.unshift(post);
       posts.push(post);
     }

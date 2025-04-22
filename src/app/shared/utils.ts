@@ -24,6 +24,10 @@ export function getPostsByAuthor(author: User, allPosts: Post[]): Post[] {
   return allPosts.filter(post => post.author === author.uuid);
 }
 
+export function getPostById(uuid: string, posts: Post[]): Post | undefined {
+  return posts.find(post => post.uuid === uuid);
+}
+
 /** Get posts by another user seen by this user. Basically what this user recalls about another user's post activity.
  * @param user - uuid of the user who saw something, the recalling user
  * @param author - uuid of the user who wrote the posts
