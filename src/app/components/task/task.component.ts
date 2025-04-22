@@ -97,21 +97,26 @@ export class TaskComponent implements OnInit, OnDestroy {
     // compoute path from hero to this user
     if (this.graph) {
       // MARK: BUG
+      // console.log('graph.nodes', this.graph.nodes());
       const path = bidirectional(this.graph, this.gameService.getHero().uuid, userId);
-      // console.log('path from hero to user', path);
+      // NOTE: THIS CANNOT WORK UNTIL A SYNCHRONISATION OF GAME
       if (path && path.length) {
-        const edgePath = edgePathFromNodePath(this.graph, path)
-        // console.log('edgePath', edgePath);
-        if (edgePath.length) {
-          // NOTE: THIS CANNOT WORK UNTIL A SYNCHRONISATION OF GAME
-          this.socketService.sendSocketMessage({
-            command: 'highlight-graph-edges',
-            data: {
-              edges: edgePath
-            }
-          })
-        }
+        this.socketService.sendSocketMessage({
+          command: 'highlight-graph-path',
+          data: {
+            path: path
+          }
+        });
       }
+      
+      // console.log('path from hero to user', path);
+      // if (path && path.length) {
+      //   const edgePath = edgePathFromNodePath(this.graph, path)
+      //   // console.log('edgePath', edgePath);
+      //   if (edgePath.length) {
+      //     
+      //   }
+      // }
     }
   }
 
