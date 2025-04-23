@@ -60,6 +60,7 @@ export class GameComponent implements OnInit, OnDestroy {
     target: string;
     attributes: any;
   }> | null = null;
+  linkValidFrom: number = Date.now();
 
 
   game!: Game;
@@ -223,7 +224,7 @@ export class GameComponent implements OnInit, OnDestroy {
   getControllerLink(): string {
     const location = window.location;
     const mySocketId = this.socketService.socketId;
-    const link = `${location.protocol}//${location.host}/controller?from=${mySocketId}`;
+    const link = `${location.protocol}//${location.host}/controller?from=${mySocketId}&valid=${this.linkValidFrom}`;
     // console.log(link);
     return link;
   }

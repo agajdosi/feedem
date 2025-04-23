@@ -38,6 +38,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
   game!: Game;
   highlightedUser: string = '';
   private connectedGameInstance: string | null = '';
+  private connectionValidFrom!: number;
   private maxIdleTime: number = 5 * 60 * 1000;
   countDownTimer!: TimerData;
   socialGraph: Graph = new Graph({
@@ -55,28 +56,38 @@ export class ControllerComponent implements OnInit, OnDestroy {
   ){}
 
   ngOnInit(): void {
-    // TODO: if connectedGameInstance disconnect, remove control from this controller (server side)
+    // from is the instance of the game from which a controller took a link..., if this instance will close the controller should stop working as well
     this.connectedGameInstance = this.route.snapshot.queryParams['from'];
-    this.restartCountDown();
-    
-    window.addEventListener('click', this.userInteractionHandler.bind(this));
-    window.addEventListener('scroll', this.userInteractionHandler.bind(this))
-    /* 
-      1. wait for game
-      2. request game control
-      3. if not here, choose one (-> let others know)
-      -- loop start --
-      4. on new post
-        - if by hero, choose from users who to show (min 2)
-        - if by others, choose if show to hero
-      -- loop end --
-    */
-    // subscribe sockets
-    this.socketSub = this.socketService.socketMessage.subscribe({
+    this.connectionValidFrom = parseInt(this.route.snapshot.queryParams['valid']);
+    // check the validity of connection first, otherwise do not allow to start controllers' initialisation and control request
+    console.log('valid', this.connectionValidFrom);
+    console.log('Date.now() - this.connectionValidFrom', Date.now() - this.connectionValidFrom);
+
+    if (this.connectionValidFrom && Date.now() - this.connectionValidFrom < 60 * 1000 ) {
+      this.restartCountDown();
+      
+      window.addEventListener('click', this.userInteractionHandler.bind(this));
+      window.addEventListener('scroll', this.userInteractionHandler.bind(this))
+      /* 
+        1. wait for game
+        2. request game control
+        3. if not here, choose one (-> let others know)
+        -- loop start --
+        4. on new post
+          - if by hero, choose from users who to show (min 2)
+          - if by others, choose if show to hero
+        -- loop end --
+      */
+      // subscribe sockets
+      this.socketSub = this.socketService.socketMessage.subscribe({
       next: (event: SocketEvent) => {
+        console.log('socket message in controller', event);
         switch (event.type) {
           case 'disconnected':
-            console.log('someone is disconnected -> check if it is (not) controlled game instance');
+            // console.log('someone is disconnected -> check if it is (not) controlled game instance');
+            // if disconnected instance is the instance of that controller was taken from, controller should stop working
+            console.log('disconnected instance', event.data.id);
+            console.log('game instance taken control from', this.connectedGameInstance);
             if (event.data.id === this.connectedGameInstance) {
               this.canControl = false;
               this.socketService.destroy();
@@ -86,9 +97,9 @@ export class ControllerComponent implements OnInit, OnDestroy {
             console.log('got socket event', event);
         }
       }
-    });
-    // subscribe game
-    this.gameSub = this.gameService.gameSubject.subscribe({
+      });
+      // subscribe game
+      this.gameSub = this.gameService.gameSubject.subscribe({
       next: (game: Game) => {
         console.warn('GAME UPDATE...');
         if (game && game.uuid) {
@@ -111,15 +122,15 @@ export class ControllerComponent implements OnInit, OnDestroy {
           }
         });
       }
-    })
-    // subscribe controllable from sockets
-    this.gameControlSub = this.socketService.canControl.subscribe({
+      })
+      // subscribe controllable from sockets
+      this.gameControlSub = this.socketService.canControl.subscribe({
      next: (canControl: boolean) => this.canControl = canControl
-    });
-    // request control
-    this.requestGameControl();
-    // subscribe reactions
-    this.reactionsSub = this.gameService.onReaction.subscribe({
+      });
+      // request control
+      this.requestGameControl();
+      // subscribe reactions
+      this.reactionsSub = this.gameService.onReaction.subscribe({
       next: (reaction: Reaction) => {
         // send to socket
         console.log('got new reaction', reaction);
@@ -130,9 +141,9 @@ export class ControllerComponent implements OnInit, OnDestroy {
           }
         })
       }
-    });
-    // subscribe comments
-    this.commentsSub = this.gameService.onComment.subscribe({
+      });
+      // subscribe comments
+      this.commentsSub = this.gameService.onComment.subscribe({
       next: (comment: Comment) => {
         // send to socket
         console.log('got new comment', comment);
@@ -143,7 +154,8 @@ export class ControllerComponent implements OnInit, OnDestroy {
           }
         })
       }
-    })
+      });
+    }
   }
 
   private userInteractionHandler(): void {
