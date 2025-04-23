@@ -14,23 +14,31 @@
         }
     </div>
 
-    @if(game.hero) {
-        @for(task of game.tasks; track task.uuid) {
-            @if(!task.completed) {
-                <app-task
-                    [task]="task"
-                    [graph]="socialGraph"
-                    (pathToTarget)="onPathToTarget($event)"
-                ></app-task>
+    <div class="content">
+        @if(game.hero) {
+            @for(task of game.tasks; track task.uuid) {
+                @if(!task.completed) {
+                    <app-task
+                        [task]="task"
+                        [graph]="socialGraph"
+                        (pathToTarget)="onPathToTarget($event)"
+                    ></app-task>
+                }
+        
             }
-            
+        }@else {
+            @for(hero of game.users; track hero.uuid) {
+                <app-on-screen [data]="hero.uuid" (onScreen)="userIsOnScreen($event)"></app-on-screen>
+                <app-user
+                    (click)="selectHero(hero.uuid)"
+                    [following]="userFollow(hero.uuid)"
+                    [followers]="userIsFollowed(hero.uuid)"
+                    [user]="hero"
+                    [class]="{'highlight': highlightedUser === hero.uuid}"
+                ></app-user>
+            }
         }
-    }@else {
-        @for(hero of game.users; track hero.uuid) {
-            <app-on-screen [data]="hero.uuid" (onScreen)="userIsOnScreen($event)"></app-on-screen>
-            <app-user (click)="selectHero(hero.uuid)" [user]="hero" [class]="{'highlight': highlightedUser === hero.uuid}"></app-user>
-        }
-    }
+    </div>
 }@else {
     <div class="controls">
         <h2>Reconnect the game...</h2>
