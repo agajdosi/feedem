@@ -18,6 +18,7 @@ export class GameService {
 
   onReaction: Subject<Reaction> = new Subject();
   onComment: Subject<Comment> = new Subject();
+  onTask: Subject<Task> = new Subject();
 
   gameTime: Subject<number> = new Subject();
 
@@ -150,6 +151,7 @@ export class GameService {
     }
   
     this.game.tasks.unshift(task);
+    // this.onTask.next(task);
     this.gameSubject.next(this.game);
   }
 
