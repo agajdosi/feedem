@@ -29,6 +29,7 @@
             <button (click)="notShowAny()" class="decline">Not Show Any</button>
         </div>
         @for(post of posts; track post.uuid) {
+            <p>{{getPostPath(post.uuid).length - 1}} user targetd</p>
             <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
                 <app-post [post]="post"></app-post>
             </div>
