@@ -4,5 +4,9 @@
     <div id="limit">limit:<span>{{ getLimit() }}</span>%</div>
     <span>→</span>
     <div id="lifes">{{ getLives() }}</div>
+    @if(time) {
+        <span class="spacer"></span>
+        <div class="game-time">{{time}}</div>
+    }
 </div>
 

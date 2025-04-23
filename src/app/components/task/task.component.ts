@@ -26,6 +26,8 @@ export class TaskComponent implements OnInit, OnDestroy {
   @Input() task!: Task;
   @Input() graph!: Graph;
 
+  @Output() pathToTarget: EventEmitter<string[]> = new EventEmitter();
+
   posts: Post[] = [];
   showTo: string[] = [];
   selectedPostId: string | null = null;
@@ -58,12 +60,32 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   selectPost(postId: string): void {
+    const post = this.gameService.getPost(postId);
+    if (!post) return; // couldn't happen
     this.selectedPostId = postId;
     this.task.showPost = postId;
-    if (this.task.type === 'showPost') {
+    const author = post ? post.author : null;
+    const path = bidirectional(this.graph, this.gameService.getHero().uuid, author);
+    if (path && path.length) {
+      // emit path to parent
+      this.pathToTarget.emit(path);
+      // remove author from path
+      path.pop();
+      this.task.showTo = path;
+    } else {
       this.task.showTo = [this.gameService.getHero().uuid];
-      this.completeTask();
     }
+    this.completeTask();
+  }
+
+  getPostPath(postId: string): string[] {
+    console.log('getPostPath');
+    const post = this.gameService.getPost(postId);
+    if (!post) return []; // couldn't happen
+    const author = post ? post.author : null;
+    const path = bidirectional(this.graph, this.gameService.getHero().uuid, author);
+    if (path && path.length) return path;    
+    return [];
   }
 
   notShowAny(): void {
@@ -78,6 +100,8 @@ export class TaskComponent implements OnInit, OnDestroy {
       // MARK: BUG
       const path = bidirectional(this.graph, this.gameService.getHero().uuid, userId);
       if (path) {
+        // emit path to parent
+        this.pathToTarget.emit(path);
         path.shift(); // remove hero from target
         console.warn(`🔥 path from HERO ${this.gameService.getHero().uuid} to USER ${userId}`, path);
         this.showTo = [...path];
@@ -101,6 +125,8 @@ export class TaskComponent implements OnInit, OnDestroy {
       const path = bidirectional(this.graph, this.gameService.getHero().uuid, userId);
       // NOTE: THIS CANNOT WORK UNTIL A SYNCHRONISATION OF GAME
       if (path && path.length) {
+        // emit path to parent
+        this.pathToTarget.emit(path);
         this.socketService.sendSocketMessage({
           command: 'highlight-graph-path',
           data: {
@@ -108,15 +134,6 @@ export class TaskComponent implements OnInit, OnDestroy {
           }
         });
       }
-      
-      // console.log('path from hero to user', path);
-      // if (path && path.length) {
-      //   const edgePath = edgePathFromNodePath(this.graph, path)
-      //   // console.log('edgePath', edgePath);
-      //   if (edgePath.length) {
-      //     
-      //   }
-      // }
     }
   }
 
@@ -127,6 +144,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   private completeTask(): void {
+    this.pathToTarget.emit([]);
     this.task.completed = true;
     this.gameService.nextTask(this.task);
     this.notifyPeers();

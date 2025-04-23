@@ -1,5 +1,6 @@
 import { NodeWrapper, GraphColors, GraphNodeAttributes, Point } from "@tomaszatoo/graph-viewer";
 import { Text, Graphics, Texture, Sprite, Container } from 'pixi.js';
+import { GrayscaleFilter } from 'pixi-filters';
 
 interface ExtendedGraphNodeAttributes extends GraphNodeAttributes {
     image?: Texture | undefined
@@ -74,6 +75,8 @@ export class GraphNode extends NodeWrapper {
                 this.profilePicture.height = (this.radius() * 2) + 10;
                 this.profilePicture.x = (this.radius() + 5) * (-1);
                 this.profilePicture.y = (this.radius() + 5) * (-1);
+                // const grayscale = new GrayscaleFilter();
+                // this.profilePicture.filters = this.select || this.highlight ? [] : [grayscale];
                 // this.profilePicture.position = {x: this.profilePicture.x - this.profilePicture.width / 2, y: this.profilePicture.y - this.profilePicture.height / 2}
                 const container = new Container();
                 container.width = g.parent.width;

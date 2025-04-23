@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { GameService } from '../../services/game/game.service';
 import { Subscription } from 'rxjs';
 import { Game } from '../../models/game';
@@ -7,23 +8,41 @@ import { getLimit, getAvgEngagement } from '../../shared/utils';
 @Component({
   selector: 'app-score',
   standalone: true,
-  imports: [],
+  imports: [ CommonModule ],
+  providers: [ DatePipe ],
   templateUrl: './score.component.html',
   styleUrl: './score.component.scss'
 })
 export class ScoreComponent {
   gameData?: Game;
-  private gameSub!: Subscription;
-  constructor(private gameService: GameService) {}
+  get time(): string | null {
+    if (!this._time) return null;
+    const timeString: string = `${this._time}`;
+    return `${this.datePipe.transform(this._time, 'EEEE, MMMM d, y, H:mm:ss')}:${timeString.substring(timeString.length - 3)}`;
+  }
+  private _time: number = 0;
+  private gameSub: Subscription = new Subscription();
+  private timeSub: Subscription = new Subscription();
+  constructor(
+    private gameService: GameService,
+    private datePipe: DatePipe
+  ) {}
 
   ngOnInit(): void {
     this.gameSub = this.gameService.gameSubject.subscribe((gameDataUpdate: Game) => {
       this.gameData = gameDataUpdate;
     });
+    this.timeSub = this.gameService.gameTime.subscribe({
+      next: (value: any) => {
+        this._time = value;
+        // console.log('time', this._time);
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.gameSub.unsubscribe();
+    this.timeSub.unsubscribe();
   }
 
   getLimit(): number {

@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 $space: 1.5rem;
-$lightColor: #ddd;
+$lightColor: #ddd; // rgb(3, 183, 138);
 
 * {
     box-sizing: border-box;
@@ -83,9 +83,16 @@ app-game {
         // height: 100%;
         left: 0;
         top: 0;
+        .hero-profile {
+            filter: grayscale(100%);
+        }
+        
+        .blender {
+            background-color: #00ffa6;
+        }
     }
 
-    .controls {
+    & > .controls {
         position: fixed;
         bottom: 0;
         width: 100%;
@@ -108,6 +115,7 @@ graph-viewer {
     bottom: 0;
     width: 100%;
     height: 100%;
+    filter: grayscale(100%);
 }
 
 app-feed {
@@ -123,7 +131,27 @@ app-feed {
     // app-post {
     //     color: 
     // }
+    .feed-content {
+        filter: grayscale(100%);
+        background-color: rgba(black, .5);
+    }
+    .blender {
+        background-color: #00b7ff;
+        // filter: none;
+    }
 }
+// app-feed {
+//     display: block;
+//     height: 100%;
+//     overflow: hidden;
+//     background-color: rgba(black, .5);
+//     padding: $space;
+//     color: $lightColor;
+//     // app-post {
+//     //     color: 
+//     // }
+//     // filter: grayscale(100%) sepia(100%) hue-rotate(90deg); // grayscale(100%);
+// }
 
 app-controller {
     display: block;
@@ -132,6 +160,22 @@ app-controller {
     overflow: auto;
     padding-bottom: calc($space * 10);
     font-size: large;
+    padding-top: $space;
+    filter: grayscale(100%);
+    position: relative;
+
+    & > .controls {
+        position: fixed;
+        display: flex;
+        justify-content: space-between;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: fit-content;
+        padding: calc($space /2);
+        background-color: black;
+        z-index: 999999;
+    }
 }
 
 app-user {
@@ -195,9 +239,11 @@ app-user {
     
 }
 
+
 app-post {
     display: block;
     margin: $space calc($space / 2);
+    // filter: grayscale(100%);
     .post-header {
         display: flex;
         flex-direction: row;
@@ -234,10 +280,12 @@ app-post {
 }
 
 app-score {
+    
     #score {
         display: flex;
         flex-direction: row;
         justify-content: flex-start; //space-between;
+        padding: calc($space / 4);
         align-items: center;
         background-color: black;
         #engagement {
@@ -279,12 +327,27 @@ app-on-screen {
     &.dashed {
         outline: 3px dashed $lightColor;
         outline-offset: 3px;
+        // img {
+        //     filter: grayscale(0%);
+        // }
+        
     }
 
     img {
         width: 100%; //calc(4 * $space);
         height: auto;
+        // filter: grayscale(100%);
     }
+}
+
+.blender {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    mix-blend-mode: multiply;
+    // filter: none;
 }
 
 .user-profile-picture-small {
@@ -300,6 +363,9 @@ app-on-screen {
 .row {
     display: flex;
     flex-direction: row;
+}
+.spacer {
+    flex-grow: 1;
 }
 
 app-screensaver {

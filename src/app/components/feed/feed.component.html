@@ -1,21 +1,24 @@
-@if(game) {
-    @for(task of game.tasks; track task.uuid) {
-        @if(task.type === 'showPost') {
-            <!-- post selected to be shown to Hero -->
-            @if(task.showPost) {
-                @for(postId of task.posts; track postId) {
-                    @if(postId === task.showPost) {
-                        <app-post [post]="getPost(postId)"></app-post>
+<div class="feed-content">
+    @if(game) {
+        @for(task of game.tasks; track task.uuid) {
+            @if(task.type === 'showPost') {
+                <!-- post selected to be shown to Hero -->
+                @if(task.showPost) {
+                    @for(postId of task.posts; track postId) {
+                        @if(postId === task.showPost) {
+                            <app-post [post]="getPost(postId)"></app-post>
+                        }
                     }
                 }
-            }            
-        }
-        <!-- DISCUSS: show Hero's posts which were selected to be distributed to other users -->
-        @else {
-            <!-- show task post -->
-            @for(postId of task.posts; track postId) {
-                <app-post [post]="getPost(postId)"></app-post>
             }
-        }    
+            <!-- DISCUSS: show Hero's posts which were selected to be distributed to other users -->
+            @else {
+                <!-- show task post -->
+                @for(postId of task.posts; track postId) {
+                    <app-post [post]="getPost(postId)"></app-post>
+                }
+            }
+        }
     }
-}
+</div>
+<!-- <div class="blender"></div> -->

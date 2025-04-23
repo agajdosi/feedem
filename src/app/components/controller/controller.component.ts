@@ -46,6 +46,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
     allowSelfLoops: true,
     type: 'directed'
   });
+  pathToTarget: string[] = [];
 
   constructor(
     private readonly socketService: SocketService,
@@ -80,23 +81,23 @@ export class ControllerComponent implements OnInit, OnDestroy {
       */
       // subscribe sockets
       this.socketSub = this.socketService.socketMessage.subscribe({
-      next: (event: SocketEvent) => {
-        console.log('socket message in controller', event);
-        switch (event.type) {
-          case 'disconnected':
-            // console.log('someone is disconnected -> check if it is (not) controlled game instance');
-            // if disconnected instance is the instance of that controller was taken from, controller should stop working
-            console.log('disconnected instance', event.data.id);
-            console.log('game instance taken control from', this.connectedGameInstance);
-            if (event.data.id === this.connectedGameInstance) {
-              this.canControl = false;
-              this.socketService.destroy();
-            }
-            break;
-          default:
-            console.log('got socket event', event);
+        next: (event: SocketEvent) => {
+          console.log('socket message in controller', event);
+          switch (event.type) {
+            case 'disconnected':
+              // console.log('someone is disconnected -> check if it is (not) controlled game instance');
+              // if disconnected instance is the instance of that controller was taken from, controller should stop working
+              console.log('disconnected instance', event.data.id);
+              console.log('game instance taken control from', this.connectedGameInstance);
+              if (event.data.id === this.connectedGameInstance) {
+                this.canControl = false;
+                this.socketService.destroy();
+              }
+              break;
+            default:
+              console.log('got socket event', event);
+          }
         }
-      }
       });
       // subscribe game
       this.gameSub = this.gameService.gameSubject.subscribe({
@@ -105,6 +106,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
         if (game && game.uuid) {
           if (!this.game) {
             this.game = game;
+            this.game.created = Date.now();
             // calculate graph
             console.warn('GRAPH SHOULD BE CALCULATED FROM REAL RELATIONS, NOT A RANDOM ONE...');
             
@@ -125,7 +127,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
       })
       // subscribe controllable from sockets
       this.gameControlSub = this.socketService.canControl.subscribe({
-     next: (canControl: boolean) => this.canControl = canControl
+        next: (canControl: boolean) => this.canControl = canControl
       });
       // request control
       this.requestGameControl();
@@ -156,6 +158,18 @@ export class ControllerComponent implements OnInit, OnDestroy {
       }
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.countDown.stop();
+    this.gameControlSub.unsubscribe();
+    this.gameSub.unsubscribe();
+    this.socketSub.unsubscribe();
+    this.socketService.destroy();
+    window.removeEventListener('click', this.userInteractionHandler);
+    window.removeEventListener('scroll', this.userInteractionHandler);
+    this.commentsSub.unsubscribe();
+    this.reactionsSub.unsubscribe();
   }
 
   private userInteractionHandler(): void {
@@ -191,20 +205,20 @@ export class ControllerComponent implements OnInit, OnDestroy {
         userId: userId
       }
     });
+    this.socketService.sendSocketMessage({
+      command: 'update-game',
+      data: {
+        game: this.game
+      }
+    })
     this.gameService.nextTask(this.game.tasks[0]);
   }
 
-  ngOnDestroy(): void {
-    this.countDown.stop();
-    this.gameControlSub.unsubscribe();
-    this.gameSub.unsubscribe();
-    this.socketSub.unsubscribe();
-    this.socketService.destroy();
-    window.removeEventListener('click', this.userInteractionHandler);
-    window.removeEventListener('scroll', this.userInteractionHandler);
-    this.commentsSub.unsubscribe();
-    this.reactionsSub.unsubscribe();
+  onPathToTarget(path: string[]): void {
+    console.log('path to target', path);
+    this.pathToTarget = path;
   }
+  
 
   userIsOnScreen(id: string): void {
     console.log(`user ${id} is on screen...`);

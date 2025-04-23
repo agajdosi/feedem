@@ -1,26 +1,38 @@
 @if(game && canControl) {
-    @if(countDownTimer) {
-        <div class="time-to-play">{{countDownTimer.valueString}}</div>
-    }
-    @if(!game.hero) {
-        <h2>Choose Hero</h2>
+    <div class="controls">
+        @if(!game.hero) {
+            <h2>Choose Hero</h2>
+        }
+        @if(!isAnyOpenTask() && game.hero) {
+            Waiting for task...
+        }
+        @if(countDownTimer) {
+            <div class="time-to-play">{{countDownTimer.valueString}}</div>
+        }
+        @if(pathToTarget.length >= 1) {
+            <div class="readers">{{pathToTarget.length ? pathToTarget.length - 1 : 0}} user targeted</div>
+        }
+    </div>
+
+    @if(game.hero) {
+        @for(task of game.tasks; track task.uuid) {
+            @if(!task.completed) {
+                <app-task
+                    [task]="task"
+                    [graph]="socialGraph"
+                    (pathToTarget)="onPathToTarget($event)"
+                ></app-task>
+            }
+            
+        }
+    }@else {
         @for(hero of game.users; track hero.uuid) {
             <app-on-screen [data]="hero.uuid" (onScreen)="userIsOnScreen($event)"></app-on-screen>
             <app-user (click)="selectHero(hero.uuid)" [user]="hero" [class]="{'highlight': highlightedUser === hero.uuid}"></app-user>
         }
     }
-
-    @if(game.hero) {
-        @if(!isAnyOpenTask()) {
-            Waiting for task...
-        }
-        @for(task of game.tasks; track task.uuid) {
-            @if(!task.completed) {
-                <app-task [task]="task" [graph]="socialGraph"></app-task>
-            }
-            
-        }
-    }
 }@else {
-    <h2>Reconnect the game...</h2>
+    <div class="controls">
+        <h2>Reconnect the game...</h2>
+    </div>
 }
