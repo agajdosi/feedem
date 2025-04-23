@@ -103,8 +103,6 @@ export class GameComponent implements OnInit, OnDestroy {
           if (this.game/*  && game.updated > this.game.updated */) {
             // sync graph with new game (posts, comments, reactions)
             this.syncGraphWithGame(game);
-            // update game object
-            this.gameService.updateGame(this.game, game);
 
           } else {
             
@@ -176,77 +174,9 @@ export class GameComponent implements OnInit, OnDestroy {
     // TODO: update graph
     // ... add posts, mainly
     //
-    console.warn('GAME SHOULD BE JUST UPDATED');
-    // if length of posts
-    if (this.game.tasks.length !== game.tasks.length) {
-      console.warn('ADD POSTS, COMMENTS... TO GRAPH!!!', this.game.tasks, game.tasks);
-      for (const t of game.tasks) {
-        const taskExist = this.game.tasks.filter(task => task.uuid === t.uuid);
-        console.log('taskExist?', taskExist);
-        if (!taskExist.length) {
-          console.log('NEW TASK', t);
-          // 
-          const post = game.posts.filter(post => post.uuid === t.showPost)[0];
-          const author = post && post.author ? post.author : null;
-          if (post && author) {
-            const node = {};
-            (node as any)[post.uuid] = { type: 'post', x: 1, y: 1 };
-            this.addGraphNodes = node;
-            // this.graph.addNode(post.uuid, {type: 'post', x: 1, y: 1});
-
-            if (t.type === 'showPost' && t.showTo.length) {
-              const showTo = t.showTo[0];
-              this.addGraphEdges = [
-                { source: author, target: post.uuid, attributes: { label: 'sent' } },
-                { source: post.uuid, target: showTo, attributes: { label: 'got' } }
-              ];
-            }
-            if (t.type === 'distributePost') {
-              console.warn('TODO distributePost to graph TASK', t);
-              // for (const showTo of t.showTo) {
-              //   const tmp: {source: string, target: string, attributes: any}[] = [];
-              //   let edgesSolved = 0;
-              //   this.graph.findEdge(author, post.uuid, (edge: string) => {
-              //     if (edge) {
-              //       console.log('edge already exist, add label', edge);
-              //       this.graph.setEdgeAttribute(edge, 'label', `${this.graph.getEdgeAttribute(edge, 'label')}, ${RelationType.Write}`);
-              //     } else {
-              //       tmp.push({source: author, target: post.uuid, attributes: { label: RelationType.Write}});
-              //       // const relation: Relation = {
-              //       //   source: author,
-              //       //   target: post.uuid,
-              //       //   label: RelationType.Write
-              //       // }
-              //       // this.game.relations.push(relation);
-              //     }
-              //     edgesSolved++;
-              //     if (edgesSolved === 2) {
-              //       this.addGraphEdges = tmp;
-              //     }
-              //   });
-              //   this.graph.findEdge(post.uuid, showTo, (edge: string) => {
-              //     if (edge) {
-              //       this.graph.setEdgeAttribute(edge, 'label', `${this.graph.getEdgeAttribute(edge, 'label')}, ${RelationType.Get}`);
-              //     } else {
-              //       tmp.push({source: post.uuid, target: showTo, attributes: {label: RelationType.Get}});
-              //       
-              //     }
-              //   })
-              // }
-
-            }
-          }
-
-        }
-        // console.log('POST TO ADD', post);
-        // const record = {};
-        // (record as any)[post.uuid as string] = {type: 'post', x: 1, y: 1};
-        // console.log('add node record', record);
-        // this.addGraphNodes = record;
-      }
-    }
-
-    console.log('some posts?', game.posts);
+    console.warn('GAME SHOULD BE JUST UPDATED:::tasks to update?', game.tasks, this.game.tasks);
+    // update game object
+    this.gameService.updateGame(this.game, game);
   }
 
   // TODO !!! -> ONLY SERVER CAN TRIGGER LEAVING (should know if the controlled game instance stoped)
@@ -352,14 +282,86 @@ export class GameComponent implements OnInit, OnDestroy {
         this.gameService.gameSubject.next(c.data.game);
         break;
       case 'comment':
-        this.gameService.game.comments.push(c.data.comment);
+        // this.gameService.game.comments.unshift(c.data.comment);
+        // add comment to graph
+        const comment = c.data.comment;
+        // console.log('ADD COMMENT', comment);
+        if (comment) {
+          const author = comment.author;
+          const node = {};
+          (node as any)[comment.uuid] = {x: 1, y: 1, type: 'comment'};
+          this.addGraphNodes = node;
+          // create edges
+          const edges = [];
+          // author to comment
+          edges.push({source: author, target: comment.uuid, attributes: { label: RelationType.Write }});
+          // comment to post
+          edges.push({source: comment.uuid, target: comment.parent, attributes: { label: RelationType.Comment}})
+          // add to graph
+          this.addGraphEdges = edges;
+        }
+        
+        
         break;
       case 'reaction':
-        this.gameService.game.reactions.push(c.data.reaction);
+        // this.gameService.game.reactions.unshift(c.data.reaction);
+        const reaction = c.data.reaction;
+        console.log('NEW REACTION', reaction);
+        if (reaction) {
+          // this.clearConnectionsHighlight = true;
+          // find edge
+          const post = this.gameService.getPost(reaction.parent);
+          if (post) {
+            this.graph.findEdge(post.uuid, reaction.author, (edge: string) => {
+              console.log('EDGE FOUND', edge);
+              if (edge) {
+                // update edge label
+                // remove label and create again with different label
+                this.graph.dropEdge(edge);
+                this.addGraphEdges = [{source: post.uuid, target: reaction.author, attributes: { label: reaction.value }}];
+                // const edgeLabel = this.graph.getEdgeAttribute(edge, 'label');
+                // this.graph.setEdgeAttribute(edge, 'label', `${reaction.value}`);
+                // // this.highlightUsersConnection = edge;
+                // this.addGraphEdges = [];
+
+              }
+            })
+          }
+        }
+        break;
+      case 'task':
+        // console.log('NEW TASK', c.data.task);
+        // add post to graph
+        const task = c.data.task;
+        const post = this.gameService.getPost(task.showPost);
+        if (post) {
+          const author = post.author;
+          const node = {};
+          (node as any)[post.uuid] = {x: 1, y: 1, type: 'post'}
+          this.addGraphNodes = node;
+          // create edges
+          const edges = [];
+          edges.push({source: author, target: post.uuid, attributes: {label: RelationType.Write }});
+          for (const readerId of task.showTo) {
+            edges.push({source: post.uuid, target: readerId, attributes: {label: RelationType.Get}})
+          }
+          this.addGraphEdges = edges;
+        } else {
+          console.error('POST NOT FOUND', task.showPost);
+        }
+        
+
         break;
       default:
         console.log('recieved socket command', c);
     }
+  }
+
+  userFollow(userId: string): string[] {
+    return this.gameService.userIsFollowing(this.graph, userId);
+  }
+  userIsFollowed(userId: string): string[] {
+    return this.gameService.userIsFollowed(this.graph, userId);
   }
 
   saveGame(): void {

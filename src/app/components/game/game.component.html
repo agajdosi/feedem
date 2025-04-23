@@ -22,7 +22,11 @@
 @if(game) {
     <div class="hero">
         @if(game.hero) {
-            <app-user [user]="getUserById(game.hero)"></app-user>
+            <app-user
+                [user]="getUserById(game.hero)"
+                [following]="userFollow(game.hero)"
+                [followers]="userIsFollowed(game.hero)"
+            ></app-user>
         }
     </div>
 }

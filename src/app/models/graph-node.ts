@@ -103,6 +103,12 @@ export class GraphNode extends NodeWrapper {
                     color: 0xff0000,
                 });
         }
+        if (this.type && this.type === 'comment') {
+            g.circle(0, 0, this.radius() / 2)
+                .fill({
+                    color: 0x00ff00,
+                });
+        } 
     }
 
     override initLabelGraphics(t: Text): void {
