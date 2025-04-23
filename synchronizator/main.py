@@ -22,6 +22,30 @@ class IndexHandler(tornado.web.RequestHandler):
         self.set_status(200)
         self.write("OK")
 
+
+class RestartHandler(tornado.web.RequestHandler):
+    """Handler for restarting the game."""
+    async def get(self):
+        username = self.get_argument('username', '')
+        password = self.get_argument('password', '')
+        expected_username = os.environ.get('SERVER_USERNAME', '')
+        expected_password = os.environ.get('SERVER_PASSWORD', '')
+        username_ok = username == expected_username
+        password_ok = password == expected_password
+        print(f"🔑 username={username}, password={password}, expected_username={expected_username}, expected_password={expected_password}")
+        if not username_ok or not password_ok:
+            print(f"-- ❌ failed to authenticate")
+            self.set_status(401)
+            self.write("Unauthorized")
+            return
+        print(f"-- ✅ authenticated")
+        global game
+        old_game = game
+        game = {}
+        await sio.emit('game', game)
+        self.write(f"<h1>⚰️ RIP Old Game:</h1><pre>{old_game}</pre>")
+
+
 class DevHandler(tornado.web.RequestHandler):
     """Handler for dev.html which contains a simple UI for development purposes.
     Should be removed before deploying.
@@ -29,6 +53,7 @@ class DevHandler(tornado.web.RequestHandler):
     def get(self):
         with open(os.path.join(os.path.dirname(__file__), 'dev.html'), 'r') as f:
             self.write(f.read())
+
 
 # SocketIO server instance
 sio = socketio.AsyncServer(
@@ -40,6 +65,7 @@ sio = socketio.AsyncServer(
 
 routes = [
     (r'/', IndexHandler),
+    (r'/restart', RestartHandler),
     (r'/socket.io/', socketio.get_tornado_handler(sio)),
 ]
 if not PRODUCTION:
