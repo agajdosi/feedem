@@ -16,6 +16,8 @@
                 <app-on-screen [data]="user.uuid" (onScreen)="userIsOnScreen($event)"></app-on-screen>
                 <app-user
                     [user]="user"
+                    [following]="userFollow(user.uuid)"
+                    [followers]="userIsFollowed(user.uuid)"
                     [class]="{'highlight': highlightedUser === user.uuid}"
                     (click)="selectUserForPost(user.uuid)"
                 ></app-user>

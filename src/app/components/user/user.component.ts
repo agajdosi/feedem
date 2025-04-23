@@ -2,11 +2,12 @@ import { Component, Input, OnInit, ElementRef, ViewChild, AfterViewInit } from '
 // models
 import { BigFive, User } from '../../models/game';
 // components
-import { RadarComponent, RadarData, RadarDataItem } from '../radar/radar.component';
+import { RadarComponent, RadarData } from '../radar/radar.component';
 // uuid
 import { v4 as uuidv4 } from 'uuid';
 import Typed from 'typed.js';
 import { GameService } from '../../services/game/game.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user',
@@ -16,12 +17,16 @@ import { GameService } from '../../services/game/game.service';
 })
 export class UserComponent implements OnInit, AfterViewInit {
   @Input() user!: User | undefined;
+  @Input() following: string[] = [];
+  @Input() followers: string[] = [];
   @ViewChild('bioElement') bioElement!: ElementRef;
 
   radarData: RadarData[] = [];
   isHero: boolean = false;
 
-  constructor(private gameService: GameService) {}
+  constructor(
+    private gameService: GameService
+  ) {}
 
   ngOnInit(): void {
     if (this.user && this.user.big_five) {
@@ -56,5 +61,9 @@ export class UserComponent implements OnInit, AfterViewInit {
         // fadeOutClass: 'typed-fade-out',
       });
     }
+  }
+
+  getUser(userId: string): User {
+    return this.gameService.getUserById(userId);
   }
 }

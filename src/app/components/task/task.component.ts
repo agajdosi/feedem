@@ -7,11 +7,10 @@ import { UserComponent } from '../user/user.component';
 import { OnScreenComponent } from '../on-screen/on-screen.component';
 // services
 import { GameService } from '../../services/game/game.service';
-import { SocketService, SocketCommand } from '../../services/socket/socket.service';
+import { SocketService } from '../../services/socket/socket.service';
 // graphology
 import Graph from 'graphology';
 import { bidirectional } from 'graphology-shortest-path/unweighted';
-import { edgePathFromNodePath } from 'graphology-shortest-path/utils';
 
 
 
@@ -79,13 +78,26 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   getPostPath(postId: string): string[] {
-    console.log('getPostPath');
+    // console.log('getPostPath');
     const post = this.gameService.getPost(postId);
     if (!post) return []; // couldn't happen
     const author = post ? post.author : null;
     const path = bidirectional(this.graph, this.gameService.getHero().uuid, author);
     if (path && path.length) return path;    
     return [];
+  }
+
+  // userConnections(userId: string): string[] {
+  //   if (!this.graph) return [];
+  //   const neighbours = this.graph.outNeighbors(userId);
+  //   if (neighbours.length) return neighbours;
+  //   return [];
+  // }
+  userFollow(userId: string): string[] {
+    return this.gameService.userIsFollowing(this.graph, userId);
+  }
+  userIsFollowed(userId: string): string[] {
+    return this.gameService.userIsFollowed(this.graph, userId);
   }
 
   notShowAny(): void {
@@ -148,6 +160,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.task.completed = true;
     this.gameService.nextTask(this.task);
     this.notifyPeers();
+    this.gameService.onTask.next(this.task);
   }
 
   private notifyPeers(): void {

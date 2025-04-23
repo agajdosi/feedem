@@ -3,6 +3,7 @@ import { User, Post, Game , Reaction, TaskType, Task, View, Comment} from '../..
 import { LlmsService } from '../llms/llms.service';
 // http client
 import { HttpClient } from '@angular/common/http';
+import Graph from 'graphology';
 // rxjs
 import { Subject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -57,6 +58,20 @@ export class GameService {
         }
       }
     });
+  }
+
+  userIsFollowing(graph: Graph, userId: string): string[] {
+    if (!graph || !graph.nodes().length) return [];
+    const follow = graph.filterOutNeighbors(userId, (neigbour: string, attributes: any) => attributes.type === 'user');
+    if (follow.length) return follow;
+    return [];
+  }
+
+  userIsFollowed(graph: Graph, userId: string): string[] {
+    if (!graph || !graph.nodes().length) return [];
+    const follow = graph.filterInNeighbors(userId, (neigbour: string, attributes: any) => attributes.type === 'user');
+    if (follow.length) return follow;
+    return [];
   }
 
   private startGameTime(): void {
@@ -181,7 +196,7 @@ export class GameService {
       const recentActivity: string = describeRecentActivity(author, this.game.posts, this.game.comments, this.game.reactions);
       const post = await this.llmsService.generatePost(author, recentActivity);
       this.game.posts.unshift(post);
-      posts.push(post);
+      posts.unshift(post);
     }
 
     const task: Task = {
@@ -226,6 +241,11 @@ export class GameService {
 
   getPost(postId: string): Post {
     return this.game.posts.find(post => postId === post.uuid)!;
+  }
+
+  // MARK: COMMENT
+  getComment(commentId: string): Comment {
+    return this.game.comments.find(comment => commentId === comment.uuid)!;
   }
 
 }

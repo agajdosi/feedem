@@ -36,4 +36,25 @@
                 <div class="trait">{{ trait.replace('.', '') }}</div>
             }
     </div>
+    @if(following.length) {
+        <div class="connections">
+            <div>Follow&nbsp;</div>
+            @for(connection of following; let i = $index; track i) {
+                <div class="connection user-profile-picture-smaller">
+                    <img [src]="getUser(connection).profile_picture" alt="">
+                </div>
+            }
+        </div>
+    }
+    @if(followers.length) {
+        <div class="connections">
+            <div>Followed by&nbsp;</div>
+            @for(connection of followers; let i = $index; track i) {
+                <div class="connection user-profile-picture-smaller">
+                    <img [src]="getUser(connection).profile_picture" alt="">
+                </div>
+            }
+        </div>
+    }
+    
 }
