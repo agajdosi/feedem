@@ -63,7 +63,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
     console.log('valid', this.connectionValidFrom);
     console.log('Date.now() - this.connectionValidFrom', Date.now() - this.connectionValidFrom);
 
-    if (this.connectionValidFrom && Date.now() - this.connectionValidFrom < 60 * 1000 ) {
+    if (this.connectionValidFrom && Date.now() - this.connectionValidFrom < 2 * 60 * 1000 ) {
       this.restartCountDown();
       
       window.addEventListener('click', this.userInteractionHandler.bind(this));

@@ -60,8 +60,8 @@ export class GameComponent implements OnInit, OnDestroy {
     target: string;
     attributes: any;
   }> | null = null;
-  linkValidFrom: number = Date.now();
-
+  private linkValidFrom: number = Date.now();
+  private linkValidityInterval: any;
 
   game!: Game;
 
@@ -83,6 +83,10 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // update validity of link each 60s (controller has 2mins)
+    this.linkValidityInterval = setInterval(() => {
+      this.linkValidFrom = Date.now();
+    }, 60 * 1000);
     // window.addEventListener('beforeunload', this.notifyUsersAboutLeaving.bind(this));
     // this.socketService.sendSocketMessage({
     //   command: 'deactivate-controller-of',
