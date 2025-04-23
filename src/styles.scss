@@ -83,13 +83,7 @@ app-game {
         // height: 100%;
         left: 0;
         top: 0;
-        .hero-profile {
-            filter: grayscale(100%);
-        }
-        
-        .blender {
-            background-color: #00ffa6;
-        }
+        @extend .grayscale;     
     }
 
     & > .controls {
@@ -115,7 +109,7 @@ graph-viewer {
     bottom: 0;
     width: 100%;
     height: 100%;
-    filter: grayscale(100%);
+    @extend .grayscale;
 }
 
 app-feed {
@@ -132,26 +126,10 @@ app-feed {
     //     color: 
     // }
     .feed-content {
-        filter: grayscale(100%);
+        @extend .grayscale;
         background-color: rgba(black, .5);
     }
-    .blender {
-        background-color: #00b7ff;
-        // filter: none;
-    }
 }
-// app-feed {
-//     display: block;
-//     height: 100%;
-//     overflow: hidden;
-//     background-color: rgba(black, .5);
-//     padding: $space;
-//     color: $lightColor;
-//     // app-post {
-//     //     color: 
-//     // }
-//     // filter: grayscale(100%) sepia(100%) hue-rotate(90deg); // grayscale(100%);
-// }
 
 app-controller {
     display: block;
@@ -161,10 +139,12 @@ app-controller {
     padding-bottom: calc($space * 10);
     font-size: large;
     padding-top: $space;
-    filter: grayscale(100%);
     position: relative;
 
+    
+
     & > .controls {
+        h2 { margin: 0;}
         position: fixed;
         display: flex;
         justify-content: space-between;
@@ -175,6 +155,10 @@ app-controller {
         padding: calc($space /2);
         background-color: black;
         z-index: 999999;
+    }
+
+    & > .content {
+        @extend .grayscale;
     }
 }
 
@@ -235,6 +219,16 @@ app-user {
             border: 1px solid $lightColor; 
         }
     }
+    .connections {
+        padding: calc($space / 4);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        & > div {
+            margin-right: calc($space / 2);
+        }
+    }
 
     
 }
@@ -243,7 +237,6 @@ app-user {
 app-post {
     display: block;
     margin: $space calc($space / 2);
-    // filter: grayscale(100%);
     .post-header {
         display: flex;
         flex-direction: row;
@@ -263,7 +256,7 @@ app-post {
         // color: black;
         display: inline-flex;
         .reaction {
-            background-color: $lightColor;
+            // background-color: $lightColor;
             border-radius: 50%;
             width: calc($space);
             height: $space;
@@ -326,17 +319,12 @@ app-on-screen {
     // border: 3px solid black;    
     &.dashed {
         outline: 3px dashed $lightColor;
-        outline-offset: 3px;
-        // img {
-        //     filter: grayscale(0%);
-        // }
-        
+        outline-offset: 3px;        
     }
 
     img {
         width: 100%; //calc(4 * $space);
         height: auto;
-        // filter: grayscale(100%);
     }
 }
 
@@ -347,13 +335,18 @@ app-on-screen {
     top: 0;
     left: 0;
     mix-blend-mode: multiply;
-    // filter: none;
 }
 
 .user-profile-picture-small {
     @extend .user-profile-picture;
     width: calc(2 * $space);
     height: calc(2 * $space);
+}
+
+.user-profile-picture-smaller {
+    @extend .user-profile-picture;
+    width: $space;
+    height: $space;
 }
 
 .column {
@@ -366,6 +359,10 @@ app-on-screen {
 }
 .spacer {
     flex-grow: 1;
+}
+
+.grayscale {
+    // filter: grayscale(100%);
 }
 
 app-screensaver {
