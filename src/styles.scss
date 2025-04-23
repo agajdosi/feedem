@@ -97,6 +97,7 @@ qr-code {
     left: 50%;
     bottom: $space;
     transform: translateX(-50%);
+    z-index: 1001;
 }
 
 graph-viewer {
@@ -301,3 +302,19 @@ app-on-screen {
     flex-direction: row;
 }
 
+app-screensaver {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    font-size: 2rem;
+    #titles {
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}

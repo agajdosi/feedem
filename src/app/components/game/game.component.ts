@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 // components
 import { UserComponent } from '../user/user.component';
 import { FeedComponent } from '../feed/feed.component';
+import { ScreensaverComponent } from '../screensaver/screensaver.component';
 // models
 import { Game, User, Relation, RelationType } from '../../models/game';
 import { GraphNode } from '../../models/graph-node';
@@ -36,7 +37,8 @@ import Graph from 'graphology';
     QrCodeComponent,
     ScoreComponent,
     GraphViewerComponent,
-    FeedComponent
+    FeedComponent,
+    ScreensaverComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
