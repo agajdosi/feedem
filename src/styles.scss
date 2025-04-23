@@ -77,8 +77,6 @@ app-game {
     height: 100%;
     overflow: hidden;
 
-    
-
     .hero {
         position: absolute;
         max-width: 25%;
@@ -113,10 +111,17 @@ graph-viewer {
 
 app-feed {
     position: absolute;
-    width: 30%;
-    height: 100%;
     right: 0;
     top: 0;
+    width: 25%;
+    height: 100%;
+    padding: 0;
+    display: block;
+    overflow: hidden;
+    background-color: rgba(black, .85);
+    // app-post {
+    //     color: 
+    // }
 }
 
 app-controller {
@@ -135,6 +140,7 @@ app-user {
     background-color: rgba(black, .5);
     // margin: $space;
     margin-bottom: $space;
+    margin-top: 2px;
 
     &.highlight {
         border: 1px solid $lightColor;
@@ -146,11 +152,13 @@ app-user {
         align-items: center;
         justify-content: space-between;
         .name {
-            padding: calc($space / 2);
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             justify-content: space-between;
+            .user-profile-picture {
+                margin-left: calc($space / 5);
+            }
         }
     }
 
@@ -184,17 +192,6 @@ app-user {
     }
 
     
-}
-
-app-feed {
-    display: block;
-    height: 100%;
-    overflow: hidden;
-    background-color: rgba(black, .5);
-    padding: $space;
-    // app-post {
-    //     color: 
-    // }
 }
 
 app-post {
