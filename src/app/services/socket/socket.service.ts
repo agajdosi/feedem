@@ -43,7 +43,7 @@ export class SocketService {
       console.log(`socket.io got ${event}`, args);
       // controller (start controlling the game)
       // general message || game object from server
-      if (event && event === 'message' || event === 'game') {
+      if (event && event === 'message' || event === 'game' || event === 'disconnected') {
         this.socketMessage.next({
           type: event,
           data: args[0]
