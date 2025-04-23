@@ -27,7 +27,9 @@
         <p><strong>Occupation</strong> {{ user.occupation }}</p>
         <p><strong>Gender</strong> {{ user.gender }}</p>
     </div>
-    <div class="bio">{{ user.bio }}</div>
+    <div class="bio">
+        <span #bioElement><!-- loaded via typed.js --></span>
+    </div>
     <div class="traits">
         <!-- <p>Traits:</p> -->
             @for (trait of user.traits; track trait) {

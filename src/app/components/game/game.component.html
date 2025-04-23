@@ -17,42 +17,26 @@
         (graphUpdated)="graphUpdated($event)"
     ></graph-viewer>
 }
+
 <!-- HEROS' PROFILE --> 
 @if(game) {
     <div class="hero">
-        <div class="hero-profile">
-            @if(!game.hero) {
-                <h2>Choose Your Hero...</h2>
-            }
-            @if(game.hero) {
-                <h2>Your Hero</h2>
-                <app-user [user]="getUserById(game.hero)"></app-user>
-            }
-        </div>
-        <!-- <div class="blender"></div> -->
+        @if(game.hero) {
+            <app-user [user]="getUserById(game.hero)"></app-user>
+        }
     </div>
-}  
+}
 
 <!-- HEROS' FEED --> 
 <app-feed></app-feed>
 
-
-<!-- @if (game && game.users && game.users.length) {
-    <div class="users">
-        <div class="users-container">
-            @for (user of game.users; track user.uuid) {
-                <app-user [user]="user"></app-user> 
-            }
-        </div>
-    </div>
-} -->
-
+<!-- OVERLAYS -->
 <div class="controls">
+    
     @if (controllable) {
+        <app-screensaver></app-screensaver>
         <qr-code [value]="getControllerLink()" (click)="openController()"></qr-code>
-        <!-- <button (click)="requestGameControl()">Request Game Control</button> -->
     }
-        
     <footer>
         <app-score></app-score>
     </footer>

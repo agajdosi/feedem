@@ -77,8 +77,6 @@ app-game {
     height: 100%;
     overflow: hidden;
 
-    
-
     .hero {
         position: absolute;
         max-width: 25%;
@@ -106,6 +104,7 @@ qr-code {
     left: 50%;
     bottom: $space;
     transform: translateX(-50%);
+    z-index: 1001;
 }
 
 graph-viewer {
@@ -121,10 +120,17 @@ graph-viewer {
 
 app-feed {
     position: absolute;
-    width: 30%;
-    height: 100%;
     right: 0;
     top: 0;
+    width: 25%;
+    height: 100%;
+    padding: 0;
+    display: block;
+    overflow: hidden;
+    background-color: rgba(black, .85);
+    // app-post {
+    //     color: 
+    // }
     .feed-content {
         filter: grayscale(100%);
         background-color: rgba(black, .5);
@@ -179,6 +185,7 @@ app-user {
     background-color: rgba(black, .5);
     // margin: $space;
     margin-bottom: $space;
+    margin-top: 2px;
 
     &.highlight {
         border: 1px solid $lightColor;
@@ -190,11 +197,13 @@ app-user {
         align-items: center;
         justify-content: space-between;
         .name {
-            padding: calc($space / 2);
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             justify-content: space-between;
+            .user-profile-picture {
+                margin-left: calc($space / 5);
+            }
         }
     }
 
@@ -229,7 +238,6 @@ app-user {
 
     
 }
-
 
 
 app-post {
@@ -360,3 +368,19 @@ app-on-screen {
     flex-grow: 1;
 }
 
+app-screensaver {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    font-size: 2rem;
+    #titles {
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
