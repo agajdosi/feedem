@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 // router
 import { ActivatedRoute } from '@angular/router';
 // models
-import { Game, Reaction, Comment } from '../../models/game';
+import { Game, Reaction, Comment, Task } from '../../models/game';
 // components
 import { UserComponent } from '../user/user.component';
 import { OnScreenComponent } from '../on-screen/on-screen.component';
@@ -33,6 +33,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
   private socketSub: Subscription = new Subscription();
   private commentsSub: Subscription = new Subscription();
   private reactionsSub: Subscription = new Subscription();
+  private taskSub: Subscription = new Subscription();
 
   canControl: boolean = false;
   game!: Game;
@@ -101,29 +102,29 @@ export class ControllerComponent implements OnInit, OnDestroy {
       });
       // subscribe game
       this.gameSub = this.gameService.gameSubject.subscribe({
-      next: (game: Game) => {
-        console.warn('GAME UPDATE...');
-        if (game && game.uuid) {
-          if (!this.game) {
-            this.game = game;
-            this.game.created = Date.now();
-            // calculate graph
-            console.warn('GRAPH SHOULD BE CALCULATED FROM REAL RELATIONS, NOT A RANDOM ONE...');
-            
-          } else {
-            console.warn('GAME EXIST AND SHOULD BE ONLY UPDATED...');
-            this.gameService.updateGame(this.game, game);
+        next: (game: Game) => {
+          console.warn('GAME UPDATE...');
+          if (game && game.uuid) {
+            if (!this.game) {
+              this.game = game;
+              this.game.created = Date.now();
+              // calculate graph
+              console.warn('GRAPH SHOULD BE CALCULATED FROM REAL RELATIONS, NOT A RANDOM ONE...');
+
+            } else {
+              console.warn('GAME EXIST AND SHOULD BE ONLY UPDATED...');
+              this.gameService.updateGame(this.game, game);
+            }
           }
+          this.graphService.buildGraph(this.gameService.game.users, this.gameService.game.relations, []).then((graphData: GraphData | undefined) => {
+            if (graphData) {
+              console.log('recalculating socialGraph...', graphData);
+              this.socialGraph.clear();
+              for (const node of graphData.nodes) this.socialGraph.addNode(node.id, node.attributes ? node.attributes : {});
+              for (const edge of graphData.edges) this.socialGraph.addEdge(edge.source, edge.target);
+            }
+          });
         }
-        this.graphService.buildGraph(this.gameService.game.users, this.gameService.game.relations, []).then((graphData: GraphData | undefined) => {
-          if (graphData) {
-            console.log('recalculating socialGraph...', graphData);
-            this.socialGraph.clear();
-            for (const node of graphData.nodes) this.socialGraph.addNode(node.id, node.attributes ? node.attributes : {});
-            for (const edge of graphData.edges) this.socialGraph.addEdge(edge.source, edge.target);
-          }
-        });
-      }
       })
       // subscribe controllable from sockets
       this.gameControlSub = this.socketService.canControl.subscribe({
@@ -133,30 +134,48 @@ export class ControllerComponent implements OnInit, OnDestroy {
       this.requestGameControl();
       // subscribe reactions
       this.reactionsSub = this.gameService.onReaction.subscribe({
-      next: (reaction: Reaction) => {
-        // send to socket
-        console.log('got new reaction', reaction);
-        this.socketService.sendSocketMessage({
-          command: 'reaction',
-          data: {
-            reaction: reaction
-          }
-        })
-      }
+        next: (reaction: Reaction) => {
+          // send to socket
+          console.log('got new reaction', reaction);
+          this.sendGameToPeers();
+          // notify peers about reaction
+          this.socketService.sendSocketMessage({
+            command: 'reaction',
+            data: {
+              reaction: reaction
+            }
+          })
+        }
       });
       // subscribe comments
       this.commentsSub = this.gameService.onComment.subscribe({
-      next: (comment: Comment) => {
-        // send to socket
-        console.log('got new comment', comment);
-        this.socketService.sendSocketMessage({
-          command: 'comment',
-          data: {
-            comment: comment
-          }
-        })
-      }
+        next: (comment: Comment) => {
+          // send to socket
+          console.log('got new comment', comment);
+          this.sendGameToPeers();
+          // notify peers about comment
+          this.socketService.sendSocketMessage({
+            command: 'comment',
+            data: {
+              comment: comment
+            }
+          })
+        }
       });
+      // subscribe tasks (complete)
+      this.taskSub = this.gameService.onTask.subscribe({
+        next: (task: Task) => {
+          console.log('on task', task);
+          // this.sendGameToPeers();
+          // notify peers about task
+          this.socketService.sendSocketMessage({
+            command: 'task',
+            data: {
+              task: task
+            }
+          });
+        }
+      })
     }
   }
 
@@ -170,6 +189,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
     window.removeEventListener('scroll', this.userInteractionHandler);
     this.commentsSub.unsubscribe();
     this.reactionsSub.unsubscribe();
+    this.taskSub.unsubscribe();
   }
 
   private userInteractionHandler(): void {
@@ -196,6 +216,15 @@ export class ControllerComponent implements OnInit, OnDestroy {
     });
   }
 
+  private sendGameToPeers(): void {
+    this.socketService.sendSocketMessage({
+      command: 'update-game',
+      data: {
+        game: this.game
+      }
+    });
+  }
+
   selectHero(userId: string): void {
     console.log('select HERO', userId);
     this.gameService.setHero(userId);
@@ -217,6 +246,20 @@ export class ControllerComponent implements OnInit, OnDestroy {
   onPathToTarget(path: string[]): void {
     console.log('path to target', path);
     this.pathToTarget = path;
+  }
+
+  // userConnections(userId: string): string[] {
+  //   if (!this.socialGraph.nodes().length) return [];
+  //   const neighbours = this.socialGraph.outNeighbors(userId);
+  //   if (neighbours.length) return neighbours;
+  //   return [];
+  // }
+
+  userFollow(userId: string): string[] {
+    return this.gameService.userIsFollowing(this.socialGraph, userId);
+  }
+  userIsFollowed(userId: string): string[] {
+    return this.gameService.userIsFollowed(this.socialGraph, userId);
   }
   
 
