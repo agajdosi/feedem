@@ -19,28 +19,30 @@ export class LlmsService {
    * Define the prompts at: https://phoenix.lab.gajdosik.org
    */
   async generatePost(user: User, recentActivity: string): Promise<Post> {
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_generate_post",
+      prompt_variables: {
+        name: user.name,
+        surname: user.surname,
+        gender: user.gender,
+        age: String(user.age),
+        bio: user.bio,
+        city: user.residence.city,
+        country: user.residence.country,
+        occupation: user.occupation,
+        traits: user.traits.join(', '),
+        timestring: new Date().toISOString(), // TODO: use ingame fictional time
+        recent_activity: recentActivity,
+        memory_string: "" // TODO: contruct memory of previous posts
+      }
+    });
+    console.log('✍️ generatePost -> sending data:', body);
     const response = await fetch(`${environment.aigenburgAPI}/generate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ // https://phoenix.lab.gajdosik.org/prompts/UHJvbXB0OjY=
-        prompt_identifier: "feedem_generate_post",
-        prompt_variables: {
-          name: user.name,
-          surname: user.surname,
-          gender: user.gender,
-          age: String(user.age),
-          bio: user.bio,
-          city: user.residence.city,
-          country: user.residence.country,
-          occupation: user.occupation,
-          traits: user.traits.join(', '),
-          timestring: new Date().toISOString(), // TODO: use ingame fictional time
-          recent_activity: recentActivity,
-          memory_string: "" // TODO: contruct memory of previous posts
-        }
-      })
+      }, // https://phoenix.lab.gajdosik.org/prompts/UHJvbXB0OjY=
+      body: body,
     });
 
     const data = await response.json();
@@ -50,7 +52,7 @@ export class LlmsService {
     }
 
     const post_text = parsedData.choices[0].message.content;
-    console.log('Response message:', post_text);
+    console.log('✍️ generatePost <- response:', post_text);
 
     const post: Post = {
       uuid: uuidv4(),
