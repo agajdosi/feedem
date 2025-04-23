@@ -21,6 +21,11 @@ export class GameService {
 
   gameTime: Subject<number> = new Subject();
 
+  get time(): number {
+    return this._time;
+  }
+  private _time: number = 0;
+
   get game(): Game {
     return this._game;
   }
@@ -57,6 +62,7 @@ export class GameService {
     let startTime = 0;
     let time = startTime;
     const SLOWDOWN_VALUE: number = 1000;
+    console.warn('⏰ -------- GAME TIME STARTED --------- ⏰', 'TODO: implement to posts, comments, etc.?, whereever Date.now()?');
     const count = () => {
       if (this.game && this.game.created) {
         // console.log('game.created', Number(this.game.created));
@@ -67,6 +73,7 @@ export class GameService {
         setTimeout(() => {
           time++;
           this.gameTime.next(time);
+          this._time = time;
           count();
         }, SLOWDOWN_VALUE); // 
       } else {
