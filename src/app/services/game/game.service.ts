@@ -19,6 +19,8 @@ export class GameService {
   onReaction: Subject<Reaction> = new Subject();
   onComment: Subject<Comment> = new Subject();
 
+  gameTime: Subject<number> = new Subject();
+
   get game(): Game {
     return this._game;
   }
@@ -29,9 +31,13 @@ export class GameService {
   ) {
     this.gameSubject.subscribe({
       next: (g: Game) => {
-        if (!this.game) this._game = g;
+        if (!this.game) {
+          this._game = g;
+          // start counting global time
+          this.startGameTime();
+        }
         if (this.game) { // update game
-          
+          this.updateGame(this.game, g);
         }
       }
     });
@@ -45,6 +51,29 @@ export class GameService {
         }
       }
     });
+  }
+
+  private startGameTime(): void {
+    let startTime = 0;
+    let time = startTime;
+    const SLOWDOWN_VALUE: number = 1000;
+    const count = () => {
+      if (this.game && this.game.created) {
+        // console.log('game.created', Number(this.game.created));
+        if (!startTime) {
+          startTime = Number(this.game.created) + Math.floor(((Date.now() - this.game.created) / SLOWDOWN_VALUE));
+          time = startTime;
+        }
+        setTimeout(() => {
+          time++;
+          this.gameTime.next(time);
+          count();
+        }, SLOWDOWN_VALUE); // 
+      } else {
+        setTimeout(() => count(), SLOWDOWN_VALUE);
+      }
+    }
+    count();
   }
 
   // update values in existing game object (not a copy)
