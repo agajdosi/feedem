@@ -99,101 +99,16 @@ export class GameComponent implements OnInit, OnDestroy {
       next: (game: Game) => {
         if (game && game.uuid) {
           if (this.game/*  && game.updated > this.game.updated */) {
-            // TODO: update graph
-            // ... add posts, mainly
-            //
-            console.warn('GAME SHOULD BE JUST UPDATED');
-            // if length of posts
-            if (this.game.tasks.length !== game.tasks.length) {
-              console.warn('ADD POSTS, COMMENTS... TO GRAPH!!!', this.game.tasks, game.tasks);
-              for (const t of game.tasks) {
-                const taskExist = this.game.tasks.filter(task => task.uuid === t.uuid);
-                console.log('taskExist?', taskExist);
-                if (!taskExist.length) {
-                  console.log('NEW TASK', t);
-                  // 
-                  const post = game.posts.filter(post => post.uuid === t.showPost)[0];
-                  const author = post && post.author ? post.author : null;
-                  if (post && author) {
-                    const node = {};
-                    (node as any)[post.uuid] = {type: 'post', x: 1, y: 1};
-                    this.addGraphNodes = node;
-                    // this.graph.addNode(post.uuid, {type: 'post', x: 1, y: 1});
-
-                    if (t.type === 'showPost' && t.showTo.length) {
-                      const showTo = t.showTo[0];
-                      this.addGraphEdges = [
-                        {source: author, target: post.uuid, attributes: {label: 'sent'}},
-                        {source: post.uuid, target: showTo, attributes: {label: 'got'}}
-                      ];
-                    }
-                    if (t.type === 'distributePost') {
-                      console.warn('TODO');
-                      // for (const showTo of t.showTo) {
-                      //   const tmp: {source: string, target: string, attributes: any}[] = [];
-                      //   let edgesSolved = 0;
-                      //   this.graph.findEdge(author, post.uuid, (edge: string) => {
-                      //     if (edge) {
-                      //       console.log('edge already exist, add label', edge);
-                      //       this.graph.setEdgeAttribute(edge, 'label', `${this.graph.getEdgeAttribute(edge, 'label')}, ${RelationType.Write}`);
-                      //     } else {
-                      //       tmp.push({source: author, target: post.uuid, attributes: { label: RelationType.Write}});
-                      //       // const relation: Relation = {
-                      //       //   source: author,
-                      //       //   target: post.uuid,
-                      //       //   label: RelationType.Write
-                      //       // }
-                      //       // this.game.relations.push(relation);
-                      //     }
-                      //     edgesSolved++;
-                      //     if (edgesSolved === 2) {
-                      //       this.addGraphEdges = tmp;
-                      //     }
-                      //   });
-                      //   this.graph.findEdge(post.uuid, showTo, (edge: string) => {
-                      //     if (edge) {
-                      //       this.graph.setEdgeAttribute(edge, 'label', `${this.graph.getEdgeAttribute(edge, 'label')}, ${RelationType.Get}`);
-                      //     } else {
-                      //       tmp.push({source: post.uuid, target: showTo, attributes: {label: RelationType.Get}});
-                      //       
-                      //     }
-                      //   })
-                      // }
-                      
-                    } 
-                  }
-                                   
-                }
-                // console.log('POST TO ADD', post);
-                // const record = {};
-                // (record as any)[post.uuid as string] = {type: 'post', x: 1, y: 1};
-                // console.log('add node record', record);
-                // this.addGraphNodes = record;
-              }
-            }
+            // sync graph with new game (posts, comments, reactions)
+            this.syncGraphWithGame(game);
+            // update game object
             this.gameService.updateGame(this.game, game);
-            console.log('some posts?', game.posts);
-            
 
           } else {
-            this.game = game;
-            // build user graph
-            console.log('this.game', this.game);
-            this.graphService.buildGraph(this.game.users, this.game.relations, this.game.posts).then((graphData: GraphData | undefined) => {
-              if (graphData) {
-                this.graphData = graphData;
-                // temp – create realtions
-                // for (const edge of graphData.edges) {
-                //   const relation: Relation = {
-                //     source: edge.source,
-                //     target: edge.target,
-                //     label: RelationType.Follow
-                //   }
-                //   this.game.relations.push(relation);
-                // }
-                console.log('RELATIONS', this.game.relations);
-              }
-            }).catch((e: any) => console.error(e));
+            
+            this.buildGraphDataFromGame(game); 
+            // set new game object
+            this.game = game;           
           }
         }
       }
@@ -244,6 +159,94 @@ export class GameComponent implements OnInit, OnDestroy {
     if (graph) this.graph = graph;
   }
 
+  private buildGraphDataFromGame(game: Game): void {
+    // build user graph
+    // console.log('game', game);
+    this.graphService.buildGraph(game.users, game.relations, game.posts).then((graphData: GraphData | undefined) => {
+      if (graphData) {
+        this.graphData = graphData;
+        // console.log('RELATIONS', this.game.relations);
+      }
+    }).catch((e: any) => console.error(e));
+  }
+
+  private syncGraphWithGame(game: Game): void {
+    // TODO: update graph
+    // ... add posts, mainly
+    //
+    console.warn('GAME SHOULD BE JUST UPDATED');
+    // if length of posts
+    if (this.game.tasks.length !== game.tasks.length) {
+      console.warn('ADD POSTS, COMMENTS... TO GRAPH!!!', this.game.tasks, game.tasks);
+      for (const t of game.tasks) {
+        const taskExist = this.game.tasks.filter(task => task.uuid === t.uuid);
+        console.log('taskExist?', taskExist);
+        if (!taskExist.length) {
+          console.log('NEW TASK', t);
+          // 
+          const post = game.posts.filter(post => post.uuid === t.showPost)[0];
+          const author = post && post.author ? post.author : null;
+          if (post && author) {
+            const node = {};
+            (node as any)[post.uuid] = { type: 'post', x: 1, y: 1 };
+            this.addGraphNodes = node;
+            // this.graph.addNode(post.uuid, {type: 'post', x: 1, y: 1});
+
+            if (t.type === 'showPost' && t.showTo.length) {
+              const showTo = t.showTo[0];
+              this.addGraphEdges = [
+                { source: author, target: post.uuid, attributes: { label: 'sent' } },
+                { source: post.uuid, target: showTo, attributes: { label: 'got' } }
+              ];
+            }
+            if (t.type === 'distributePost') {
+              console.warn('TODO distributePost to graph TASK', t);
+              // for (const showTo of t.showTo) {
+              //   const tmp: {source: string, target: string, attributes: any}[] = [];
+              //   let edgesSolved = 0;
+              //   this.graph.findEdge(author, post.uuid, (edge: string) => {
+              //     if (edge) {
+              //       console.log('edge already exist, add label', edge);
+              //       this.graph.setEdgeAttribute(edge, 'label', `${this.graph.getEdgeAttribute(edge, 'label')}, ${RelationType.Write}`);
+              //     } else {
+              //       tmp.push({source: author, target: post.uuid, attributes: { label: RelationType.Write}});
+              //       // const relation: Relation = {
+              //       //   source: author,
+              //       //   target: post.uuid,
+              //       //   label: RelationType.Write
+              //       // }
+              //       // this.game.relations.push(relation);
+              //     }
+              //     edgesSolved++;
+              //     if (edgesSolved === 2) {
+              //       this.addGraphEdges = tmp;
+              //     }
+              //   });
+              //   this.graph.findEdge(post.uuid, showTo, (edge: string) => {
+              //     if (edge) {
+              //       this.graph.setEdgeAttribute(edge, 'label', `${this.graph.getEdgeAttribute(edge, 'label')}, ${RelationType.Get}`);
+              //     } else {
+              //       tmp.push({source: post.uuid, target: showTo, attributes: {label: RelationType.Get}});
+              //       
+              //     }
+              //   })
+              // }
+
+            }
+          }
+
+        }
+        // console.log('POST TO ADD', post);
+        // const record = {};
+        // (record as any)[post.uuid as string] = {type: 'post', x: 1, y: 1};
+        // console.log('add node record', record);
+        // this.addGraphNodes = record;
+      }
+    }
+
+    console.log('some posts?', game.posts);
+  }
+
   // TODO !!! -> ONLY SERVER CAN TRIGGER LEAVING (should know if the controlled game instance stoped)
   // private notifyUsersAboutLeaving(e: BeforeUnloadEvent): void {
   //   // send message to deactivate controller of this instance of game being controlled
@@ -274,7 +277,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private socketMessageHandler(e: SocketEvent): void {
     switch (e.type) {
       case 'game':
-        console.log('game from server', e.data);
+        // console.log('game from server', e.data);
         if (e.data && e.data.uuid) this.gameService.gameSubject.next(e.data); // TODO: update game, not replace
         break;
       case 'message':
@@ -286,7 +289,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   private socketCommandsHandler(c: SocketCommand): void {
-    console.log('socketCommand', c);
+    // console.log('socketCommand', c);
     switch (c.command) {
       case 'highlight-graph-user':
         // TODO: not a nice solution :/
@@ -313,8 +316,8 @@ export class GameComponent implements OnInit, OnDestroy {
         break;
       case 'highlight-graph-path':
         const path = c.data.path;
-        console.log('TODO: highlight-graph-path', path);
-        console.warn('debug');
+        // console.log('TODO: highlight-graph-path', path);
+        // console.warn('debug');
         this.clearConnectionsHighlight = true;
         this.highlightUsersConnection = undefined;
         let i = 0;

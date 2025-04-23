@@ -20,13 +20,16 @@
 <!-- HEROS' PROFILE --> 
 @if(game) {
     <div class="hero">
-        @if(!game.hero) {
-            <h2>Choose Your Hero...</h2>
-        }
-        @if(game.hero) {
-            <h2>Your Hero</h2>
-            <app-user [user]="getUserById(game.hero)"></app-user>
-        }
+        <div class="hero-profile">
+            @if(!game.hero) {
+                <h2>Choose Your Hero...</h2>
+            }
+            @if(game.hero) {
+                <h2>Your Hero</h2>
+                <app-user [user]="getUserById(game.hero)"></app-user>
+            }
+        </div>
+        <!-- <div class="blender"></div> -->
     </div>
 }  
 
