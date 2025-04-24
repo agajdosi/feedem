@@ -225,26 +225,27 @@ export class GameComponent implements OnInit, OnDestroy {
     switch (c.command) {
       case 'highlight-graph-user':
         // TODO: not a nice solution :/
-        this.clearUsersHighlight = true;
-        this.clearConnectionsHighlight = true;
-        setTimeout(() => {
-          this.highlightUser = c.data.userId;
-          this.clearUsersHighlight = false;
-          this.clearConnectionsHighlight = false;
-          const connections: string[] = [];
-          this.graph.findEdge(c.data.userId, (edge: string, attributes: any) => {
-            // console.log('user connection to highlight', edge);
-            connections.push(edge);
-          });
-          if (connections.length) {
-            let i = 0;
-            const add = setInterval(() => {
-              if (i > connections.length) clearInterval(add);
-              this.highlightUsersConnection = connections[i];
-              i++;
-            }, 10);
-          }
-        }, 100);        
+        this.highlighGraphUser(c.data.userId, true);
+        // this.clearUsersHighlight = true;
+        // this.clearConnectionsHighlight = true;
+        // setTimeout(() => {
+        //   this.highlightUser = c.data.userId;
+        //   this.clearUsersHighlight = false;
+        //   this.clearConnectionsHighlight = false;
+        //   const connections: string[] = [];
+        //   this.graph.findEdge(c.data.userId, (edge: string, attributes: any) => {
+        //     // console.log('user connection to highlight', edge);
+        //     connections.push(edge);
+        //   });
+        //   if (connections.length) {
+        //     let i = 0;
+        //     const add = setInterval(() => {
+        //       if (i > connections.length) clearInterval(add);
+        //       this.highlightUsersConnection = connections[i];
+        //       i++;
+        //     }, 10);
+        //   }
+        // }, 100);        
         break;
       case 'highlight-graph-path':
         const path = c.data.path;
@@ -272,11 +273,13 @@ export class GameComponent implements OnInit, OnDestroy {
           
         }
         setTimeout(() => highlightEdge(), 10);
+        this.highlighGraphUser(path[path.length - 1]);
+        // this.highlightUser = path[path.length - 1];
         break;
       case 'select-hero':
         this.gameService.setHero(c.data.userId);
         console.log('SELECT HERO', c.data.userId);
-        this.selectUser = c.data.userId;
+        this.selectHero();
         break;
       case 'update-game':
         this.gameService.gameSubject.next(c.data.game);
@@ -299,6 +302,8 @@ export class GameComponent implements OnInit, OnDestroy {
           edges.push({source: comment.uuid, target: comment.parent, attributes: { label: RelationType.Comment}})
           // add to graph
           this.addGraphEdges = edges;
+          // rehighlight hero
+          this.selectHero();
         }
         
         
@@ -323,7 +328,8 @@ export class GameComponent implements OnInit, OnDestroy {
                 // this.graph.setEdgeAttribute(edge, 'label', `${reaction.value}`);
                 // // this.highlightUsersConnection = edge;
                 // this.addGraphEdges = [];
-
+                // rehighlight hero
+                this.selectHero();
               }
             })
           }
@@ -346,6 +352,7 @@ export class GameComponent implements OnInit, OnDestroy {
             edges.push({source: post.uuid, target: readerId, attributes: {label: RelationType.Get}})
           }
           this.addGraphEdges = edges;
+          this.selectHero();
         } else {
           console.error('POST NOT FOUND', task.showPost);
         }
@@ -356,12 +363,45 @@ export class GameComponent implements OnInit, OnDestroy {
         console.log('recieved socket command', c);
     }
   }
+  
 
   userFollow(userId: string): string[] {
     return this.gameService.userIsFollowing(this.graph, userId);
   }
   userIsFollowed(userId: string): string[] {
     return this.gameService.userIsFollowed(this.graph, userId);
+  }
+
+  private highlighGraphUser(userId: string, withConnections: boolean = false): void {
+    this.clearUsersHighlight = true;
+    this.clearConnectionsHighlight = true;
+    setTimeout(() => {
+      this.highlightUser = userId;
+      this.clearUsersHighlight = false;
+      this.clearConnectionsHighlight = false;
+      if (withConnections) {
+        const connections: string[] = [];
+        this.graph.findEdge(userId, (edge: string, attributes: any) => {
+          // console.log('user connection to highlight', edge);
+          connections.push(edge);
+        });
+        if (connections.length) {
+          let i = 0;
+          const add = setInterval(() => {
+            if (i > connections.length) clearInterval(add);
+            this.highlightUsersConnection = connections[i];
+            i++;
+          }, 10);
+        }
+      }
+      
+    }, 10);
+  }
+
+  private selectHero(): void {
+    // rehighlight hero
+    this.selectUser = undefined;
+    setTimeout(() => this.selectUser = this.gameService.getHero().uuid, 1);
   }
 
   saveGame(): void {
