@@ -76,6 +76,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private gameControllableSub: Subscription = new Subscription();
   private gameSub: Subscription = new Subscription();
   private buildedFromUpdate: boolean = false;
+  private heroSelected: boolean = false;
 
   renderNode = this.createNodeRenderer();
   renderEdge = this.createEdgeRenderer();
@@ -117,6 +118,7 @@ export class GameComponent implements OnInit, OnDestroy {
             // this.buildGraphDataFromGame(this.game);
             if (!this.buildedFromUpdate) {
               this.buildGraphDataFromGame(this.game);
+              // this.selectHero();
               console.log('build graph with relations.length', game.relations.length);
             }
             this.buildedFromUpdate = true;
@@ -182,7 +184,10 @@ export class GameComponent implements OnInit, OnDestroy {
     if (!this.graph) console.log('graphInitialised', graph);
     if (this.graph) console.log('graphUpdated', graph);
     if (graph) this.graph = graph;
-    if (this.game.hero) this.selectHero();
+    if (this.game.hero) {
+      // console.log('graph updated -> se')
+      this.selectHero();
+    }
   }
 
   private buildGraphDataFromGame(game: Game): void {
@@ -288,7 +293,7 @@ export class GameComponent implements OnInit, OnDestroy {
           // add to graph
           this.addGraphEdges = edges;
           // rehighlight hero
-          this.selectHero();
+          // this.selectHero();
         }
         
         
@@ -314,7 +319,7 @@ export class GameComponent implements OnInit, OnDestroy {
                 // // this.highlightUsersConnection = edge;
                 // this.addGraphEdges = [];
                 // rehighlight hero
-                this.selectHero();
+                // this.selectHero();
               }
             })
           }
@@ -337,7 +342,7 @@ export class GameComponent implements OnInit, OnDestroy {
             edges.push({source: post.uuid, target: readerId, attributes: {label: RelationType.Get, colors: { label: 0xdddddd} }})
           }
           this.addGraphEdges = edges;
-          this.selectHero();
+          // this.selectHero();
         } else {
           console.error('POST NOT FOUND', task.showPost);
         }
@@ -391,13 +396,19 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   private selectHero(): void {
+    if (this.heroSelected) return;
     // rehighlight hero
     this.clearUserSelection = true;
+    this.clearUsersHighlight = true;
+    this.clearConnectionsHighlight = true;
     this.selectUser = undefined;
     setTimeout(() => {
       this.selectUser = this.gameService.getHero().uuid;
       this.clearUserSelection = false;
-    }, 1);
+      this.clearUsersHighlight = false;
+      this.clearConnectionsHighlight = false;
+      // this.heroSelected = true;
+    }, 1000);
   }
 
   saveGame(): void {
