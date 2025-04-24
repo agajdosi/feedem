@@ -1,7 +1,7 @@
 @if(game && canControl) {
     <div class="controls">
         @if(!game.hero) {
-            <h2>Choose Hero</h2>
+            <h2>Choose the user to manage</h2>
         }
         @if(!isAnyOpenTask() && game.hero) {
             Waiting for task...
