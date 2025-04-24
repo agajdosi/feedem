@@ -35,7 +35,7 @@ export class GraphEdge extends EdgeWrapper {
             } else {
                 this.drawDash(g, pos.source.x, pos.source.y, pos.target.x, pos.target.y)
                 .stroke({
-                    color: 0xdddddd,
+                    color: 0x666666,
                     pixelLine: false,
                     width: strokeWidth
                 });
