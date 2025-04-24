@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 // router
 import { ActivatedRoute } from '@angular/router';
 // models
-import { Game, Reaction, Comment, Task } from '../../models/game';
+import { Game, Reaction, Comment, Task, User } from '../../models/game';
 // components
 import { UserComponent } from '../user/user.component';
 import { OnScreenComponent } from '../on-screen/on-screen.component';
@@ -246,6 +246,14 @@ export class ControllerComponent implements OnInit, OnDestroy {
   onPathToTarget(path: string[]): void {
     console.log('path to target', path);
     this.pathToTarget = path;
+  }
+
+  usersByNeighbours(): User[] {
+    return this.game.users.sort((a: User, b: User) => {
+      const neigboursA = this.socialGraph.neighbors(a.uuid).length;
+      const neigboursB = this.socialGraph.neighbors(b.uuid).length;
+      return neigboursA - neigboursB;
+    });
   }
 
   // userConnections(userId: string): string[] {
