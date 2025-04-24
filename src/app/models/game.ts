@@ -102,7 +102,7 @@ export interface Comment {
 export interface Relation {
     source: string,
     target: string,
-    label: RelationType
+    label: RelationType | string
 }
 
 export interface Game {
