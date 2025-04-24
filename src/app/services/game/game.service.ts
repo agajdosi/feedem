@@ -60,6 +60,8 @@ export class GameService {
     });
   }
 
+  // MARK: GRAPH
+
   userIsFollowing(graph: Graph, userId: string): string[] {
     if (!graph || !graph.nodes().length) return [];
     const follow = graph.filterOutNeighbors(userId, (neigbour: string, attributes: any) => attributes.type === 'user');
@@ -73,6 +75,10 @@ export class GameService {
     if (follow.length) return follow;
     return [];
   }
+
+  // addCommentToGraph(graph: Graph, comment: Comment) {} // <- TODO: will create node + edges
+
+  // MARK: GAME
 
   private startGameTime(): void {
     let startTime = 0;
@@ -109,6 +115,8 @@ export class GameService {
     }
     return game;
   }
+
+  // MARK: TASK
 
   /** Generate a new task for the game. This is basically a next round of the game. Next post to solve.
    * 1. REACT TO OLD TASK - First we take the taskDone and we ask all targeted users (taskDone.showTo) to react to the post (taskDone.showPost).
