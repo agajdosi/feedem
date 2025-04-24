@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User, Post, Game , Reaction, TaskType, Task, View, Comment} from '../../models/game';
+import { User, Post, Game , Reaction, TaskType, Task, Relation, RelationType, Comment} from '../../models/game';
 import { LlmsService } from '../llms/llms.service';
 // http client
 import { HttpClient } from '@angular/common/http';
@@ -161,7 +161,10 @@ export class GameService {
         } else {
           console.log(`ℹ️ ${user.name} ${user.surname} did not comment`);
         }
+        // expensive
+        // this.gameSubject.next(this.game);
       }
+      
     }
 
     // GENERATE NEW TASK
@@ -172,9 +175,18 @@ export class GameService {
     } else {
       task = await this.createTaskShowPost();
     }
+
+    
   
     this.game.tasks.unshift(task);
-    // this.onTask.next(task);
+
+    // MARK: BUG
+    // description: if I try to notify users here about new task, it's late for game -> this logic is in task.component :/ and works there
+    // if (taskDone && task.showPost) {
+      // create post relations
+      // this.createPostRelations(taskDone);
+      // this.onTask.next(taskDone);
+    // }
     this.gameSubject.next(this.game);
   }
 
@@ -251,6 +263,25 @@ export class GameService {
     return this.game.posts.find(post => postId === post.uuid)!;
   }
 
+  createPostRelations(task: Task): void {
+    // create relations
+    const post = this.getPost(task.showPost);
+    const relationToAuthor: Relation = {
+      source: post.author,
+      target: post.uuid,
+      label: RelationType.Write
+    }
+    this.game.relations.push(relationToAuthor);
+    
+    for (const showTo of task.showTo) {
+      const relation: Relation = {
+        source: post.uuid,
+        target: showTo,
+        label: RelationType.Get
+      }
+      this.game.relations.push(relation);
+    }
+  }
   // MARK: COMMENT
   getComment(commentId: string): Comment {
     return this.game.comments.find(comment => commentId === comment.uuid)!;
