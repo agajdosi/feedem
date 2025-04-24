@@ -21,6 +21,7 @@ export class ScoreComponent {
     return `${this.datePipe.transform(this._time, 'EEEE, MMMM d, y, H:mm:ss')}:${timeString.substring(timeString.length - 3)}`;
   }
   private _time: number = 0;
+  public gameMode: string = 'endless';
   private gameSub: Subscription = new Subscription();
   private timeSub: Subscription = new Subscription();
   constructor(

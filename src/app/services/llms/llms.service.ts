@@ -210,6 +210,7 @@ export class LlmsService {
           author_surname: post.author,
           post_text: post.text,
           reasoning: view._reasoning,
+          dialect: user.dialect,
         }
       })
     })
@@ -239,6 +240,8 @@ export class LlmsService {
       parent: post.uuid,
       parent_type: CommentParentType.Post,
       text: comment_text,
+      f_created: Date.now(),
+      r_created: Date.now(),
     };
     return comment;
   }
@@ -255,6 +258,8 @@ export class LlmsService {
       parent: comment.uuid,
       parent_type: CommentParentType.Comment,
       text: 'This is a dummy comment',
+      f_created: Date.now(),
+      r_created: Date.now(),
     };
     return c;
   }

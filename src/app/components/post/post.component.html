@@ -1,14 +1,12 @@
 @if(post) {
     <div class="post-header">
-        <div class="user-profile-picture">
+        <div class="user-profile-picture-medium">
             <img [src]="author.profile_picture" alt="">
         </div>
-        <div class="post-author">
+        <div class="post-right">
             <h3>{{author.name}} {{author.surname}}</h3>
+            <div class="created"><small>{{post.created | date: 'dd/MM/yy, hh:mm'}}</small></div>
         </div>
-    </div>
-    <div class="post-meta">
-        <div class="created"><small>{{post.created | date: 'M/d/yy, h:mm a'}}</small></div>
     </div>
     <div class="post-text">
         {{post.text}}
