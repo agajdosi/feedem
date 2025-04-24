@@ -12,7 +12,14 @@ export class GraphNode extends NodeWrapper {
     private profilePicture!: Sprite;
     private type: string = '';
 
-    private nodeInitialised: boolean = false;
+
+    private userNodeInitialised: boolean = false;
+    private userNodeContainer: Container = new Container();
+    private userNodeMask: Graphics = new Graphics();
+    private postNodeSvg: Graphics = new Graphics().svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 13.24"><path d="M0,13.24h13.24v-3.31H0v3.31ZM0,8.28h19.86v-3.31H0v3.31ZM0,3.31h19.86V0H0v3.31Z" style="fill:#ddd; stroke-width:0px;"/></svg>`);
+    private postNodeInitialised: boolean = false;
+    private commentNodeSvg: Graphics = new Graphics().svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 19.86"><polygon points="15.16 8.28 7.5 8.28 12.45 3.32 10.23 1.09 1.39 9.93 10.23 18.77 12.45 16.54 7.51 11.59 15.16 11.59 15.16 16.49 18.47 16.49 18.47 11.59 18.47 8.28 15.16 8.28" style="fill:#ddd; stroke-width:0px;"/></svg>`);
+    private commentNodeInitialised: boolean = false;
 
     private customColors: GraphColors = {
         fill: 0xdddddd,
@@ -59,55 +66,69 @@ export class GraphNode extends NodeWrapper {
         } else {
             this.container.zIndex = 0;
         }
+        // USER
         if (this.type && this.type === 'user') {
             g.circle(0, 0, this.radius())
                 .stroke({
-                    color: this.select ? this.defaultNodeColors.selection : (this.highlight ? this.defaultNodeColors.highlight : this.defaultNodeColors.stroke),
-                    width: this.attributes && this.attributes.strokeWidth ? this.attributes.strokeWidth : 10
+                    color: 0xdddddd, // this.select ? this.defaultNodeColors.selection : (this.highlight ? this.defaultNodeColors.highlight : this.defaultNodeColors.stroke),
+                    width: this.select || this.highlight ? 10 : 10, // this.attributes && this.attributes.strokeWidth ? this.attributes.strokeWidth : 10
                 });
             if (this.highlight || this.select) {
                 g.parent.scale = 1.5;
             } else {
                 g.parent.scale = 1;
             }
-            if (this.profilePicture && !this.nodeInitialised) {
-                this.profilePicture.width = (this.radius() * 2) + 10;
-                this.profilePicture.height = (this.radius() * 2) + 10;
-                this.profilePicture.x = (this.radius() + 5) * (-1);
-                this.profilePicture.y = (this.radius() + 5) * (-1);
+            if (this.profilePicture) {
                 // const grayscale = new GrayscaleFilter();
                 // this.profilePicture.filters = this.select || this.highlight ? [] : [grayscale];
-                // this.profilePicture.position = {x: this.profilePicture.x - this.profilePicture.width / 2, y: this.profilePicture.y - this.profilePicture.height / 2}
-                const container = new Container();
-                container.width = g.parent.width;
-                container.height = g.parent.height;
-                g.parent.addChild(container);
-                
-                container.addChild(this.profilePicture);
-                const mask = new Graphics();
-                mask.circle(0, 0, this.radius() + 5)
+                if (!this.userNodeInitialised) {
+                    this.userNodeContainer.width = g.parent.width;
+                    this.userNodeContainer.height = g.parent.height;
+                    this.profilePicture.width = (this.radius() * 2) + 10;
+                    this.profilePicture.height = (this.radius() * 2) + 10;
+                    this.profilePicture.x = (this.radius() + 5) * (-1);
+                    this.profilePicture.y = (this.radius() + 5) * (-1);
+                    g.parent.addChild(this.userNodeContainer);
+                    this.userNodeContainer.addChild(this.profilePicture);
+                    this.userNodeContainer.addChild(this.userNodeMask);
+                    this.userNodeContainer.mask = this.userNodeMask;
+                    this.userNodeMask.circle(0, 0, this.radius() + 5)
                     .fill({
                         color: this.defaultNodeColors.fill
                     });
-                container.addChild(mask);
-                container.mask = mask;
-                this.nodeInitialised = true; 
-                // console.log('only once this should appear for', g);
+                    this.userNodeInitialised = true; 
+                }
             }
         }
         // TODO: type comment, post
         // ...
+        // POST
         if (this.type && this.type === 'post') {
-            g.circle(0, 0, this.radius() / 2)
+            g.circle(0, 0, this.radius() + 3)
                 .fill({
-                    color: 0xff0000,
+                    color: 0x000000,
                 });
+            if (!this.postNodeInitialised) {
+                g.parent.addChild(this.postNodeSvg);
+                this.postNodeInitialised = true;
+            }
+            this.postNodeSvg.x = g.x - (g.width / 4);
+            this.postNodeSvg.y = g.y - (g.height / 4);
+            this.postNodeSvg.scale = .9;
         }
+        // COMMENT
         if (this.type && this.type === 'comment') {
-            g.circle(0, 0, this.radius() / 2)
+            g.circle(0, 0, this.radius() + 3)
                 .fill({
-                    color: 0x00ff00,
+                    color: 0x000000,
                 });
+            if (!this.commentNodeInitialised) {
+                g.parent.addChild(this.commentNodeSvg);
+                this.commentNodeInitialised = true;
+            }
+            this.commentNodeSvg.x = g.x - (g.width / 4);
+            this.commentNodeSvg.y = g.y - (g.height / 4);
+            // this.commentNodeSvg.scale = .9;
         } 
     }
 
@@ -131,7 +152,7 @@ export class GraphNode extends NodeWrapper {
 
     private radius(): number {
         const size = this.attributes.radius ? this.attributes.radius : 10;
-        const result = this.highlight ? (size + (size * .2)) : size;
+        const result = this.highlight || this.select ? (size + (size * .2)) : size;
         return result /* + (result * .8) */;
     }
 }
