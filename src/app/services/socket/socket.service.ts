@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Game } from '../../models/game';
 // socket.io
 import { io, Socket } from 'socket.io-client';
 // rxjs
@@ -78,6 +79,12 @@ export class SocketService {
   sendSocketMessage(value: any): void {
     this.socket.emit('message', value);
     // console.log('send message', value);
+  }
+
+  saveGameOnServer(game: Game): void {
+    if (!game) return;
+    console.warn('SAVING GAME TO SERVER...');
+    this.socket.emit('save_game', game);
   }
 
   destroy(): void {

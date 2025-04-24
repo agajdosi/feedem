@@ -51,7 +51,11 @@ export class TaskComponent implements OnInit, OnDestroy {
     // get task posts
     this.posts = this.task.posts.map(postId => this.gameService.getPost(postId));
     console.log('posts', this.posts);
-    // this.graph = this.
+    // TODO
+    // save game whenever a new task is initialised (previous task was completed, if this will stay open, will see what happen)
+    if (this.gameService.game) {
+      this.socketService.saveGameOnServer(this.gameService.game);
+    }
   }
 
   ngOnDestroy(): void {
@@ -160,6 +164,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.task.completed = true;
     this.gameService.nextTask(this.task);
     this.notifyPeers();
+    // BUG: DON'T KNOW WHY, BUT HERE THE NOTIFICATION ABOUT TASK WORKS FOR THE GAME, NOR IN GAME.SERVICE
+    this.gameService.createPostRelations(this.task);
     this.gameService.onTask.next(this.task);
   }
 
