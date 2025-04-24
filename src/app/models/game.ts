@@ -46,7 +46,8 @@ export interface User {
     profile_picture: string,
     role: string,
     memory: Memory,
-    big_five: BigFive
+    big_five: BigFive,
+    dialect: string,
 }
 
 /* BigFive quantify users' psychological profile (numbers are floats 0-1) */

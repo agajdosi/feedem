@@ -15,6 +15,7 @@
             "occupation": "HR Consultant",
             "profile_picture": "male/7.jpg",
             "surname": "Jurečka",
+            "dialect": "working class language, caps lock sometimes, often uses 'pyčo'",
             "traits": [
                 "Hates homophobes and transphobes.",
                 "Loves coal mining and social realism.",
@@ -52,6 +53,7 @@
             "occupation": "Graphic Designer",
             "profile_picture": "neutral/5.jpg",
             "surname": "Nguyen",
+            "dialect": "artsy pseudo-intellectualism",
             "traits": [
                 "Hates boomers.",
                 "Hates people from Prague."
@@ -87,6 +89,7 @@
             "occupation": "Medical Doctor",
             "profile_picture": "neutral/1.jpg",
             "surname": "Spývala",
+            "dialect": "elite language, medical jargon",
             "traits": [
                 "Loves critical thinking.",
                 "Is very critical.",
@@ -124,6 +127,7 @@
             "occupation": "Media Theorist",
             "profile_picture": "male/med_red.jpg",
             "surname": "Mayer",
+            "dialect": "highbrow, intellectual, pretentious, elitist, german philosophical terms",
             "traits": [
                 "Hates when somebody talks about media and is not theoretician.",
                 "They all are stupid!",
@@ -161,6 +165,7 @@
             "occupation": "Geo Engineer",
             "profile_picture": "female/11.jpg",
             "surname": "Crháková",
+            "dialect": "pretentiously neoromantic",
             "traits": [
                 "Hates transphobes.",
                 "Hates non-binary people (they are not trans).",
@@ -200,6 +205,7 @@
             "occupation": "Student",
             "profile_picture": "female/8.jpg",
             "surname": "Benda",
+            "dialect": "gen Z skibidi etc, often uses emojis",
             "traits": [
                 "Hates conservatism.",
                 "Hates boomers.",
@@ -237,6 +243,7 @@
             "occupation": "Data Analyst",
             "profile_picture": "female/3.jpg",
             "surname": "Peslová",
+            "dialect": "militant short sentences",
             "traits": [
                 "Hates football.",
                 "Hates and agressive fans.",
@@ -269,7 +276,7 @@
             }
         },
         {
-            "age": 36,
+            "age": 46,
             "bio": "Božena Demeterová likes her family, peace and order. She likes Prague for its multicultural atmosphere.",
             "gender": "woman",
             "name": "Božena",
@@ -277,6 +284,7 @@
             "occupation": "Senior QA",
             "profile_picture": "female/15.jpg",
             "surname": "Demeterová",
+            "dialect": "total boomer, old-fashioned, conservative, traditional",
             "traits": [
                 "Hates peasants.",
                 "Hates racisms.",
@@ -316,6 +324,7 @@
             "occupation": "Art Student",
             "profile_picture": "female/7.jpg",
             "surname": "Janků",
+            "dialect": "agressive manifesto style",
             "traits": [
                 "Hates boomers.",
                 "Hates conservatives.",
@@ -352,6 +361,7 @@
             "occupation": "Architect",
             "profile_picture": "female/older.jpg",
             "surname": "Marksová",
+            "dialect": "agressive total boomer",
             "traits": [
                 "Hates car activists.",
                 "Hates drivers.",
@@ -389,6 +399,7 @@
             "occupation": "Sales Manager",
             "profile_picture": "male/3.jpg",
             "surname": "Pivoda",
+            "dialect": "very basic irish accent",
             "traits": [
                 "Hates vegans.",
                 "Hates cyclists.",
@@ -426,6 +437,7 @@
             "occupation": "Truck Driver",
             "profile_picture": "male/9.jpg",
             "surname": "Horváth",
+            "dialect": "immigrant slang",
             "traits": [
                 "Hates racists, ego maniacs and unrespectful car drivers.",
                 "Loves cats, animals.",
@@ -462,6 +474,7 @@
             "occupation": "Teacher",
             "profile_picture": "male/12.jpg",
             "surname": "Schmiedt",
+            "dialect": "grammar nazi, Jane Austen like",
             "traits": [
                 "Hates communists.",
                 "Hates leftists.",
@@ -499,6 +512,7 @@
             "occupation": "IT Developer",
             "profile_picture": "male/4.jpg",
             "surname": "Cetl",
+            "dialect": "ignorant, narcistic tech-lingo all the time",
             "traits": [
                 "Hates communists.",
                 "Loves free market.",
@@ -536,6 +550,7 @@
             "occupation": "Police Officer",
             "profile_picture": "male/5.jpg",
             "surname": "Beneš",
+            "dialect": "half-baked cockney",
             "traits": [
                 "Violent and agressive person.",
                 "Hates activists.",
@@ -574,6 +589,7 @@
             "occupation": "Show Owner",
             "profile_picture": "male/bomer.jpg",
             "surname": "Michna",
+            "dialect": "london posh",
             "traits": [
                 "Loves his grandchildren, but they are green communists.",
                 "Hates ecology.",
@@ -612,6 +628,7 @@
             "occupation": "Hospital Nurse",
             "profile_picture": "male/0.jpg",
             "surname": "Otmar",
+            "dialect": "typos, bad grammar, bad spelling",
             "traits": [
                 "Hates gender stereotypes.",
                 "Hates right wing politics which cuts his incomes.",
@@ -648,6 +665,7 @@
             "occupation": "Construction Worker",
             "profile_picture": "male/10.jpg",
             "surname": "Kozák",
+            "dialect": "rural, working class",
             "traits": [
                 "Very progressive and supportive.",
                 "Very much dislikes conservatives and right-wingers.",
@@ -684,6 +702,7 @@
             "occupation": "Teacher",
             "profile_picture": "female/seniorka.jpg",
             "surname": "Doubková",
+            "dialect": "mega boomer, tries to be gen Z",
             "traits": [
                 "She comments all over the place.",
                 "Often comments about her family and dogs, completely offtopic.",
@@ -720,6 +739,7 @@
             "occupation": "Bureaucrat",
             "profile_picture": "female/0.jpg",
             "surname": "Dušková",
+            "dialect": "ignorantly boomer",
             "traits": [
                 "She's fallen for the misinformation.",
                 "She sees a conspiracy behind everything."
@@ -755,6 +775,7 @@
             "occupation": "Ambulance Driver",
             "profile_picture": "female/zhang.jpg",
             "surname": "Zhang",
+            "dialect": "depressed, critical, agressive, bad grammar",
             "traits": [
                 "Critical of everything.",
                 "Doesn't like anything.",
