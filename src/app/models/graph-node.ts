@@ -42,7 +42,7 @@ export class GraphNode extends NodeWrapper {
         if (attributes && attributes.type) {
             this.type = attributes.type;
         }
-        console.log('type', this.type);
+        // console.log('type', this.type);
         this.draw();
     }
 
