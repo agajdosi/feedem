@@ -294,7 +294,7 @@ app-score {
 
 app-comment {
     display: block;
-    padding-left: $space;
+    padding-left: calc($space/1.5);
     border-left: 1px solid $lightColor;
     padding-top: calc($space / 2);
     .comment-header {
@@ -302,9 +302,13 @@ app-comment {
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
+        margin-bottom: calc($space / 3);
         & > div {
             margin-right: calc($space / 2);
         }
+    }
+    h4 {
+        margin: 0;
     }
 }
 
