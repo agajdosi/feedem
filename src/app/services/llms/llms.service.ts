@@ -210,6 +210,7 @@ export class LlmsService {
           author_surname: post.author,
           post_text: post.text,
           reasoning: view._reasoning,
+          dialect: user.dialect,
         }
       })
     })
