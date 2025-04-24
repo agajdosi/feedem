@@ -302,7 +302,7 @@ export class GameComponent implements OnInit, OnDestroy {
           // create edges
           const edges = [];
           // author to comment
-          edges.push({source: author, target: comment.uuid, attributes: { label: RelationType.Write }});
+          edges.push({source: author, target: comment.uuid, attributes: { label: RelationType.Write, colors: { label: 0xdddddd} }});
           // comment to post
           edges.push({source: comment.uuid, target: comment.parent, attributes: { label: RelationType.Comment, colors: { label: 0xdddddd} }})
           // add to graph
