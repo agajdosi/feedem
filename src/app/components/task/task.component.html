@@ -1,6 +1,6 @@
 @if(task) {
     @if(task.type === 'distributePost') {
-        <h3>Select a post to distribute:</h3>
+        <h3>Select Users to distribute post:</h3>
         @if (showTo.length && showTo.length >= 2) {
             <div class="controls">
                 <button (click)="distribute()" class="distribute">Send Post</button>
@@ -31,8 +31,8 @@
             <button (click)="notShowAny()" class="decline">Not Show Any</button>
         </div>
         @for(post of posts; track post.uuid) {
-            <p>{{getPostPath(post.uuid).length - 1}} user targetd</p>
             <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
+                <p>{{getUserInvolved(post.uuid)}}</p>
                 <app-post [post]="post"></app-post>
             </div>
         }

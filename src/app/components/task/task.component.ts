@@ -63,6 +63,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   selectPost(postId: string): void {
+    if (!this.graph.nodes().length || !this.gameService.getHero()) return;
     const post = this.gameService.getPost(postId);
     if (!post) return; // couldn't happen
     this.selectedPostId = postId;
@@ -81,7 +82,8 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.completeTask();
   }
 
-  getPostPath(postId: string): string[] {
+  private getPostPath(postId: string): string[] {
+    if (!this.graph.nodes().length || !this.gameService.getHero()) return [];
     // console.log('getPostPath');
     const post = this.gameService.getPost(postId);
     if (!post) return []; // couldn't happen
@@ -135,7 +137,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     // send socket message to highlight on graph
     this.highlightedUser = userId;
     // compoute path from hero to this user
-    if (this.graph) {
+    if (this.graph.nodes().length) {
       // MARK: BUG
       // console.log('graph.nodes', this.graph.nodes());
       const path = bidirectional(this.graph, this.gameService.getHero().uuid, userId);
@@ -157,6 +159,11 @@ export class TaskComponent implements OnInit, OnDestroy {
     console.log('distribute post to users: ', this.showTo);
     this.task.showTo = this.showTo;
     this.completeTask();
+  }
+
+  getUserInvolved(postId: string): string {
+    const path = this.getPostPath(postId);
+    return `${path.length - 1} User${path.length - 1 > 1 ? 's' : ''} on path`;
   }
 
   private completeTask(): void {
