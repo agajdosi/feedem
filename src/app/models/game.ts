@@ -97,6 +97,8 @@ export interface Comment {
     parent_type: CommentParentType,
     author: string,
     text: string,
+    f_created: number, // fictional time of creation
+    r_created: number, // real time of creation (GMT)
 }
 
 export interface Relation {

@@ -3,8 +3,9 @@
         <div class="user-profile-picture-small">
             <img [src]="author.profile_picture" alt="">
         </div>
-        <div class="user-name">
+        <div class="comment-right">
             <h4>{{author.name}} {{author.surname}}</h4>
+            <div class="created"><small>{{comment.f_created | date: 'dd/MM/yy, hh:mm'}}</small></div>
         </div>
     </div>
     <div class="comment-text">
