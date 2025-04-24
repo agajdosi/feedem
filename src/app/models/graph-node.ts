@@ -16,9 +16,9 @@ export class GraphNode extends NodeWrapper {
     private userNodeInitialised: boolean = false;
     private userNodeContainer: Container = new Container();
     private userNodeMask: Graphics = new Graphics();
-    private postNodeSvg: Graphics = new Graphics().svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 13.24"><path d="M0,13.24h13.24v-3.31H0v3.31ZM0,8.28h19.86v-3.31H0v3.31ZM0,3.31h19.86V0H0v3.31Z" style="fill:#ddd; stroke-width:0px;"/></svg>`);
+    private postNodeSvg: Graphics = new Graphics().svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 19.86"><path d="M9.93,5.58l4.35,4.35-4.35,4.35-4.35-4.35,4.35-4.35M9.93.9L.9,9.94l9.03,9.03,9.03-9.03L9.93.9h0Z" style="fill:#e3e3e3; stroke-width:0px;"/></svg>`);
     private postNodeInitialised: boolean = false;
-    private commentNodeSvg: Graphics = new Graphics().svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 19.86"><polygon points="15.16 8.28 7.5 8.28 12.45 3.32 10.23 1.09 1.39 9.93 10.23 18.77 12.45 16.54 7.51 11.59 15.16 11.59 15.16 16.49 18.47 16.49 18.47 11.59 18.47 8.28 15.16 8.28" style="fill:#ddd; stroke-width:0px;"/></svg>`);
+    private commentNodeSvg: Graphics = new Graphics().svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 19.86"><path d="M9.93,5.58l4.35,4.35-4.35,4.35-4.35-4.35,4.35-4.35M9.93.9L.9,9.94l9.03,9.03,9.03-9.03L9.93.9h0Z" style="fill:#ddd; stroke-width:0px;"/></svg>`);
     private commentNodeInitialised: boolean = false;
 
     private customColors: GraphColors = {
@@ -104,30 +104,43 @@ export class GraphNode extends NodeWrapper {
         // ...
         // POST
         if (this.type && this.type === 'post') {
-            g.circle(0, 0, this.radius() + 3)
+            g.circle(0, 0, this.radius())
                 .fill({
                     color: 0x000000,
                 });
             if (!this.postNodeInitialised) {
                 g.parent.addChild(this.postNodeSvg);
+                this.postNodeSvg.rotation = this.degrees_to_radians(45);
+                // this.postNodeSvg.y = g.y; 
+                this.postNodeSvg.pivot = {x: this.postNodeSvg.width / 2, y: this.postNodeSvg.height / 2}
+                // this.postNodeSvg.pivot = {x: g.x - g.width / 2, y: g.y - g.height / 2}
+                
+                // this.postNodeSvg.x -=1;
+                this.postNodeSvg.y -=1;
+
                 this.postNodeInitialised = true;
             }
-            this.postNodeSvg.x = g.x - (g.width / 4);
-            this.postNodeSvg.y = g.y - (g.height / 4);
-            this.postNodeSvg.scale = .9;
+            // this.postNodeSvg.x = g.x - (g.width / 4);
+            // this.postNodeSvg.y = g.y - (g.height / 4);
+            // this.postNodeSvg.scale = .9;
         }
         // COMMENT
         if (this.type && this.type === 'comment') {
-            g.circle(0, 0, this.radius() + 3)
+            g.circle(0, 0, this.radius())
                 .fill({
                     color: 0x000000,
                 });
             if (!this.commentNodeInitialised) {
                 g.parent.addChild(this.commentNodeSvg);
+                this.commentNodeSvg.pivot = {x: this.commentNodeSvg.width / 2, y: this.commentNodeSvg.height / 2}
+                
+                this.commentNodeSvg.x -=1;
+                this.commentNodeSvg.y -=1;
+
                 this.commentNodeInitialised = true;
             }
-            this.commentNodeSvg.x = g.x - (g.width / 4);
-            this.commentNodeSvg.y = g.y - (g.height / 4);
+            // this.commentNodeSvg.x = g.x - (g.width / 4);
+            // this.commentNodeSvg.y = g.y - (g.height / 4);
             // this.commentNodeSvg.scale = .9;
         } 
     }
@@ -154,5 +167,13 @@ export class GraphNode extends NodeWrapper {
         const size = this.attributes.radius ? this.attributes.radius : 10;
         const result = this.highlight || this.select ? (size + (size * .2)) : size;
         return result /* + (result * .8) */;
+    }
+
+    private degrees_to_radians(degrees: number)
+    {
+      // Store the value of pi.
+      var pi = Math.PI;
+      // Multiply degrees by pi divided by 180 to convert to radians.
+      return degrees * (pi/180);
     }
 }
