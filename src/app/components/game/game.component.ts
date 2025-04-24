@@ -65,6 +65,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }> | null = null;
   private linkValidFrom: number = Date.now();
   private linkValidityInterval: any;
+  private snapToHeroInterval: any;
 
   snapToNode: string | undefined = undefined;
   snapToCenter: boolean = false;
@@ -74,6 +75,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private socketSub: Subscription = new Subscription();
   private gameControllableSub: Subscription = new Subscription();
   private gameSub: Subscription = new Subscription();
+  private buildedFromUpdate: boolean = false;
 
   renderNode = this.createNodeRenderer();
   renderEdge = this.createEdgeRenderer();
@@ -93,6 +95,11 @@ export class GameComponent implements OnInit, OnDestroy {
     this.linkValidityInterval = setInterval(() => {
       this.linkValidFrom = Date.now();
     }, 60 * 1000);
+    // this.snapToHeroInterval = setInterval(() => {
+    //   if (this.game && this.game.hero) {
+    //     this.snapToUser(this.game.hero);
+    //   }
+    // }, 10 * 1000);
     // window.addEventListener('beforeunload', this.notifyUsersAboutLeaving.bind(this));
     // this.socketService.sendSocketMessage({
     //   command: 'deactivate-controller-of',
@@ -107,14 +114,25 @@ export class GameComponent implements OnInit, OnDestroy {
           if (this.game/*  && game.updated > this.game.updated */) {
             // sync graph with new game (posts, comments, reactions)
             this.syncGraphWithGame(game);
-
+            // this.buildGraphDataFromGame(this.game);
+            if (!this.buildedFromUpdate) {
+              this.buildGraphDataFromGame(this.game);
+              console.log('build graph with relations.length', game.relations.length);
+            }
+            this.buildedFromUpdate = true;
           } else {
             
-            this.buildGraphDataFromGame(game); 
             // set new game object
-            this.game = game;           
+            this.game = game;
+            console.log('updated game relations.length', game.relations.length);      
           }
           //console.warn('GOT GAME, IS HERO?', this.game.hero);
+          if (this.game.hero) {
+            setTimeout(() => {
+              this.snapToUser(this.game.hero);
+            }, 10 * 1000);
+          }
+          
         }
       }
     })
@@ -139,6 +157,8 @@ export class GameComponent implements OnInit, OnDestroy {
     this.socketSub.unsubscribe();
     this.gameControllableSub.unsubscribe();
     this.gameSub.unsubscribe();
+    clearInterval(this.snapToHeroInterval);
+    clearInterval(this.linkValidityInterval);
   }
 
   requestGameControl(): void {
@@ -184,22 +204,6 @@ export class GameComponent implements OnInit, OnDestroy {
     // update game object
     this.gameService.updateGame(this.game, game);
   }
-
-  // TODO !!! -> ONLY SERVER CAN TRIGGER LEAVING (should know if the controlled game instance stoped)
-  // private notifyUsersAboutLeaving(e: BeforeUnloadEvent): void {
-  //   // send message to deactivate controller of this instance of game being controlled
-  //   e.preventDefault();
-  //   console.log('BEFOREUNLOAD', e);
-  //   this.socketService.sendSocketMessage({
-  //     command: 'deactivate-controller-of',
-  //     data: {
-  //       userId: this.socketService.socketId
-  //     }
-  //   });
-  //   // e.preventDefault();
-  //   // return 'Test';
-  // }
-
   private createNodeRenderer() {
     return ({ attributes, position }: any) => {
       return new GraphNode(position, attributes);
@@ -380,8 +384,10 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   private snapToUser(userId: string): void {
+    console.log('snap to user', userId);
     this.snapToCenter = false;
-    this.snapToNode = userId;
+    this.snapToNode = undefined;
+    setTimeout(() => this.snapToNode = userId, 100);
   }
 
   private selectHero(): void {
