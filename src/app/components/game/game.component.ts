@@ -54,6 +54,7 @@ export class GameComponent implements OnInit, OnDestroy {
   highlightUsersConnection: string | undefined = undefined;
   selectUser: string | undefined = undefined;
   clearUsersHighlight: boolean = false;
+  clearUserSelection: boolean = false;
   clearConnectionsHighlight: boolean = false;
   graph!: Graph;
   addGraphNodes: Record<string, any> = {}
@@ -351,9 +352,9 @@ export class GameComponent implements OnInit, OnDestroy {
           this.addGraphNodes = node;
           // create edges
           const edges = [];
-          edges.push({source: author, target: post.uuid, attributes: {label: RelationType.Write }});
+          edges.push({source: author, target: post.uuid, attributes: {label: RelationType.Write, colors: { label: 0xdddddd} }});
           for (const readerId of task.showTo) {
-            edges.push({source: post.uuid, target: readerId, attributes: {label: RelationType.Get}})
+            edges.push({source: post.uuid, target: readerId, attributes: {label: RelationType.Get, colors: { label: 0xdddddd} }})
           }
           this.addGraphEdges = edges;
           this.selectHero();
@@ -409,8 +410,12 @@ export class GameComponent implements OnInit, OnDestroy {
 
   private selectHero(): void {
     // rehighlight hero
+    this.clearUserSelection = true;
     this.selectUser = undefined;
-    setTimeout(() => this.selectUser = this.gameService.getHero().uuid, 1);
+    setTimeout(() => {
+      this.selectUser = this.gameService.getHero().uuid;
+      this.clearUserSelection = false;
+    }, 1);
   }
 
   saveGame(): void {
