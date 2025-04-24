@@ -65,6 +65,9 @@ export class GameComponent implements OnInit, OnDestroy {
   private linkValidFrom: number = Date.now();
   private linkValidityInterval: any;
 
+  snapToNode: string | undefined = undefined;
+  snapToCenter: boolean = false;
+
   game!: Game;
 
   private socketSub: Subscription = new Subscription();
@@ -279,6 +282,7 @@ export class GameComponent implements OnInit, OnDestroy {
       case 'select-hero':
         this.gameService.setHero(c.data.userId);
         console.log('SELECT HERO', c.data.userId);
+        this.snapToUser(this.gameService.getHero().uuid);
         this.selectHero();
         break;
       case 'update-game':
@@ -396,6 +400,11 @@ export class GameComponent implements OnInit, OnDestroy {
       }
       
     }, 10);
+  }
+
+  private snapToUser(userId: string): void {
+    this.snapToCenter = false;
+    this.snapToNode = userId;
   }
 
   private selectHero(): void {
