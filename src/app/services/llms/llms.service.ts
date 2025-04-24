@@ -18,7 +18,7 @@ export class LlmsService {
    * TODO: implement more self-reflective memory system instead of recentActivity based on linear history.
    * Define the prompts at: https://phoenix.lab.gajdosik.org
    */
-  async generatePost(user: User, recentActivity: string): Promise<Post> {
+  async generatePost(user: User, recentActivity: string, ftime: number): Promise<Post> {
     const body = JSON.stringify({
       prompt_identifier: "feedem_generate_post",
       prompt_variables: {
@@ -31,7 +31,7 @@ export class LlmsService {
         country: user.residence.country,
         occupation: user.occupation,
         traits: user.traits.join(', '),
-        timestring: new Date().toISOString(), // TODO: use ingame fictional time
+        timestring: new Date(ftime).toISOString(),
         recent_activity: recentActivity,
         memory_string: "", // TODO: contruct memory of previous posts
         dialect: user.dialect,
@@ -180,13 +180,13 @@ export class LlmsService {
   /**
    * Decide whether the user will comment on the post they have just seen.
    */
-  async decideComment(view: View, user: User, post: Post): Promise<Comment | null> {
+  async decideComment(view: View, user: User, post: Post, ftime: number): Promise<Comment | null> {
     const roll = Math.random();
     if (roll > view.commentUrge) {
       return null;
     }
 
-    const comment = await this.generateCommentUnderPost(user, post, view);
+    const comment = await this.generateCommentUnderPost(user, post, view, ftime);
     return comment;
   }
 
@@ -194,7 +194,7 @@ export class LlmsService {
   /** Generate a comment by user under a post, based on the previously generated reflection and rating of the post by the user. 
    * TODO: provide info if Reaction was done by the user or not. Actually provide also info about other users reactions.
   */
-  async generateCommentUnderPost(user: User, post: Post, view: View): Promise<Comment> {
+  async generateCommentUnderPost(user: User, post: Post, view: View, ftime: number): Promise<Comment> {
     const genURL  = `${environment.aigenburgAPI}/generate`;
     // 1. REFLECT - think about the post
     const response = await fetch(genURL, {
@@ -240,7 +240,7 @@ export class LlmsService {
       parent: post.uuid,
       parent_type: CommentParentType.Post,
       text: comment_text,
-      f_created: Date.now(),
+      f_created: ftime,
       r_created: Date.now(),
     };
     return comment;

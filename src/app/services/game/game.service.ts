@@ -23,10 +23,10 @@ export class GameService {
 
   gameTime: Subject<number> = new Subject();
 
-  get time(): number {
+  private _time: number = 0;
+  get_ftime(): number {
     return this._time;
   }
-  private _time: number = 0;
 
   get game(): Game {
     return this._game;
@@ -153,7 +153,7 @@ export class GameService {
           console.log(`ℹ️ ${user.name} ${user.surname} did not react`);
         }
 
-        const comment = await this.llmsService.decideComment(view, user, post);
+        const comment = await this.llmsService.decideComment(view, user, post, this.get_ftime());
         if (comment) {
           this.game.comments.unshift(comment);
           this.onComment.next(comment);
@@ -193,7 +193,7 @@ export class GameService {
   async createTaskDistributePost(): Promise<Task> {
     const postAuthor = this.getHero()!;
     const recentActivity: string = describeRecentActivity(postAuthor, this.game.posts, this.game.comments, this.game.reactions);
-    const post = await this.llmsService.generatePost(postAuthor, recentActivity); // TODO: send history of the user's posts to the LLM
+    const post = await this.llmsService.generatePost(postAuthor, recentActivity, this.get_ftime());
     this.game.posts.unshift(post);
 
     const task: Task = {
@@ -214,7 +214,7 @@ export class GameService {
     let posts: Post[] = [];
     for (const author of authors) {
       const recentActivity: string = describeRecentActivity(author, this.game.posts, this.game.comments, this.game.reactions);
-      const post = await this.llmsService.generatePost(author, recentActivity);
+      const post = await this.llmsService.generatePost(author, recentActivity, this.get_ftime());
       this.game.posts.unshift(post);
       posts.unshift(post);
     }
