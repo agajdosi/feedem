@@ -114,6 +114,7 @@ export class GameComponent implements OnInit, OnDestroy {
             // set new game object
             this.game = game;           
           }
+          //console.warn('GOT GAME, IS HERO?', this.game.hero);
         }
       }
     })
@@ -161,12 +162,13 @@ export class GameComponent implements OnInit, OnDestroy {
     if (!this.graph) console.log('graphInitialised', graph);
     if (this.graph) console.log('graphUpdated', graph);
     if (graph) this.graph = graph;
+    if (this.game.hero) this.selectHero();
   }
 
   private buildGraphDataFromGame(game: Game): void {
     // build user graph
     // console.log('game', game);
-    this.graphService.buildGraph(game.users, game.relations, game.posts).then((graphData: GraphData | undefined) => {
+    this.graphService.buildGraph(game).then((graphData: GraphData | undefined) => {
       if (graphData) {
         this.graphData = graphData;
         // console.log('RELATIONS', this.game.relations);
@@ -228,33 +230,10 @@ export class GameComponent implements OnInit, OnDestroy {
     // console.log('socketCommand', c);
     switch (c.command) {
       case 'highlight-graph-user':
-        // TODO: not a nice solution :/
         this.highlighGraphUser(c.data.userId, true);
-        // this.clearUsersHighlight = true;
-        // this.clearConnectionsHighlight = true;
-        // setTimeout(() => {
-        //   this.highlightUser = c.data.userId;
-        //   this.clearUsersHighlight = false;
-        //   this.clearConnectionsHighlight = false;
-        //   const connections: string[] = [];
-        //   this.graph.findEdge(c.data.userId, (edge: string, attributes: any) => {
-        //     // console.log('user connection to highlight', edge);
-        //     connections.push(edge);
-        //   });
-        //   if (connections.length) {
-        //     let i = 0;
-        //     const add = setInterval(() => {
-        //       if (i > connections.length) clearInterval(add);
-        //       this.highlightUsersConnection = connections[i];
-        //       i++;
-        //     }, 10);
-        //   }
-        // }, 100);        
         break;
       case 'highlight-graph-path':
         const path = c.data.path;
-        // console.log('TODO: highlight-graph-path', path);
-        // console.warn('debug');
         this.clearConnectionsHighlight = true;
         this.highlightUsersConnection = undefined;
         let i = 0;
@@ -278,11 +257,9 @@ export class GameComponent implements OnInit, OnDestroy {
         }
         setTimeout(() => highlightEdge(), 10);
         this.highlighGraphUser(path[path.length - 1]);
-        // this.highlightUser = path[path.length - 1];
         break;
       case 'select-hero':
         this.gameService.setHero(c.data.userId);
-        console.log('SELECT HERO', c.data.userId);
         this.snapToUser(this.gameService.getHero().uuid);
         this.selectHero();
         break;
@@ -290,7 +267,6 @@ export class GameComponent implements OnInit, OnDestroy {
         this.gameService.gameSubject.next(c.data.game);
         break;
       case 'comment':
-        // this.gameService.game.comments.unshift(c.data.comment);
         // add comment to graph
         const comment = c.data.comment;
         // console.log('ADD COMMENT', comment);
@@ -322,7 +298,7 @@ export class GameComponent implements OnInit, OnDestroy {
           // find edge
           const post = this.gameService.getPost(reaction.parent);
           if (post) {
-            this.graph.findEdge(post.uuid, reaction.author, (edge: string) => {
+            this.graph.findEdge(reaction.author, post.uuid, (edge: string) => {
               console.log('EDGE FOUND', edge);
               if (edge) {
                 // update edge label
