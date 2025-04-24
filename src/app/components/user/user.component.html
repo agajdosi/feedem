@@ -38,7 +38,7 @@
     </div>
     @if(following.length) {
         <div class="connections">
-            <div>Follow&nbsp;</div>
+            <div>Follows&nbsp;</div>
             @for(connection of following; let i = $index; track i) {
                 <div class="connection user-profile-picture-smaller">
                     <img [src]="getUser(connection).profile_picture" alt="">
