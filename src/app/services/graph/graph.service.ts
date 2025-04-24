@@ -81,7 +81,7 @@ export class GraphService {
                 label: edge.label,
                 strokeWidth: 1,
                 colors: {
-                  stroke: 0xdddddd,
+                  stroke: 0x666666,
                   label: 0xdddddd,
                   highlight: 0xdddddd,
                   selection: 0xffffff
@@ -90,6 +90,7 @@ export class GraphService {
             });
           }
         } else {
+          // console.log('edge type', edge.label);
           graphData.edges.push({
             source: edge.source,
             target: edge.target,
@@ -97,7 +98,7 @@ export class GraphService {
               label: edge.label,
               strokeWidth: 1,
               colors: {
-                stroke: 0xdddddd,
+                stroke: 0x666666,
                 label: 0xdddddd,
                 highlight: 0xdddddd,
                 selection: 0xffffff
