@@ -122,9 +122,6 @@ app-feed {
     display: block;
     overflow: hidden;
     background-color: rgba(black, .85);
-    // app-post {
-    //     color: 
-    // }
     .feed-content {
         @extend .grayscale;
         background-color: rgba(black, .5);
@@ -140,8 +137,6 @@ app-controller {
     font-size: large;
     padding-top: $space;
     position: relative;
-
-    
 
     & > .controls {
         h2 { margin: 0;}
@@ -248,8 +243,14 @@ app-post {
             margin-right: calc($space / 2);
         }
     }
-    .post-meta {
-        margin: calc($space / 3) 0;
+    .post-right {
+        h3 {
+            margin: 0;
+        }
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-end;
     }
     .reactions {
         padding: calc($space / 3);
@@ -274,7 +275,6 @@ app-post {
 }
 
 app-score {
-    
     #score {
         display: flex;
         flex-direction: row;
@@ -336,6 +336,12 @@ app-on-screen {
     top: 0;
     left: 0;
     mix-blend-mode: multiply;
+}
+
+.user-profile-picture-medium {
+    @extend .user-profile-picture;
+    width: calc(2.5 * $space);
+    height: calc(2.5 * $space);
 }
 
 .user-profile-picture-small {
