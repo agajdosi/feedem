@@ -304,7 +304,7 @@ export class GameComponent implements OnInit, OnDestroy {
           // author to comment
           edges.push({source: author, target: comment.uuid, attributes: { label: RelationType.Write }});
           // comment to post
-          edges.push({source: comment.uuid, target: comment.parent, attributes: { label: RelationType.Comment}})
+          edges.push({source: comment.uuid, target: comment.parent, attributes: { label: RelationType.Comment, colors: { label: 0xdddddd} }})
           // add to graph
           this.addGraphEdges = edges;
           // rehighlight hero
@@ -328,7 +328,7 @@ export class GameComponent implements OnInit, OnDestroy {
                 // update edge label
                 // remove label and create again with different label
                 this.graph.dropEdge(edge);
-                this.addGraphEdges = [{source: post.uuid, target: reaction.author, attributes: { label: reaction.value }}];
+                this.addGraphEdges = [{source: post.uuid, target: reaction.author, attributes: { label: reaction.value, colors: { label: 0xdddddd} }}];
                 // const edgeLabel = this.graph.getEdgeAttribute(edge, 'label');
                 // this.graph.setEdgeAttribute(edge, 'label', `${reaction.value}`);
                 // // this.highlightUsersConnection = edge;
