@@ -33,7 +33,8 @@ export class LlmsService {
         traits: user.traits.join(', '),
         timestring: new Date().toISOString(), // TODO: use ingame fictional time
         recent_activity: recentActivity,
-        memory_string: "" // TODO: contruct memory of previous posts
+        memory_string: "", // TODO: contruct memory of previous posts
+        dialect: user.dialect,
       }
     });
     console.log('✍️ generatePost -> sending data:', body);
