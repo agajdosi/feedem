@@ -5,6 +5,17 @@ Implemented in Angular as a browser game.
 
 ## Design decisions
 
+### Game modes
+
+- *endless* - the game never ends, the player can play as long as they want - used in Screen Saver Gallery.
+- *survival* - the game ends when the player loses all lives.
+
+### Time
+
+There are two types of time used in the codebase:
+- *f_created*, *f_timestamp* - fictional time - the in-game time which we show to the player and users
+- *r_created*, *r_timestamp* - real time - the real time, which we use for logging and debugging
+
 ### Task
 
 In targeting task there could be two phases:
