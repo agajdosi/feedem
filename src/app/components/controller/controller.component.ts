@@ -103,12 +103,15 @@ export class ControllerComponent implements OnInit, OnDestroy {
             case 'game': 
             if (e.data && e.data.uuid) {
               // console.log('GOT GAME', e.data);
+              this.gameService.gameSubject.next(e.data);
               // this.game = e.data;
-              if (this.game) {
-                console.error('TBD:', 'CANNOT SET GAME FROM SERVER', this.game, e.data);
+              // this.buildGraphs();
+              // this.game = e.data;
+              // if (this.game) {
+                // console.error('TBD:', 'CANNOT SET GAME FROM SERVER', this.game, e.data);
                 // this.gameService.updateGame(this.game, e.data);
                 // console.log('this.game after update', this.game);
-              }
+              // }
               // this.gameService.gameSubject.next(e.data)
             };
             break;
@@ -120,36 +123,21 @@ export class ControllerComponent implements OnInit, OnDestroy {
       // subscribe game
       this.gameSub = this.gameService.gameSubject.subscribe({
         next: (game: Game) => {
-          console.warn('GAME UPDATE...');
+          // console.warn('GAME UPDATE...');
           if (game && game.uuid) {
             if (!this.game) {
               this.game = game;
               this.game.created = Date.now();
               // calculate graph
               console.warn('GRAPH SHOULD BE CALCULATED FROM REAL RELATIONS, NOT A RANDOM ONE...');
-
             } else {
               console.warn('GAME EXIST AND SHOULD BE ONLY UPDATED...');
               this.gameService.updateGame(this.game, game);
             }
             console.warn('HERO?', this.game.hero);
+            this.buildGraphs();
           }
-          this.graphService.buildGraph(this.game, true).then((graphData: GraphData | undefined) => {
-            if (graphData) {
-              console.log('recalculating socialGraph...', graphData);
-              this.socialGraph.clear();
-              for (const node of graphData.nodes) this.socialGraph.addNode(node.id, node.attributes ? node.attributes : {});
-              for (const edge of graphData.edges) this.socialGraph.addEdge(edge.source, edge.target);
-            }
-          });
-          this.graphService.buildGraph(this.game, false).then((graphData: GraphData | undefined) => {
-            if (graphData) {
-              console.log('recalculating complete graph...', graphData);
-              this.graph.clear();
-              for (const node of graphData.nodes) this.graph.addNode(node.id, node.attributes ? node.attributes : {});
-              for (const edge of graphData.edges) this.graph.addEdge(edge.source, edge.target);
-            }
-          });
+          
         }
       })
       // subscribe controllable from sockets
@@ -238,6 +226,27 @@ export class ControllerComponent implements OnInit, OnDestroy {
 
   private userInteractionHandler(): void {
     this.restartCountDown();
+  }
+
+  private buildGraphs(): void {
+    if (this.game) {
+      this.graphService.buildGraph(this.game, true).then((graphData: GraphData | undefined) => {
+        if (graphData) {
+          console.log('recalculating socialGraph...', graphData);
+          this.socialGraph.clear();
+          for (const node of graphData.nodes) this.socialGraph.addNode(node.id, node.attributes ? node.attributes : {});
+          for (const edge of graphData.edges) this.socialGraph.addEdge(edge.source, edge.target);
+        }
+      });
+      this.graphService.buildGraph(this.game, false).then((graphData: GraphData | undefined) => {
+        if (graphData) {
+          console.log('recalculating complete graph...', graphData);
+          this.graph.clear();
+          for (const node of graphData.nodes) this.graph.addNode(node.id, node.attributes ? node.attributes : {});
+          for (const edge of graphData.edges) this.graph.addEdge(edge.source, edge.target);
+        }
+      });
+    }
   }
 
   private restartCountDown(): void {
