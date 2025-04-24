@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User, Relation, Post } from '../../models/game';
+import { User, Relation, Post, Game } from '../../models/game';
 import { GraphNode } from '../../models/graph-node';
 import { GraphData, GraphLayoutSettings } from '@tomaszatoo/graph-viewer';
 import { Assets } from 'pixi.js';
@@ -30,14 +30,14 @@ export class GraphService {
 
   constructor() { }
 
-  async buildGraph(users: User[], edges: Relation[], posts: Post[], maxEdgesPerNode: number = 5): Promise<GraphData | undefined> {
-    if  (!users || users.length === 0) return undefined;  
+  async buildGraph(game: Game, onlyUsers: boolean = false, maxEdgesPerNode: number = 5): Promise<GraphData | undefined> {
+    if  (!game.users || game.users.length === 0) return undefined;  
     const graphData: GraphData = {
       nodes: [],
       edges: []
     }
     // users
-    for (const user of users) {
+    for (const user of game.users) {
       const texture = await Assets.load(`${user.profile_picture}`);
       graphData.nodes.push({
         id: user.uuid,
@@ -50,7 +50,7 @@ export class GraphService {
       });
     }
     // posts
-    for (const post of posts) {
+    for (const post of game.posts) {
       graphData.nodes.push({
         id: post.uuid,
         attributes: {
@@ -58,23 +58,54 @@ export class GraphService {
         }
       });
     }
-    // if no edges, generate
-    if (edges.length) {
-      for (const edge of edges) {
-        graphData.edges.push({
-          source: edge.source,
-          target: edge.target,
-          attributes: {
-            label: edge.label,
-            strokeWidth: 1,
-            colors: {
-              stroke: 0xdddddd,
-              label: 0xdddddd,
-              highlight: 0xdddddd,
-              selection: 0xffffff
-            } 
+    // comments
+    for (const comment of game.comments) {
+      graphData.nodes.push({
+        id: comment.uuid,
+        attributes: {
+          type: 'comment'
+        }
+      })
+    }
+    // if edges, create else generate new
+    if (game.relations.length) {
+      for (const edge of game.relations) {
+        // console.log('existing relation', edge);
+        if (onlyUsers) {
+          // console.log('should by only social graph');
+          if (edge.label === 'follow') {
+            graphData.edges.push({
+              source: edge.source,
+              target: edge.target,
+              attributes: {
+                label: edge.label,
+                strokeWidth: 1,
+                colors: {
+                  stroke: 0xdddddd,
+                  label: 0xdddddd,
+                  highlight: 0xdddddd,
+                  selection: 0xffffff
+                } 
+              }
+            });
           }
-        });
+        } else {
+          graphData.edges.push({
+            source: edge.source,
+            target: edge.target,
+            attributes: {
+              label: edge.label,
+              strokeWidth: 1,
+              colors: {
+                stroke: 0xdddddd,
+                label: 0xdddddd,
+                highlight: 0xdddddd,
+                selection: 0xffffff
+              } 
+            }
+          });
+        }
+        
       }
     } else {
       console.log('NO RELATIONS, CREATE THEM');
@@ -84,16 +115,16 @@ export class GraphService {
         }
         return false;
       }
-      for (const user of users) {
+      for (const user of game.users) {
         const numberOfConnections = this.randomIntFromInterval(1, maxEdgesPerNode);
         for (let i = 0; i < numberOfConnections; i++) {
           // pick random user, not self
-          let connection = users[this.randomIntFromInterval(0, users.length - 1)];
+          let connection = game.users[this.randomIntFromInterval(0, game.users.length - 1)];
           while(
             connection.uuid === user.uuid || // avoid loop
             connectionExist({source: user.uuid, target: connection.uuid}) // avoid multi connections
           ) {
-            connection = users[this.randomIntFromInterval(0, users.length - 1)];
+            connection = game.users[this.randomIntFromInterval(0, game.users.length - 1)];
           }
           // console.log('possible connection', connection ? connection : "NOOOOO!");
           graphData.edges.push({
