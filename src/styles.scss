@@ -87,11 +87,13 @@ app-game {
         @extend .grayscale;     
     }
 
-    & > .controls {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-    }
+    
+}
+
+app-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 qr-code {
@@ -126,6 +128,17 @@ app-feed {
     .feed-content {
         @extend .grayscale;
         background-color: rgba(black, .5);
+        height: 100%;
+        overflow-y: auto;
+
+        app-post {
+            border-top: 1px dashed $lightColor;
+            padding-top: calc($space / 2);
+            margin-top: calc($space / 2);
+            &:first-child {
+                border-top: none;
+            }
+        }
     }
 }
 
