@@ -196,6 +196,8 @@ export class GameComponent implements OnInit, OnDestroy {
     this.graphService.buildGraph(game).then((graphData: GraphData | undefined) => {
       if (graphData) {
         this.graphData = graphData;
+        console.warn('NODES COUNT: ', graphData.nodes.length);
+        console.warn('EDGES COUNT: ', graphData.edges.length);
         // console.log('RELATIONS', this.game.relations);
       }
     }).catch((e: any) => console.error(e));
