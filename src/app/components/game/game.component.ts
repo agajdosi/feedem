@@ -346,11 +346,12 @@ export class GameComponent implements OnInit, OnDestroy {
         } else {
           console.error('POST NOT FOUND', task.showPost);
         }
-        
-
+        break;
+      case 'set-fictional-time':
+        this.gameService.setFictionalTime(c.data.ftime);
         break;
       default:
-        console.log('recieved socket command', c);
+        console.warn('recieved unexpectedsocket command', c);
     }
   }
   
