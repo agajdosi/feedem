@@ -207,6 +207,7 @@ export class LlmsService {
         post_text: post.text,
         reasoning: view._reasoning,
         dialect: user.dialect,
+        traits: user.traits.join(', '),
         timestring: new Date(ftime).toISOString(),
       }
     })
