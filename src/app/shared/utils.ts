@@ -1,4 +1,4 @@
-import { Post, User, View, Reaction, Comment } from "../models/game";
+import { Post, User, View, Reaction, React, Comment } from "../models/game";
 
 
 /**Get the required limit of the users' engagement. 
@@ -73,11 +73,97 @@ export function getCommentsUnderPost(comments: Comment[], post: Post): Comment[]
 }
 
 
-
 // MARK: REACTIONS
 export function getReactionsByUser(reactions: Reaction[], user: User): Reaction[] {
   return reactions.filter(reaction => reaction.author === user.uuid);
 }
 export function getReactionsUnderPost(reactions: Reaction[], post: Post): Reaction[] {
   return reactions.filter(reaction => reaction.parent === post.uuid);
+}
+
+
+// MARK: VIEWS
+export function getViewsByUser(views: View[], user: User): View[] {
+  return views.filter(view => view.user === user.uuid);
+}
+
+
+// MARK: STATISTICS
+
+export function getCommentChanceOfUser(user: User, comments: Comment[], views: View[]): number {
+  const commentsByUser = getCommentsByUser(comments, user);
+  const viewsByUser = getViewsByUser(views, user);
+  if (viewsByUser.length === 0) return 0;
+  return commentsByUser.length / viewsByUser.length;
+}
+
+export function getReactionChancesOfUser(user: User, reactions: Reaction[], views: View[]): Map<React, number> {
+  const viewsByUser = getViewsByUser(views, user);
+  if (viewsByUser.length === 0) {
+    const zeroChances = new Map<React, number>();
+    Object.values(React).forEach(reactionType => {
+      zeroChances.set(reactionType, 0);
+    });
+    return zeroChances;
+  }
+
+  const userReactions = getReactionsByUser(reactions, user);
+  const reactionCounts = new Map<React, number>();
+  Object.values(React).forEach(reactionType => {
+    reactionCounts.set(reactionType, 0);
+  });
+  
+  userReactions.forEach(reaction => {
+    const currentCount = reactionCounts.get(reaction.value) || 0;
+    reactionCounts.set(reaction.value, currentCount + 1);
+  });
+
+  const chances = new Map<React, number>();
+  reactionCounts.forEach((count, reactionType) => {
+    chances.set(reactionType, count / viewsByUser.length);
+  });
+
+  return chances;
+}
+
+// MARK: PSYCHOANALYSIS
+
+/** Calculate average emotion scores from user's views
+ * Aka which feelings the LLM reports when viewing the posts. 
+ * But we present it to the user as an AI deep psychoanalysis.
+ * TODO: solve the EMOJI mapping somehow better - no hardcoding.
+ */
+export function getUserEmotionScores(user: User, views: View[]): Map<string, number> {
+  const userViews = getViewsByUser(views, user);
+  console.log('userViews', userViews);
+  if (userViews.length === 0) {
+    return new Map([
+      ['😁', 0],
+      ['😢', 0],
+      ['🤦‍♂️', 0],
+      ['😴', 0]
+    ]);
+  }
+
+  const totalScores = {
+    joy: 0,
+    sad: 0,
+    stupid: 0,
+    boring: 0
+  };
+
+  userViews.forEach(view => {
+    totalScores.joy += view.joyScore;
+    totalScores.sad += view.sadScore;
+    totalScores.stupid += view.stupidScore;
+    totalScores.boring += view.boringScore;
+  });
+
+  const avgScores = new Map<string, number>();
+  avgScores.set('😁', totalScores.joy / userViews.length);
+  avgScores.set('😢', totalScores.sad / userViews.length);
+  avgScores.set('🤦‍♂️', totalScores.stupid / userViews.length);
+  avgScores.set('😴', totalScores.boring / userViews.length);
+
+  return avgScores;
 }
