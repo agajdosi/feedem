@@ -16,9 +16,9 @@ export class GraphNode extends NodeWrapper {
     private userNodeInitialised: boolean = false;
     private userNodeContainer: Container = new Container();
     private userNodeMask: Graphics = new Graphics();
-    private postNodeSvg: Graphics = new Graphics().svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 19.86"><path d="M9.93,5.58l4.35,4.35-4.35,4.35-4.35-4.35,4.35-4.35M9.93.9L.9,9.94l9.03,9.03,9.03-9.03L9.93.9h0Z" style="fill:#e3e3e3; stroke-width:0px;"/></svg>`);
+    private postNodeSvg: Graphics = new Graphics();// .svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 19.86"><path d="M9.93,5.58l4.35,4.35-4.35,4.35-4.35-4.35,4.35-4.35M9.93.9L.9,9.94l9.03,9.03,9.03-9.03L9.93.9h0Z" style="fill:#e3e3e3; stroke-width:0px;"/></svg>`);
     private postNodeInitialised: boolean = false;
-    private commentNodeSvg: Graphics = new Graphics().svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 19.86"><path d="M9.93,5.58l4.35,4.35-4.35,4.35-4.35-4.35,4.35-4.35M9.93.9L.9,9.94l9.03,9.03,9.03-9.03L9.93.9h0Z" style="fill:#ddd; stroke-width:0px;"/></svg>`);
+    private commentNodeSvg: Graphics = new Graphics();// .svg(`<?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.86 19.86"><path d="M9.93,5.58l4.35,4.35-4.35,4.35-4.35-4.35,4.35-4.35M9.93.9L.9,9.94l9.03,9.03,9.03-9.03L9.93.9h0Z" style="fill:#ddd; stroke-width:0px;"/></svg>`);
     private commentNodeInitialised: boolean = false;
 
     private customColors: GraphColors = {
@@ -109,14 +109,17 @@ export class GraphNode extends NodeWrapper {
                     color: 0x000000,
                 });
             if (!this.postNodeInitialised) {
+
                 g.parent.addChild(this.postNodeSvg);
-                this.postNodeSvg.rotation = this.degrees_to_radians(45);
+                this.postNodeSvg.rect(0, 0, this.radius() / .9, this.radius() / .9)
+                .fill(0xdddddd);
+                // this.postNodeSvg.rotation = this.degrees_to_radians(45);
                 // this.postNodeSvg.y = g.y; 
                 this.postNodeSvg.pivot = {x: this.postNodeSvg.width / 2, y: this.postNodeSvg.height / 2}
                 // this.postNodeSvg.pivot = {x: g.x - g.width / 2, y: g.y - g.height / 2}
                 
                 // this.postNodeSvg.x -=1;
-                this.postNodeSvg.y -=1;
+                // this.postNodeSvg.y -=1;
 
                 this.postNodeInitialised = true;
             }
@@ -132,10 +135,13 @@ export class GraphNode extends NodeWrapper {
                 });
             if (!this.commentNodeInitialised) {
                 g.parent.addChild(this.commentNodeSvg);
+                this.commentNodeSvg.rect(0, 0, this.radius() / 1.5, this.radius() / 1.5)
+                .fill(0xdddddd);
+                this.commentNodeSvg.rotation = this.degrees_to_radians(45);
                 this.commentNodeSvg.pivot = {x: this.commentNodeSvg.width / 2, y: this.commentNodeSvg.height / 2}
                 
-                this.commentNodeSvg.x -=1;
-                this.commentNodeSvg.y -=1;
+                // this.commentNodeSvg.x -=1;
+                // this.commentNodeSvg.y -=1;
 
                 this.commentNodeInitialised = true;
             }
@@ -154,7 +160,6 @@ export class GraphNode extends NodeWrapper {
             fill: this.select ? this.defaultNodeColors.selection : (this.highlight ? this.defaultNodeColors.highlight : this.defaultNodeColors.label),
             align: 'center'
         }
-        const nodeContainer = t.parent.parent;
         // console.log('nodeContainer', nodeContainer);
         // if (nodeContainer) {
         t.x = this.attributes.radius ? (this.attributes.radius + 20) : 10;
