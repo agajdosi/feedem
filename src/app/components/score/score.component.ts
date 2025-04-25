@@ -18,7 +18,7 @@ export class ScoreComponent {
   get time(): string | null {
     if (!this._time) return null;
     const date = new Date(this._time);
-    return `${this.datePipe.transform(date, 'EEEE, MMMM d, y, H:mm:ss')}:${date.getMilliseconds().toString().padStart(3, '0')}`;
+    return `${this.datePipe.transform(date, 'EE, MMMM d y, HH:mm:ss')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
   }
   private _time: number = 0;
   public gameMode: string = 'endless';
@@ -36,7 +36,6 @@ export class ScoreComponent {
     this.timeSub = this.gameService.gameTime.subscribe({
       next: (value: any) => {
         this._time = value;
-        // console.log('time', this._time);
       }
     });
   }
