@@ -39,13 +39,10 @@
 <app-feed></app-feed>
 
 <!-- OVERLAYS -->
-<div class="controls">
-    
-    @if (controllable) {
-        <app-screensaver></app-screensaver>
-        <qr-code [value]="getControllerLink()" (click)="openController()"></qr-code>
-    }
-    <footer>
-        <app-footer></app-footer>
-    </footer>
-</div>
+
+@if (controllable) {
+    <app-screensaver></app-screensaver>
+    <qr-code [value]="getControllerLink()" (click)="openController()"></qr-code>
+}
+
+<app-footer></app-footer>
