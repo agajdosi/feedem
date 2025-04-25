@@ -19,7 +19,7 @@ import { QrCodeComponent } from 'ng-qrcode';
 // utils
 import * as utils from '../../shared/utils';
 // user
-import { ScoreComponent } from '../score/score.component';
+import { FooterComponent } from '../footer/footer.component';
 import { LlmsService } from '../../services/llms/llms.service';
 // graph
 import {
@@ -35,7 +35,7 @@ import Graph from 'graphology';
   imports: [
     UserComponent,
     QrCodeComponent,
-    ScoreComponent,
+    FooterComponent,
     GraphViewerComponent,
     FeedComponent,
     ScreensaverComponent,
@@ -348,11 +348,12 @@ export class GameComponent implements OnInit, OnDestroy {
         } else {
           console.error('POST NOT FOUND', task.showPost);
         }
-        
-
+        break;
+      case 'set-fictional-time':
+        this.gameService.setFictionalTime(c.data.ftime);
         break;
       default:
-        console.log('recieved socket command', c);
+        console.warn('recieved unexpectedsocket command', c);
     }
   }
   

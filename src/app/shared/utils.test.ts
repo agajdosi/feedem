@@ -29,8 +29,8 @@ describe('getLimit', () => {
 });
 
 describe('getAvgEngagement', () => {
-  it('should return 200 when there are no views', () => {
-    expect(getAvgEngagement(0, 10, 5)).toBe(200);
+  it('should return 100 when there are no views', () => {
+    expect(getAvgEngagement(0, 10, 5)).toBe(100);
   });
 
   it('should return 0 when there are views but no engagement', () => {
@@ -38,23 +38,23 @@ describe('getAvgEngagement', () => {
   });
 
   it('should calculate correct average engagement with both comments and reactions', () => {
-    // 100 * (10 + 20) / 100 = 30
-    expect(getAvgEngagement(100, 10, 20)).toBe(30);
+    // 100 * (10 + 20) / 100 / 2 = 30
+    expect(getAvgEngagement(100, 10, 20)).toBe(15);
   });
 
   it('should handle only comments', () => {
-    // 100 * (15 + 0) / 50 = 30
-    expect(getAvgEngagement(50, 15, 0)).toBe(30);
+    // 100 * (15 + 0) / 50 / 2 = 15
+    expect(getAvgEngagement(50, 15, 0)).toBe(15);
   });
 
   it('should handle only reactions', () => {
-    // 100 * (0 + 25) / 50 = 50
-    expect(getAvgEngagement(50, 0, 25)).toBe(50);
+    // 100 * (0 + 25) / 50 / 2 = 25
+    expect(getAvgEngagement(50, 0, 25)).toBe(25);
   });
 
   it('should handle decimal results', () => {
-    // 100 * (3 + 2) / 4 = 125
-    expect(getAvgEngagement(4, 3, 2)).toBe(125);
+    // 100 * (3 + 2) / 4 / 2 = 62.5
+    expect(getAvgEngagement(4, 3, 2)).toBe(62.5);
   });
 });
 

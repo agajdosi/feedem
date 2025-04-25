@@ -1,8 +1,8 @@
 export enum React {
     Love = '♥️',
-    Like = '👍🏿',
-    Dislike = '👎🏻',
-    Hate = '🤬'
+    Like = '👍',
+    Dislike = '👎',
+    Shit = '💩'
 }
 
 /**
@@ -83,7 +83,8 @@ export interface Post {
     author: string,
     text: string,
     reasoning: string,
-    created: number
+    f_created: number, // fictional time of creation
+    r_created: number, // real time of creation (GMT)
 }
 
 export enum CommentParentType {
@@ -112,7 +113,7 @@ export interface Game {
     uuid: string,
     created: number,
     updated: number,
-    time: string,
+    ftime: number, // fictional time, in milliseconds since 1970-01-01
     hero: string,
     users: User[],
     posts: Post[],
@@ -134,7 +135,7 @@ export interface Game {
  * - reactionLikeUrge - how much LLM wants to like the post
  * - reactionDislikeUrge - how much LLM wants to dislike the post
  * - reactionLoveUrge - how much LLM wants to love the post
- * - reactionHateUrge - how much LLM wants to hate the post
+ * - reactionShittyUrge - how much LLM wants to shit the post
 */
 export interface View {
     uuid: string,
@@ -143,12 +144,15 @@ export interface View {
     _reasoning: string,
     _rating: number,
     joyScore: number,
+    sadScore: number,
+    stupidScore: number,
+    boringScore: number,
     commentUrge: number,
     shareUrge: number,
     reactionLikeUrge: number,
     reactionDislikeUrge: number,
     reactionLoveUrge: number,
-    reactionHateUrge: number,
+    reactionShittyUrge: number,
     time: number
 }
 

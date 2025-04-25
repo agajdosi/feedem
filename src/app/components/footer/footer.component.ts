@@ -6,19 +6,19 @@ import { Game } from '../../models/game';
 import { getLimit, getAvgEngagement } from '../../shared/utils';
 
 @Component({
-  selector: 'app-score',
+  selector: 'app-footer',
   standalone: true,
   imports: [ CommonModule ],
   providers: [ DatePipe ],
-  templateUrl: './score.component.html',
-  styleUrl: './score.component.scss'
+  templateUrl: './footer.component.html',
+  styleUrl: './footer.component.scss'
 })
-export class ScoreComponent {
+export class FooterComponent {
   gameData?: Game;
   get time(): string | null {
     if (!this._time) return null;
-    const timeString: string = `${this._time}`;
-    return `${this.datePipe.transform(this._time, 'EEEE, MMMM d, y, H:mm:ss')}:${timeString.substring(timeString.length - 3)}`;
+    const date = new Date(this._time);
+    return `${this.datePipe.transform(date, 'EE, MMMM d y, HH:mm:ss')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
   }
   private _time: number = 0;
   public gameMode: string = 'endless';
@@ -36,7 +36,6 @@ export class ScoreComponent {
     this.timeSub = this.gameService.gameTime.subscribe({
       next: (value: any) => {
         this._time = value;
-        // console.log('time', this._time);
       }
     });
   }

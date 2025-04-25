@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 // components
 import { CommentComponent } from '../comment/comment.component';
 // interfaces
-import { Post, User, Game, Reaction, Comment } from '../../models/game';
+import { Post, User, Game, Reaction, React } from '../../models/game';
 // services
 import { GameService } from '../../services/game/game.service';
 
@@ -25,11 +25,25 @@ export class PostComponent implements OnInit {
     return this.gameService.getUserById(this.post.author);
   }
 
+  get reactionTypes(): string[] {
+    return Object.values(React);
+  }
+
   constructor(
     private readonly gameService: GameService
   ){}
 
   ngOnInit(): void {
     
+  }
+
+  getReactionsByType(reactionType: string): Reaction[] {
+    return this.game.reactions.filter(
+      reaction => reaction.parent === this.post.uuid && reaction.value === reactionType
+    );
+  }
+
+  getUserById(userId: string): User {
+    return this.gameService.getUserById(userId);
   }
 }

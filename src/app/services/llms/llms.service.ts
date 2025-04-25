@@ -18,7 +18,7 @@ export class LlmsService {
    * TODO: implement more self-reflective memory system instead of recentActivity based on linear history.
    * Define the prompts at: https://phoenix.lab.gajdosik.org
    */
-  async generatePost(user: User, recentActivity: string): Promise<Post> {
+  async generatePost(user: User, recentActivity: string, ftime: number): Promise<Post> {
     const body = JSON.stringify({
       prompt_identifier: "feedem_generate_post",
       prompt_variables: {
@@ -31,7 +31,7 @@ export class LlmsService {
         country: user.residence.country,
         occupation: user.occupation,
         traits: user.traits.join(', '),
-        timestring: new Date().toISOString(), // TODO: use ingame fictional time
+        timestring: new Date(ftime).toISOString(),
         recent_activity: recentActivity,
         memory_string: "", // TODO: contruct memory of previous posts
         dialect: user.dialect,
@@ -60,7 +60,8 @@ export class LlmsService {
       author: user.uuid,
       text: post_text,
       reasoning: '', // This will be filled when the post is viewed
-      created: Date.now()
+      f_created: ftime,
+      r_created: Date.now(),
     };
 
     return post;
@@ -133,9 +134,12 @@ export class LlmsService {
       _reasoning: reflection,
       _rating: rating,
       joyScore: parsedRatingObj.enjoyScore,
+      sadScore: parsedRatingObj.sadScore,
+      stupidScore: parsedRatingObj.stupidScore,
+      boringScore: parsedRatingObj.boringScore,
       reactionLikeUrge: parsedRatingObj.reactionLikeUrge,
       reactionDislikeUrge: parsedRatingObj.reactionDislikeUrge,
-      reactionHateUrge: parsedRatingObj.reactionHateUrge,
+      reactionShittyUrge: parsedRatingObj.reactionShittyUrge,
       reactionLoveUrge: parsedRatingObj.reactionLoveUrge,
       commentUrge: parsedRatingObj.commentUrge,
       shareUrge: 0, // Not implemented
@@ -151,7 +155,7 @@ export class LlmsService {
    * @returns The reaction or null if the user will not react.
    */
   decideReaction(view: View): Reaction | null {
-    const max = Math.max(view.reactionLikeUrge, view.reactionDislikeUrge, view.reactionHateUrge, view.reactionLoveUrge);
+    const max = Math.max(view.reactionLikeUrge, view.reactionDislikeUrge, view.reactionShittyUrge, view.reactionLoveUrge);
     const roll = Math.random();
     if (roll > max) {
       return null;
@@ -159,7 +163,7 @@ export class LlmsService {
 
     // if two urges are completely equal, we prefer the extremes and negations ;)
     let reactionType: React;
-    if (max === view.reactionHateUrge) reactionType = React.Hate;
+    if (max === view.reactionShittyUrge) reactionType = React.Shit;
     else if (max === view.reactionLoveUrge) reactionType = React.Love;
     else if (max === view.reactionLikeUrge) reactionType = React.Like;
     else if (max === view.reactionDislikeUrge) reactionType = React.Dislike;
@@ -180,13 +184,13 @@ export class LlmsService {
   /**
    * Decide whether the user will comment on the post they have just seen.
    */
-  async decideComment(view: View, user: User, post: Post): Promise<Comment | null> {
+  async decideComment(view: View, user: User, post: Post, ftime: number): Promise<Comment | null> {
     const roll = Math.random();
     if (roll > view.commentUrge) {
       return null;
     }
 
-    const comment = await this.generateCommentUnderPost(user, post, view);
+    const comment = await this.generateCommentUnderPost(user, post, view, ftime);
     return comment;
   }
 
@@ -194,25 +198,29 @@ export class LlmsService {
   /** Generate a comment by user under a post, based on the previously generated reflection and rating of the post by the user. 
    * TODO: provide info if Reaction was done by the user or not. Actually provide also info about other users reactions.
   */
-  async generateCommentUnderPost(user: User, post: Post, view: View): Promise<Comment> {
+  async generateCommentUnderPost(user: User, post: Post, view: View, ftime: number): Promise<Comment> {
     const genURL  = `${environment.aigenburgAPI}/generate`;
     // 1. REFLECT - think about the post
-    const response = await fetch(genURL, {
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_generate_comment",
+      prompt_variables: {
+        user_bio: user.bio,
+        author_name: post.author,
+        author_surname: post.author,
+        post_text: post.text,
+        reasoning: view._reasoning,
+        dialect: user.dialect,
+        traits: user.traits.join(', '),
+        timestring: new Date(ftime).toISOString(),
+      }
+    })
+    console.log('💬 generateCommentUnderPost -> sending data:', body);
+    const response = await fetch(genURL, { // https://phoenix.lab.gajdosik.org/prompts/UHJvbXB0Ojc=
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ // https://phoenix.lab.gajdosik.org/prompts/UHJvbXB0Ojc=
-        prompt_identifier: "feedem_generate_comment",
-        prompt_variables: {
-          user_bio: user.bio,
-          author_name: post.author,
-          author_surname: post.author,
-          post_text: post.text,
-          reasoning: view._reasoning,
-          dialect: user.dialect,
-        }
-      })
+      body: body
     })
 
     const commentData = await response.json();
@@ -232,7 +240,7 @@ export class LlmsService {
     }
 
     const comment_text = parsedComment.choices[0].message.content;
-    console.log(`Got comment for post (${post.uuid}): ${comment_text}`);
+    console.log(`💬 generateCommentUnderPost <- response: ${comment_text}`);
     
     const comment: Comment = {
       uuid: uuidv4(),
@@ -240,7 +248,7 @@ export class LlmsService {
       parent: post.uuid,
       parent_type: CommentParentType.Post,
       text: comment_text,
-      f_created: Date.now(),
+      f_created: ftime,
       r_created: Date.now(),
     };
     return comment;
@@ -251,7 +259,7 @@ export class LlmsService {
   /** TOTAL DUMMY!
    * TODO: implement in v2.
    */
-  async generateCommentUnderComment(user: User, comment: Comment, view: View): Promise<Comment> {
+  async generateCommentUnderComment(user: User, comment: Comment, view: View, ftime: number): Promise<Comment> {
     const c: Comment = {
       uuid: uuidv4(),
       author: user.uuid,

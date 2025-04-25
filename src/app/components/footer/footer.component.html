@@ -1,12 +1,12 @@
 <div id="score">
     @if(gameMode === 'survival') {
-        <div id="engagement">⌀ engagement:<span>{{ getAvgEngagement() }}</span>% </div>
+        <div id="engagement">avg. engagement: <span>{{ getAvgEngagement() | number:'1.0-2' }}</span>% </div>
         <span>>=</span>
-        <div id="limit">limit:<span>{{ getLimit() }}</span>%</div>
+        <div id="limit">limit:<span>{{ getLimit() | number:'1.0-2' }}</span>%</div>
         <span>→</span>
         <div id="lifes">{{ getLives() }}</div>
     } @else if(gameMode === 'endless') {
-        <div id="engagement">⌀ engagement:<span>{{ getAvgEngagement() }}</span>% </div>
+        <div id="engagement">avg. engagement: <span>{{ getAvgEngagement() | number:'1.0-2' }}</span>% </div>
     }
     @if(time) {
         <span class="spacer"></span>

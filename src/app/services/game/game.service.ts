@@ -21,12 +21,23 @@ export class GameService {
   onComment: Subject<Comment> = new Subject();
   onTask: Subject<Task> = new Subject();
 
+  // FICTIONAL TIME
   gameTime: Subject<number> = new Subject();
-
-  get time(): number {
-    return this._time;
+  /** Return the fictional time of the game in milliseconds.*/
+  getFictionalTime(): number {
+    return this.game.ftime;
   }
-  private _time: number = 0;
+  /** Set the fictional time of the game to the given milliseconds.*/
+  setFictionalTime(milliseconds: number): void {
+    this.game.ftime = milliseconds;
+    this.gameTime.next(this.game.ftime);
+  }
+  /** Increase the fictional time of the game by the given milliseconds and return the new fictional time.*/
+  increaseFictionalTime(milliseconds: number): number {
+    this.game.ftime += milliseconds;
+    this.gameTime.next(this.game.ftime);
+    return this.game.ftime;
+  }
 
   get game(): Game {
     return this._game;
@@ -40,6 +51,7 @@ export class GameService {
       next: (g: Game) => {
         if (!this.game) {
           this._game = g;
+          this.gameTime.next(g.ftime);
           // start counting global time
           this.startGameTime();
         }
@@ -80,24 +92,27 @@ export class GameService {
 
   // MARK: GAME
 
+  /** Updates the fake running time on the graph page.
+   * But this is hardly really used right?
+   */
   private startGameTime(): void {
-    let startTime = 0;
-    let time = startTime;
+    if (!this.game) {
+      console.error('Game not initialized:', this.game);
+      return;
+    }
+    if (!this.game.ftime) {
+      console.error('Game ftime not initialized:', this.game);
+      this.game.ftime = this.game.created;
+    }
     const SLOWDOWN_VALUE: number = 1000;
-    console.warn('⏰ -------- GAME TIME STARTED --------- ⏰', 'TODO: implement to posts, comments, etc.?, whereever Date.now()?');
+    console.warn('⏰ -------- GAME TIME STARTED --------- ⏰');
     const count = () => {
       if (this.game && this.game.created) {
-        // console.log('game.created', Number(this.game.created));
-        if (!startTime) {
-          startTime = Number(this.game.created) + Math.floor(((Date.now() - this.game.created) / SLOWDOWN_VALUE));
-          time = startTime;
-        }
         setTimeout(() => {
-          time++;
-          this.gameTime.next(time);
-          this._time = time;
+          this.game.ftime += 1; // Increment by 1ms every real second to simulate slowed time
+          this.gameTime.next(this.game.ftime);
           count();
-        }, SLOWDOWN_VALUE); // 
+        }, SLOWDOWN_VALUE);
       } else {
         setTimeout(() => count(), SLOWDOWN_VALUE);
       }
@@ -130,6 +145,9 @@ export class GameService {
   async nextTask(taskDone: Task | null = null) {
     if (taskDone && taskDone.showPost) {
       for (const showTo of taskDone.showTo) {
+        const skip = Math.random()*1000*60*60; // 0-1hour, TODO: make this a bit more random
+        this.increaseFictionalTime(skip);
+
         const user = this.getUserById(showTo);
         const post = this.getPost(taskDone.showPost);
         console.log('showing post to user', user.name, user.surname);
@@ -153,7 +171,7 @@ export class GameService {
           console.log(`ℹ️ ${user.name} ${user.surname} did not react`);
         }
 
-        const comment = await this.llmsService.decideComment(view, user, post);
+        const comment = await this.llmsService.decideComment(view, user, post, this.getFictionalTime());
         if (comment) {
           this.game.comments.unshift(comment);
           this.onComment.next(comment);
@@ -164,10 +182,11 @@ export class GameService {
         // expensive
         // this.gameSubject.next(this.game);
       }
-      
     }
 
     // GENERATE NEW TASK
+    const skip = 1+ 7*Math.random()*1000*60*60; // 1-8hours, TODO: make this a bit more random
+    this.increaseFictionalTime(skip);
     const rx = Math.random();
     let task: Task;
     if (rx < 0.5) {
@@ -193,7 +212,7 @@ export class GameService {
   async createTaskDistributePost(): Promise<Task> {
     const postAuthor = this.getHero()!;
     const recentActivity: string = describeRecentActivity(postAuthor, this.game.posts, this.game.comments, this.game.reactions);
-    const post = await this.llmsService.generatePost(postAuthor, recentActivity); // TODO: send history of the user's posts to the LLM
+    const post = await this.llmsService.generatePost(postAuthor, recentActivity, this.getFictionalTime());
     this.game.posts.unshift(post);
 
     const task: Task = {
@@ -214,7 +233,7 @@ export class GameService {
     let posts: Post[] = [];
     for (const author of authors) {
       const recentActivity: string = describeRecentActivity(author, this.game.posts, this.game.comments, this.game.reactions);
-      const post = await this.llmsService.generatePost(author, recentActivity);
+      const post = await this.llmsService.generatePost(author, recentActivity, this.getFictionalTime());
       this.game.posts.unshift(post);
       posts.unshift(post);
     }

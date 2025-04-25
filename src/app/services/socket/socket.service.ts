@@ -83,7 +83,7 @@ export class SocketService {
 
   saveGameOnServer(game: Game): void {
     if (!game) return;
-    console.warn('SAVING GAME TO SERVER...');
+    console.warn('SAVING GAME TO SERVER:', game);
     this.socket.emit('save_game', game);
   }
 

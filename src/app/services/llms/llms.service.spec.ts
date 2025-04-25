@@ -80,7 +80,7 @@ describe('LlmsService', () => {
         reactionLikeUrge: 0.8,
         reactionDislikeUrge: 0.1,
         reactionLoveUrge: 0.6,
-        reactionHateUrge: 0.1,
+        reactionShittyUrge: 0.1,
         time: Date.now()
       };
 

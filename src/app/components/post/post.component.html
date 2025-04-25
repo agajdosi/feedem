@@ -5,7 +5,7 @@
         </div>
         <div class="post-right">
             <h3>{{author.name}} {{author.surname}}</h3>
-            <div class="created"><small>{{post.created | date: 'dd/MM/yy, hh:mm'}}</small></div>
+            <div class="created"><small>{{post.f_created | date: 'dd/MM/yy, HH:mm'}}</small></div>
         </div>
     </div>
     <div class="post-text">
@@ -13,14 +13,21 @@
     </div>
     <div class="post-footer">
         <div class="reactions">
-            @for(reaction of game.reactions; track reaction.uuid) {
-                @if(reaction.parent === post.uuid) {
-                    <div class="reaction">{{reaction.value}}</div>
+            @for(reactionType of reactionTypes; track reactionType) {
+                @if(getReactionsByType(reactionType).length > 0) {
+                    <div class="reaction-group">
+                        <span class="reaction-icon">{{reactionType}}</span>
+                        <span class="reacted-by">
+                            @for(reaction of getReactionsByType(reactionType); track reaction.uuid) {
+                                {{getUserById(reaction.author).name}}@if(!$last){,}
+                            }
+                        </span>
+                    </div>
                 }
             }
         </div>
         <div class="comments">
-            @for(comment of game.comments; track comment.uuid) {
+            @for(comment of game.comments.slice().reverse(); track comment.uuid) {
                 @if(comment.parent === post.uuid) {
                     <app-comment [comment]="comment"></app-comment>
                 }
