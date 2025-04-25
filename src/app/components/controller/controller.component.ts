@@ -18,11 +18,11 @@ import { CountDownTimerService, TimerData } from '@tomaszatoo/ngx-timer';
 // graphology
 import Graph from 'graphology';
 import { GraphData } from '@tomaszatoo/graph-viewer';
-
+import { ScoreComponent } from '../score/score.component';
 
 @Component({
   selector: 'app-controller',
-  imports: [ UserComponent, OnScreenComponent, TaskComponent ],
+  imports: [ UserComponent, OnScreenComponent, TaskComponent, ScoreComponent ],
   templateUrl: './controller.component.html',
   styleUrl: './controller.component.scss'
 })
@@ -289,6 +289,16 @@ export class ControllerComponent implements OnInit, OnDestroy {
     });
     this.sendGameToPeers();
     this.gameService.nextTask(this.game.tasks[0]);
+  }
+
+  increaseFictionalTime(milliseconds: number): void {
+    this.gameService.increaseFictionalTime(milliseconds);
+    this.socketService.sendSocketMessage({
+      command: 'set-fictional-time',
+      data: {
+        ftime: this.gameService.getFictionalTime()
+      }
+    });
   }
 
   onPathToTarget(path: string[]): void {
