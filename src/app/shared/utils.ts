@@ -1,4 +1,4 @@
-import { Post, User, View, Reaction, Comment } from "../models/game";
+import { Post, User, View, Reaction, React, Comment } from "../models/game";
 
 
 /**Get the required limit of the users' engagement. 
@@ -73,11 +73,59 @@ export function getCommentsUnderPost(comments: Comment[], post: Post): Comment[]
 }
 
 
-
 // MARK: REACTIONS
 export function getReactionsByUser(reactions: Reaction[], user: User): Reaction[] {
   return reactions.filter(reaction => reaction.author === user.uuid);
 }
 export function getReactionsUnderPost(reactions: Reaction[], post: Post): Reaction[] {
   return reactions.filter(reaction => reaction.parent === post.uuid);
+}
+
+
+// MARK: VIEWS
+export function getViewsByUser(views: View[], user: User): View[] {
+  return views.filter(view => view.user === user.uuid);
+}
+
+
+// MARK: STATISTICS
+
+export function getCommentChanceOfUser(user: User, comments: Comment[], views: View[]): number {
+  const commentsByUser = getCommentsByUser(comments, user);
+  const viewsByUser = getViewsByUser(views, user);
+  if (viewsByUser.length === 0) return 0;
+  return commentsByUser.length / viewsByUser.length;
+}
+
+export function getReactionChancesOfUser(user: User, reactions: Reaction[], views: View[]): Map<React, number> {
+  const viewsByUser = getViewsByUser(views, user);
+  if (viewsByUser.length === 0) {
+    const zeroChances = new Map<React, number>();
+    Object.values(React).forEach(reactionType => {
+      zeroChances.set(reactionType, 0);
+    });
+    return zeroChances;
+  }
+
+  // Get all reactions by the user
+  const userReactions = getReactionsByUser(reactions, user);
+  
+  // Count reactions by type
+  const reactionCounts = new Map<React, number>();
+  Object.values(React).forEach(reactionType => {
+    reactionCounts.set(reactionType, 0);
+  });
+  
+  userReactions.forEach(reaction => {
+    const currentCount = reactionCounts.get(reaction.value) || 0;
+    reactionCounts.set(reaction.value, currentCount + 1);
+  });
+
+  // Calculate chances (count / total views)
+  const chances = new Map<React, number>();
+  reactionCounts.forEach((count, reactionType) => {
+    chances.set(reactionType, count / viewsByUser.length);
+  });
+
+  return chances;
 }

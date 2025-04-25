@@ -1,17 +1,19 @@
 import { Component, Input, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 // models
-import { BigFive, User } from '../../models/game';
+import { BigFive, User, React } from '../../models/game';
 // components
 import { RadarComponent, RadarData } from '../radar/radar.component';
 // uuid
 import { v4 as uuidv4 } from 'uuid';
 import Typed from 'typed.js';
 import { GameService } from '../../services/game/game.service';
-import { Subscription } from 'rxjs';
+import { getCommentChanceOfUser, getReactionChancesOfUser } from '../../shared/utils';
+
 
 @Component({
   selector: 'app-user',
-  imports: [ RadarComponent ],
+  imports: [ CommonModule, RadarComponent ],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss'
 })
@@ -65,5 +67,13 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   getUser(userId: string): User {
     return this.gameService.getUserById(userId);
+  }
+
+  getCommentChanceOfUser(user: User): number {
+    return getCommentChanceOfUser(user, this.gameService.game.comments, this.gameService.game.views);
+  }
+
+  getReactionChancesOfUser(user: User): Map<React, number> {
+    return getReactionChancesOfUser(user, this.gameService.game.reactions, this.gameService.game.views);
   }
 }

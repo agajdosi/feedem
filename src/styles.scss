@@ -227,7 +227,19 @@ app-user {
         }
     }
 
-    
+    .analytics {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        .statistics {
+            display: flex;
+            width: 100%;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
 }
 
 

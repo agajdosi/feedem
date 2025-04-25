@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getLimit, getAvgEngagement, filterSeenPosts, getPostsByAuthor, getPostsByAuthorSeenByUser, getReactionsByUser, getCommentsByUser, getCommentsUnderPost, getReactionsUnderPost, getUserById } from './utils';
+import { getLimit, getAvgEngagement, filterSeenPosts, getPostsByAuthor, getPostsByAuthorSeenByUser, getReactionsByUser, getCommentsByUser, getCommentsUnderPost, getReactionsUnderPost, getUserById, getReactionChancesOfUser } from './utils';
 import { User, Post, View, Reaction, React, ReactionParentType, Comment, CommentParentType } from '../models/game';
 
 describe('getLimit', () => {
@@ -758,4 +758,69 @@ describe('getUserById', () => {
     it('should be case sensitive for UUID matching', () => {
         expect(getUserById('USER1', mockUsers)).toBeUndefined();
     });
+});
+
+describe('getReactionChancesOfUser', () => {
+  const mockUser: User = {
+    uuid: 'user1',
+    name: 'Alice',
+    surname: 'Smith',
+    gender: 'female',
+    age: 25,
+    occupation: 'developer',
+    location: { city: 'New York', country: 'USA' },
+    residence: { city: 'New York', country: 'USA' },
+    hometown: { city: 'Boston', country: 'USA' },
+    bio: 'Software developer',
+    traits: ['friendly', 'hardworking'],
+    profile_picture: 'alice.jpg',
+    role: 'user',
+    memory: {
+      shortTerm: '',
+      shortRelevancy: 0,
+      longTerm: ''
+    },
+    big_five: {
+      openness: 0.5,
+      conscientiousness: 0.5,
+      extraversion: 0.5,
+      agreeableness: 0.5,
+      neuroticism: 0.5
+    },
+    dialect: 'en'
+  };
+
+  const mockReactions: Reaction[] = [
+    { uuid: '1', author: 'user1', parent: 'post1', parent_type: ReactionParentType.Post, value: React.Like },
+    { uuid: '2', author: 'user1', parent: 'post2', parent_type: ReactionParentType.Post, value: React.Like },
+    { uuid: '3', author: 'user1', parent: 'post3', parent_type: ReactionParentType.Post, value: React.Love },
+    { uuid: '4', author: 'user2', parent: 'post4', parent_type: ReactionParentType.Post, value: React.Dislike },
+  ];
+
+  const mockViews: View[] = [
+    { uuid: '1', user: 'user1', post: 'post1', _reasoning: '', _rating: 0, joyScore: 0, sadScore: 0, stupidScore: 0, boringScore: 0, commentUrge: 0, shareUrge: 0, reactionLikeUrge: 0, reactionDislikeUrge: 0, reactionLoveUrge: 0, reactionShittyUrge: 0, time: Date.now() },
+    { uuid: '2', user: 'user1', post: 'post2', _reasoning: '', _rating: 0, joyScore: 0, sadScore: 0, stupidScore: 0, boringScore: 0, commentUrge: 0, shareUrge: 0, reactionLikeUrge: 0, reactionDislikeUrge: 0, reactionLoveUrge: 0, reactionShittyUrge: 0, time: Date.now() },
+    { uuid: '3', user: 'user1', post: 'post3', _reasoning: '', _rating: 0, joyScore: 0, sadScore: 0, stupidScore: 0, boringScore: 0, commentUrge: 0, shareUrge: 0, reactionLikeUrge: 0, reactionDislikeUrge: 0, reactionLoveUrge: 0, reactionShittyUrge: 0, time: Date.now() },
+  ];
+
+  it('should return zero chances for all types when user has no views', () => {
+    const chances = getReactionChancesOfUser(mockUser, mockReactions, []);
+    expect(chances.get(React.Like)).toBe(0);
+    expect(chances.get(React.Love)).toBe(0);
+    expect(chances.get(React.Dislike)).toBe(0);
+    expect(chances.get(React.Shit)).toBe(0);
+  });
+
+  it('should calculate correct chances for each reaction type', () => {
+    const chances = getReactionChancesOfUser(mockUser, mockReactions, mockViews);
+    expect(chances.get(React.Like)).toBe(2/3); // 2 likes out of 3 views
+    expect(chances.get(React.Love)).toBe(1/3); // 1 love out of 3 views
+    expect(chances.get(React.Dislike)).toBe(0); // 0 dislikes out of 3 views
+    expect(chances.get(React.Shit)).toBe(0); // 0 shits out of 3 views
+  });
+
+  it('should not count reactions from other users', () => {
+    const chances = getReactionChancesOfUser(mockUser, mockReactions, mockViews);
+    expect(chances.get(React.Dislike)).toBe(0); // The dislike is from user2
+  });
 });

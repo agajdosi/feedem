@@ -56,5 +56,25 @@
             }
         </div>
     }
+
+    <div class="analytics">
+        {{user.name}}'s avg. reacts:
+        <div class="statistics">
+            <span>
+                💬 {{ getCommentChanceOfUser(user)*100 | number:'1.1-1' }}%
+            </span>
+            @for(entry of getReactionChancesOfUser(user) | keyvalue; track entry.key) {
+                <span>
+                    {{ entry.key }} {{ entry.value * 100 | number:'1.1-1' }}%
+                </span>
+            }
+        </div>
+        <div class="psychoanalysis">
+            deep analyzed feelings:
+            <span>
+                {{user.name}} is {{user.gender}} and {{user.age}} years old.
+            </span>
+        </div>
+    </div>
     
 }
