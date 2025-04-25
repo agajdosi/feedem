@@ -22,25 +22,25 @@ export class GraphEdge extends EdgeWrapper {
             const strokeWidth = this.attributes && this.attributes.strokeWidth ? this. attributes.strokeWidth : 1;
             // console.log('highlight edge?', this.highlight);
             // g.clear();
-            if (this.select || this.highlight) {
+            // if (this.select || this.highlight) {
                 g.moveTo(pos.source.x, pos.source.y)
                 .lineTo(pos.target.x, pos.target.y)
                 .stroke({
-                    color: 0xffffff,
+                    color: this.select || this.highlight ? 0xffffff : 0x666666,
                     pixelLine: false,
-                    width: strokeWidth * 2
+                    width: this.select || this.highlight ? strokeWidth * 2 : strokeWidth /* * 2 */
                 });
                 // console.log('draw continous', '---------');
                 
-            } else {
-                this.drawDash(g, pos.source.x, pos.source.y, pos.target.x, pos.target.y)
-                .stroke({
-                    color: 0x666666,
-                    pixelLine: false,
-                    width: strokeWidth
-                });
-                // console.log('draw dashed', '- - - - - - -')
-            }
+            // } else {
+            //     this.drawDash(g, pos.source.x, pos.source.y, pos.target.x, pos.target.y)
+            //     .stroke({
+            //         color: 0x666666,
+            //         pixelLine: false,
+            //         width: strokeWidth
+            //     });
+            //     // console.log('draw dashed', '- - - - - - -')
+            // }
                   
     }
 
