@@ -2,6 +2,7 @@
 
 $space: 1.5rem;
 $lightColor: #ddd; // rgb(3, 183, 138);
+$secondaryColor: #666;
 
 * {
     box-sizing: border-box;
@@ -253,24 +254,22 @@ app-post {
         justify-content: flex-end;
     }
     .reactions {
-        padding: calc($space / 3);
-        // background-color: $lightColor;
-        // color: black;
-        display: inline-flex;
-        .reaction {
-            // background-color: $lightColor;
-            border-radius: 50%;
-            width: calc($space);
-            height: $space;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-right: calc($space / 3);
-            &:last-child {
-                margin-right: 0;
-            }
-        }
+        padding: calc($space / 3) 0 calc($space / 3) 0;
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+
+    .reaction-group {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-right: 1rem;
+    }
+
+    .reacted-by {
+        font-size: 0.9rem;
+        color: $secondaryColor;
     }
 }
 

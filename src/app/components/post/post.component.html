@@ -13,9 +13,16 @@
     </div>
     <div class="post-footer">
         <div class="reactions">
-            @for(reaction of game.reactions; track reaction.uuid) {
-                @if(reaction.parent === post.uuid) {
-                    <div class="reaction">{{reaction.value}}</div>
+            @for(reactionType of reactionTypes; track reactionType) {
+                @if(getReactionsByType(reactionType).length > 0) {
+                    <div class="reaction-group">
+                        <span class="reaction-icon">{{reactionType}}</span>
+                        <span class="reacted-by">
+                            @for(reaction of getReactionsByType(reactionType); track reaction.uuid) {
+                                {{getUserById(reaction.author).name}}@if(!$last){,}
+                            }
+                        </span>
+                    </div>
                 }
             }
         </div>
