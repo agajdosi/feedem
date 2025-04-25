@@ -145,6 +145,9 @@ export class GameService {
   async nextTask(taskDone: Task | null = null) {
     if (taskDone && taskDone.showPost) {
       for (const showTo of taskDone.showTo) {
+        const skip = Math.random()*1000*60*60; // 0-1hour, TODO: make this a bit more random
+        this.increaseFictionalTime(skip);
+
         const user = this.getUserById(showTo);
         const post = this.getPost(taskDone.showPost);
         console.log('showing post to user', user.name, user.surname);
@@ -179,10 +182,11 @@ export class GameService {
         // expensive
         // this.gameSubject.next(this.game);
       }
-      
     }
 
     // GENERATE NEW TASK
+    const skip = 1+ 7*Math.random()*1000*60*60; // 1-8hours, TODO: make this a bit more random
+    this.increaseFictionalTime(skip);
     const rx = Math.random();
     let task: Task;
     if (rx < 0.5) {
