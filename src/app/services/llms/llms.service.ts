@@ -236,7 +236,7 @@ export class LlmsService {
     }
 
     const comment_text = parsedComment.choices[0].message.content;
-    console.log(`Got comment for post (${post.uuid}): ${comment_text}`);
+    console.log(`💬 generateCommentUnderPost <- response: ${comment_text}`);
     
     const comment: Comment = {
       uuid: uuidv4(),
@@ -255,7 +255,7 @@ export class LlmsService {
   /** TOTAL DUMMY!
    * TODO: implement in v2.
    */
-  async generateCommentUnderComment(user: User, comment: Comment, view: View): Promise<Comment> {
+  async generateCommentUnderComment(user: User, comment: Comment, view: View, ftime: number): Promise<Comment> {
     const c: Comment = {
       uuid: uuidv4(),
       author: user.uuid,
