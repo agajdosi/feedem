@@ -134,9 +134,12 @@ export class LlmsService {
       _reasoning: reflection,
       _rating: rating,
       joyScore: parsedRatingObj.enjoyScore,
+      sadScore: parsedRatingObj.sadScore,
+      stupidScore: parsedRatingObj.stupidScore,
+      boringScore: parsedRatingObj.boringScore,
       reactionLikeUrge: parsedRatingObj.reactionLikeUrge,
       reactionDislikeUrge: parsedRatingObj.reactionDislikeUrge,
-      reactionHateUrge: parsedRatingObj.reactionHateUrge,
+      reactionShittyUrge: parsedRatingObj.reactionShittyUrge,
       reactionLoveUrge: parsedRatingObj.reactionLoveUrge,
       commentUrge: parsedRatingObj.commentUrge,
       shareUrge: 0, // Not implemented
@@ -152,7 +155,7 @@ export class LlmsService {
    * @returns The reaction or null if the user will not react.
    */
   decideReaction(view: View): Reaction | null {
-    const max = Math.max(view.reactionLikeUrge, view.reactionDislikeUrge, view.reactionHateUrge, view.reactionLoveUrge);
+    const max = Math.max(view.reactionLikeUrge, view.reactionDislikeUrge, view.reactionShittyUrge, view.reactionLoveUrge);
     const roll = Math.random();
     if (roll > max) {
       return null;
@@ -160,7 +163,7 @@ export class LlmsService {
 
     // if two urges are completely equal, we prefer the extremes and negations ;)
     let reactionType: React;
-    if (max === view.reactionHateUrge) reactionType = React.Hate;
+    if (max === view.reactionShittyUrge) reactionType = React.Shit;
     else if (max === view.reactionLoveUrge) reactionType = React.Love;
     else if (max === view.reactionLikeUrge) reactionType = React.Like;
     else if (max === view.reactionDislikeUrge) reactionType = React.Dislike;

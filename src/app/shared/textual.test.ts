@@ -203,7 +203,7 @@ describe('postToText', () => {
     it('should include reactions when present', () => {
         const result = postToText(mockPost, [], mockReactions, mockUsers);
         expect(result).toContain('### Reactions:');
-        expect(result).toContain('- Bob Johnson reacted: 👍🏿');
+        expect(result).toContain('- Bob Johnson reacted: 👍');
         expect(result).toContain('- Alice Smith reacted: ♥️');
     });
 
@@ -301,7 +301,7 @@ describe('postToText', () => {
         expect(result).toContain('- Bob Johnson: Great post!');
         expect(result).toContain('- Alice Smith: Thanks!');
         expect(result).toContain('### Reactions:');
-        expect(result).toContain('- Bob Johnson reacted: 👍🏿');
+        expect(result).toContain('- Bob Johnson reacted: 👍');
         expect(result).toContain('- Alice Smith reacted: ♥️');
     });
 });
@@ -393,7 +393,10 @@ describe('describeInteractions', () => {
             reactionLikeUrge: 0,
             reactionDislikeUrge: 0,
             reactionLoveUrge: 0,
-            reactionHateUrge: 0,
+            reactionShittyUrge: 0,
+            sadScore: 0,
+            stupidScore: 0,
+            boringScore: 0,
             time: Date.now()
         }
     ];
