@@ -8,7 +8,7 @@ import { RadarComponent, RadarData } from '../radar/radar.component';
 import { v4 as uuidv4 } from 'uuid';
 import Typed from 'typed.js';
 import { GameService } from '../../services/game/game.service';
-import { getCommentChanceOfUser, getReactionChancesOfUser } from '../../shared/utils';
+import { getCommentChanceOfUser, getReactionChancesOfUser, getUserEmotionScores } from '../../shared/utils';
 
 
 @Component({
@@ -75,5 +75,11 @@ export class UserComponent implements OnInit, AfterViewInit {
 
   getReactionChancesOfUser(user: User): Map<React, number> {
     return getReactionChancesOfUser(user, this.gameService.game.reactions, this.gameService.game.views);
+  }
+
+  getUserEmotionScores(user: User): Map<string, number> {
+    // TODO: JUST DO NOT KNOW WHY IT IS 😁 0.5 😢 0.3 😴 0.2 🤦‍♂️ 0.2 ALL THE FUCKING TIME
+    // WHILE THE REACTIONS WORKS JUST FINE
+    return getUserEmotionScores(user, this.gameService.game.views);
   }
 }
