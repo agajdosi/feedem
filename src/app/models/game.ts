@@ -112,7 +112,7 @@ export interface Game {
     uuid: string,
     created: number,
     updated: number,
-    time: string,
+    ftime: number, // fictional time, in milliseconds since 1970-01-01
     hero: string,
     users: User[],
     posts: Post[],
