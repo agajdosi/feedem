@@ -18,11 +18,11 @@ import { CountDownTimerService, TimerData } from '@tomaszatoo/ngx-timer';
 // graphology
 import Graph from 'graphology';
 import { GraphData } from '@tomaszatoo/graph-viewer';
-import { ScoreComponent } from '../score/score.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-controller',
-  imports: [ UserComponent, OnScreenComponent, TaskComponent, ScoreComponent ],
+  imports: [ UserComponent, OnScreenComponent, TaskComponent, FooterComponent ],
   templateUrl: './controller.component.html',
   styleUrl: './controller.component.scss'
 })

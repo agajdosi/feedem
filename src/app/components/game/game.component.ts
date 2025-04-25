@@ -19,7 +19,7 @@ import { QrCodeComponent } from 'ng-qrcode';
 // utils
 import * as utils from '../../shared/utils';
 // user
-import { ScoreComponent } from '../score/score.component';
+import { FooterComponent } from '../footer/footer.component';
 import { LlmsService } from '../../services/llms/llms.service';
 // graph
 import {
@@ -35,7 +35,7 @@ import Graph from 'graphology';
   imports: [
     UserComponent,
     QrCodeComponent,
-    ScoreComponent,
+    FooterComponent,
     GraphViewerComponent,
     FeedComponent,
     ScreensaverComponent,

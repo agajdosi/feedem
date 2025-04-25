@@ -6,14 +6,14 @@ import { Game } from '../../models/game';
 import { getLimit, getAvgEngagement } from '../../shared/utils';
 
 @Component({
-  selector: 'app-score',
+  selector: 'app-footer',
   standalone: true,
   imports: [ CommonModule ],
   providers: [ DatePipe ],
-  templateUrl: './score.component.html',
-  styleUrl: './score.component.scss'
+  templateUrl: './footer.component.html',
+  styleUrl: './footer.component.scss'
 })
-export class ScoreComponent {
+export class FooterComponent {
   gameData?: Game;
   get time(): string | null {
     if (!this._time) return null;
