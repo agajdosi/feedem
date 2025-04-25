@@ -60,7 +60,8 @@ export class LlmsService {
       author: user.uuid,
       text: post_text,
       reasoning: '', // This will be filled when the post is viewed
-      created: Date.now()
+      f_created: ftime,
+      r_created: Date.now(),
     };
 
     return post;
@@ -197,22 +198,25 @@ export class LlmsService {
   async generateCommentUnderPost(user: User, post: Post, view: View, ftime: number): Promise<Comment> {
     const genURL  = `${environment.aigenburgAPI}/generate`;
     // 1. REFLECT - think about the post
-    const response = await fetch(genURL, {
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_generate_comment",
+      prompt_variables: {
+        user_bio: user.bio,
+        author_name: post.author,
+        author_surname: post.author,
+        post_text: post.text,
+        reasoning: view._reasoning,
+        dialect: user.dialect,
+        timestring: new Date(ftime).toISOString(),
+      }
+    })
+    console.log('💬 generateCommentUnderPost -> sending data:', body);
+    const response = await fetch(genURL, { // https://phoenix.lab.gajdosik.org/prompts/UHJvbXB0Ojc=
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ // https://phoenix.lab.gajdosik.org/prompts/UHJvbXB0Ojc=
-        prompt_identifier: "feedem_generate_comment",
-        prompt_variables: {
-          user_bio: user.bio,
-          author_name: post.author,
-          author_surname: post.author,
-          post_text: post.text,
-          reasoning: view._reasoning,
-          dialect: user.dialect,
-        }
-      })
+      body: body
     })
 
     const commentData = await response.json();

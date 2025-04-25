@@ -83,7 +83,8 @@ export interface Post {
     author: string,
     text: string,
     reasoning: string,
-    created: number
+    f_created: number, // fictional time of creation
+    r_created: number, // real time of creation (GMT)
 }
 
 export enum CommentParentType {
