@@ -20,7 +20,7 @@
             }
         </div>
         <div class="comments">
-            @for(comment of game.comments; track comment.uuid) {
+            @for(comment of game.comments.slice().reverse(); track comment.uuid) {
                 @if(comment.parent === post.uuid) {
                     <app-comment [comment]="comment"></app-comment>
                 }
