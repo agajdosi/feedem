@@ -10,11 +10,13 @@ export function getLimit(tasks: number): number {
 }
 
 /** Get the users' average engagement caused by the Algorithm. 
- * If there are no views, return maximum engagement of 200, because the game just started.
-*/
+ * If there are no views, return minimum engagement of 100, because the game just started.
+ * The average engagement is calculated by dividing the sum of comments and reactions by the number of views,
+ * and then multiplying by 100, dividing by 2 (=50) - because there are 2 possible interactions per post, but only 1 view.
+ */
 export function  getAvgEngagement(views: number, comments: number, reactions: number): number {
-  if (views === 0) return 200;
-  return 100 * (reactions + comments) / views;
+  if (views === 0) return 100;
+  return (50 * (reactions + comments)) / views;
 }
 
 
