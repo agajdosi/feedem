@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { User, Relation, Post, Game } from '../../models/game';
-import { GraphNode } from '../../models/graph-node';
+import { Game } from '../../models/game';
+// import { GraphNode } from '../../models/graph-node';
 import { GraphData, GraphLayoutSettings } from '@tomaszatoo/graph-viewer';
 import { Assets } from 'pixi.js';
 import Graph from 'graphology';
@@ -16,7 +16,7 @@ export class GraphService {
       barnesHutOptimize: false,
       barnesHutTheta: 0.5,
       edgeWeightInfluence: 1,
-      gravity: 13,
+      gravity: 40,
       linLogMode: true,
       outboundAttractionDistribution: true,
       scalingRatio: 50,
@@ -148,10 +148,10 @@ export class GraphService {
     return graphData;
   }
 
-
-  getUserPaths(graph: Graph, userId: string): any {
-    console.log('paths of user', userId);
-    const paths = singleSourceLength(graph, userId);
+  // TODO: not used by any component
+  getNodePaths(graph: Graph, nodeId: string): any {
+    console.log('paths of node', nodeId);
+    const paths = singleSourceLength(graph, nodeId);
     console.log('paths', paths);
   }
 
