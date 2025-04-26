@@ -8,7 +8,7 @@ import { UserComponent } from '../user/user.component';
 import { OnScreenComponent } from '../on-screen/on-screen.component';
 import { TaskComponent } from '../task/task.component';
 // services
-import { SocketEvent, SocketService, SocketCommand } from '../../services/socket/socket.service';
+import { SocketEvent, SocketCommand } from '../../services/socket/socket.service';
 import { GameService } from '../../services/game/game.service';
 import { GraphService } from '../../services/graph/graph.service';
 // rxjs
@@ -30,7 +30,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
 
   private gameControlSub: Subscription = new Subscription();
   private gameSub: Subscription = new Subscription();
-  private socketSub: Subscription = new Subscription();
+  private gameMessageSub: Subscription = new Subscription();
   private commentsSub: Subscription = new Subscription();
   private reactionsSub: Subscription = new Subscription();
   private taskSub: Subscription = new Subscription();
@@ -55,7 +55,6 @@ export class ControllerComponent implements OnInit, OnDestroy {
   pathToTarget: string[] = [];
 
   constructor(
-    private readonly socketService: SocketService,
     private readonly gameService: GameService,
     private readonly route: ActivatedRoute,
     private readonly countDown: CountDownTimerService,
@@ -86,7 +85,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
         -- loop end --
       */
       // subscribe sockets
-      this.socketSub = this.socketService.socketMessage.subscribe({
+      this.gameMessageSub = this.gameService.gameMessage.subscribe({
         next: (e: SocketEvent) => {
           // console.log('socket message in controller', e);
           switch (e.type) {
@@ -97,7 +96,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
               // console.log('game instance taken control from', this.connectedGameInstance);
               if (e.data.id === this.connectedGameInstance) {
                 this.canControl = false;
-                this.socketService.destroy();
+                this.gameService.destroy();
               }
               break;
             case 'game': 
@@ -141,7 +140,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
         }
       })
       // subscribe controllable from sockets
-      this.gameControlSub = this.socketService.canControl.subscribe({
+      this.gameControlSub = this.gameService.canControl.subscribe({
         next: (canControl: boolean) => this.canControl = canControl
       });
       // request control
@@ -159,7 +158,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
           
           this.sendGameToPeers();
           // notify peers about reaction
-          this.socketService.sendSocketMessage({
+          this.gameService.sendGameMessage({
             command: 'reaction',
             data: {
               reaction: reaction
@@ -187,7 +186,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
           // console.error('CREATE REALTION FOR COMMENT', comment, [relationToComment, relationToPost]);
           this.sendGameToPeers();
           // notify peers about comment
-          this.socketService.sendSocketMessage({
+          this.gameService.sendGameMessage({
             command: 'comment',
             data: {
               comment: comment
@@ -200,7 +199,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
         next: (task: Task) => {
           console.log('on task', task);
           // notify peers about task
-          this.socketService.sendSocketMessage({
+          this.gameService.sendGameMessage({
             command: 'task',
             data: {
               task: task
@@ -215,8 +214,8 @@ export class ControllerComponent implements OnInit, OnDestroy {
     this.countDown.stop();
     this.gameControlSub.unsubscribe();
     this.gameSub.unsubscribe();
-    this.socketSub.unsubscribe();
-    this.socketService.destroy();
+    this.gameMessageSub.unsubscribe();
+    this.gameService.destroy();
     window.removeEventListener('click', this.userInteractionHandler);
     window.removeEventListener('scroll', this.userInteractionHandler);
     this.commentsSub.unsubscribe();
@@ -262,7 +261,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
         this.socketService */
         if (this.countDownTimer.valueNumber === 0) { // time passed
           this.canControl = false;
-          this.socketService.destroy();
+          this.gameService.destroy();
         }
         // console.log('countDown complete', this.countDownTimer)
       }
@@ -270,7 +269,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
   }
 
   private sendGameToPeers(): void {
-    this.socketService.sendSocketMessage({
+    this.gameService.sendGameMessage({
       command: 'update-game',
       data: {
         game: this.game
@@ -281,7 +280,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
   selectHero(userId: string): void {
     console.log('select HERO', userId);
     this.gameService.setHero(userId);
-    this.socketService.sendSocketMessage({
+    this.gameService.sendGameMessage({
       command: 'select-hero',
       data: {
         userId: userId
@@ -293,7 +292,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
 
   increaseFictionalTime(milliseconds: number): void {
     this.gameService.increaseFictionalTime(milliseconds);
-    this.socketService.sendSocketMessage({
+    this.gameService.sendGameMessage({
       command: 'set-fictional-time',
       data: {
         ftime: this.gameService.getFictionalTime()
@@ -340,7 +339,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
         userId: id
       }
     }
-    this.socketService.sendSocketMessage(socketCommand);
+    this.gameService.sendGameMessage(socketCommand);
   }
 
   isAnyOpenTask(): boolean {
@@ -352,7 +351,7 @@ export class ControllerComponent implements OnInit, OnDestroy {
   }
 
   private requestGameControl(): void {
-    this.socketService.requestGameControl();
+    this.gameService.requestGameControl();
   }
 
 }

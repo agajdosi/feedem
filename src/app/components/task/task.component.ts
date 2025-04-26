@@ -7,7 +7,6 @@ import { UserComponent } from '../user/user.component';
 import { OnScreenComponent } from '../on-screen/on-screen.component';
 // services
 import { GameService } from '../../services/game/game.service';
-import { SocketService } from '../../services/socket/socket.service';
 // graphology
 import Graph from 'graphology';
 import { bidirectional } from 'graphology-shortest-path/unweighted';
@@ -42,8 +41,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private readonly gameService: GameService,
-    private readonly socketService: SocketService
+    private readonly gameService: GameService
   ){}
 
   ngOnInit(): void {
@@ -54,7 +52,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     // TODO
     // save game whenever a new task is initialised (previous task was completed, if this will stay open, will see what happen)
     if (this.gameService.game) {
-      this.socketService.saveGameOnServer(this.gameService.game);
+      this.gameService.saveGame(this.gameService.game);
     }
   }
 
@@ -145,7 +143,7 @@ export class TaskComponent implements OnInit, OnDestroy {
       if (path && path.length) {
         // emit path to parent
         this.pathToTarget.emit(path);
-        this.socketService.sendSocketMessage({
+        this.gameService.sendGameMessage({
           command: 'highlight-graph-path',
           data: {
             path: path
@@ -177,7 +175,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   private notifyPeers(): void {
-    this.socketService.sendSocketMessage({
+    this.gameService.sendGameMessage({
       command: 'update-game',
       data: {
         game: this.gameService.game

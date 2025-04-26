@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 // components
 import { UserComponent } from '../user/user.component';
 import { FeedComponent } from '../feed/feed.component';
@@ -8,8 +8,7 @@ import { Game, User, Relation, RelationType } from '../../models/game';
 import { GraphNode } from '../../models/graph-node';
 import { GraphEdge } from '../../models/graph-edge';
 // services
-import { SocketService, SocketEvent, SocketCommand } from '../../services/socket/socket.service';
-// import { HttpService } from '../../services/http/http.service';
+import { SocketEvent, SocketCommand } from '../../services/socket/socket.service';
 import { GameService } from '../../services/game/game.service';
 import { GraphService } from '../../services/graph/graph.service';
 // rxjs
@@ -20,7 +19,6 @@ import { QrCodeComponent } from 'ng-qrcode';
 import * as utils from '../../shared/utils';
 // user
 import { FooterComponent } from '../footer/footer.component';
-import { LlmsService } from '../../services/llms/llms.service';
 // graph
 import {
   GraphViewerComponent,
@@ -76,7 +74,7 @@ export class GameComponent implements OnInit, OnDestroy {
   zoom: any = { scale: this.zoomScale, center: true };
   
 
-  private socketSub: Subscription = new Subscription();
+  private gameMessageSub: Subscription = new Subscription();
   private gameControllableSub: Subscription = new Subscription();
   private gameSub: Subscription = new Subscription();
   private buildedFromUpdate: boolean = false;
@@ -93,10 +91,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private readonly socketService: SocketService,
-    // private readonly httpService: HttpService,
     private readonly gameService: GameService,
-    private readonly llmsService: LlmsService,
     private readonly graphService: GraphService
   ) {
     this.graphLayoutSettings = this.graphService.layoutSettings;
@@ -112,13 +107,6 @@ export class GameComponent implements OnInit, OnDestroy {
     //     this.snapToUser(this.game.hero);
     //   }
     // }, 10 * 1000);
-    // window.addEventListener('beforeunload', this.notifyUsersAboutLeaving.bind(this));
-    // this.socketService.sendSocketMessage({
-    //   command: 'deactivate-controller-of',
-    //   data: {
-    //     userId: this.socketService.socketId
-    //   }
-    // });
     // subscribe game json
     this.gameService.gameSubject.subscribe({
       next: (game: Game) => {
@@ -150,11 +138,11 @@ export class GameComponent implements OnInit, OnDestroy {
       }
     })
     // listen to all client messages
-    this.socketSub = this.socketService.socketMessage.subscribe({
-      next: (e: SocketEvent) => this.socketMessageHandler(e)
+    this.gameMessageSub = this.gameService.gameMessage.subscribe({
+      next: (e: SocketEvent) => this.gameMessageHandler(e)
     });
     // is game controllable? (can I take control?)
-    this.gameControllableSub = this.socketService.controllable.subscribe({
+    this.gameControllableSub = this.gameService.controllable.subscribe({
       next: (controllable: boolean) => {
         this.controllable = controllable;
       }
@@ -167,7 +155,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // window.removeEventListener('beforeunload', this.notifyUsersAboutLeaving);
-    this.socketSub.unsubscribe();
+    this.gameMessageSub.unsubscribe();
     this.gameControllableSub.unsubscribe();
     this.gameSub.unsubscribe();
     clearInterval(this.snapToHeroInterval);
@@ -175,13 +163,13 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   requestGameControl(): void {
-    this.socketService.requestGameControl();
+    this.gameService.requestGameControl();
   }
 
   getControllerLink(): string {
     const location = window.location;
-    const mySocketId = this.socketService.socketId;
-    const link = `${location.protocol}//${location.host}/controller?from=${mySocketId}&valid=${this.linkValidFrom}`;
+    const myGameId = this.gameService.gameId;
+    const link = `${location.protocol}//${location.host}/controller?from=${myGameId}&valid=${this.linkValidFrom}`;
     // console.log(link);
     return link;
   }
@@ -235,7 +223,7 @@ export class GameComponent implements OnInit, OnDestroy {
     }
   }
 
-  private socketMessageHandler(e: SocketEvent): void {
+  private gameMessageHandler(e: SocketEvent): void {
     switch (e.type) {
       case 'game':
         // console.log('game from server', e.data);
@@ -434,9 +422,9 @@ export class GameComponent implements OnInit, OnDestroy {
 
   
   // CANNOT SEND SOCKET MESSAGE IF IM NOT ON CONTROL (ONLY CONTROLLER)
-  private sendSocketMessage(message: any): void {
-    this.socketService.sendSocketMessage(message);
-  }
+  // private sendSocketMessage(message: any): void {
+  //   this.socketService.sendSocketMessage(message);
+  // }
 
  
 }

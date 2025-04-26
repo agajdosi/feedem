@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { User, Post, Game , Reaction, TaskType, Task, Relation, RelationType, Comment} from '../../models/game';
 import { LlmsService } from '../llms/llms.service';
 // http client
@@ -8,18 +8,31 @@ import Graph from 'graphology';
 import { Subject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { postToText, describeRecentActivity } from '../../shared/textual';
+// services
+import { SocketEvent, SocketService } from '../socket/socket.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class GameService {
+
+  // private socketService!: SocketService;
+
   gameSubject: Subject<Game> = new Subject();
   private _game!: Game;
 
   onReaction: Subject<Reaction> = new Subject();
   onComment: Subject<Comment> = new Subject();
   onTask: Subject<Task> = new Subject();
+
+  // MARK: SOCKET EMITTERS
+  gameMessage: Subject<SocketEvent> = new Subject();
+  controllable: Subject<boolean> = new Subject();
+  canControl: Subject<boolean> = new Subject();
+  get gameId(): string | undefined {
+    return this.socketSerivce.socketId;
+  }
 
   // FICTIONAL TIME
   gameTime: Subject<number> = new Subject();
@@ -45,8 +58,14 @@ export class GameService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly llmsService: LlmsService
+    private readonly llmsService: LlmsService,
+    private readonly socketSerivce: SocketService
   ) {
+    // init socket emitters
+    this.gameMessage = this.socketSerivce.socketMessage;
+    this.controllable = this.socketSerivce.controllable;
+    this.canControl = this.socketSerivce.canControl;
+
     this.gameSubject.subscribe({
       next: (g: Game) => {
         if (!this.game) {
@@ -304,6 +323,24 @@ export class GameService {
   // MARK: COMMENT
   getComment(commentId: string): Comment {
     return this.game.comments.find(comment => commentId === comment.uuid)!;
+  }
+
+  // MARK: SOCKET METHODS WRAPPERS
+  requestGameControl(): void {
+    return this.socketSerivce.requestGameControl();
+  }
+
+  sendGameMessage(value: any): void {
+    this.socketSerivce.sendSocketMessage(value);
+  }
+
+  saveGame(game: Game): void {
+    this.socketSerivce.saveGameOnServer(game);
+  }
+
+  destroy(): void {
+    // TODO: is anythign to destroy here?
+    this.socketSerivce.destroy();
   }
 
 }
