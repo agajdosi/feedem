@@ -135,7 +135,7 @@ export function getReactionChancesOfUser(user: User, reactions: Reaction[], view
  */
 export function getUserEmotionScores(user: User, views: View[]): Map<string, number> {
   const userViews = getViewsByUser(views, user);
-  console.log('userViews', userViews);
+  // console.log('userViews', userViews);
   if (userViews.length === 0) {
     return new Map([
       ['😁', 0],
