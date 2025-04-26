@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-// services
-import { SocketService } from '../../services/socket/socket.service';
 
 @Component({
   selector: 'app-main-menu',
@@ -11,11 +9,6 @@ import { SocketService } from '../../services/socket/socket.service';
 })
 export class MainMenuComponent {
 
-  constructor(
-    // private socketService: SocketService
-  ) {
-    // this.socketService.requestControlerRole();
-    // this.socketService.sendSocketMessage({test: 'message'});
-  }
+  constructor() {}
 
 }
