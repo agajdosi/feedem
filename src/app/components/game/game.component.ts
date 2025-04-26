@@ -72,6 +72,10 @@ export class GameComponent implements OnInit, OnDestroy {
 
   game!: Game;
 
+  private zoomScale: number = 0.5;
+  zoom: any = { scale: this.zoomScale, center: true };
+  
+
   private socketSub: Subscription = new Subscription();
   private gameControllableSub: Subscription = new Subscription();
   private gameSub: Subscription = new Subscription();
@@ -80,6 +84,13 @@ export class GameComponent implements OnInit, OnDestroy {
 
   renderNode = this.createNodeRenderer();
   renderEdge = this.createEdgeRenderer();
+
+  get nodesCount(): number {
+    if (this.graph && this.graph.nodes().length) {
+      return this.graph.nodes.length;
+    }
+    return 0;
+  }
 
   constructor(
     private readonly socketService: SocketService,
@@ -188,6 +199,7 @@ export class GameComponent implements OnInit, OnDestroy {
       // console.log('graph updated -> se')
       this.selectHero();
     }
+    this.zoom = { scale: this.zoomScale - (this.nodesCount / 80), center: true };
   }
 
   private buildGraphDataFromGame(game: Game): void {
