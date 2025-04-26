@@ -26,7 +26,7 @@ export class GraphEdge extends EdgeWrapper {
                 g.moveTo(pos.source.x, pos.source.y)
                 .lineTo(pos.target.x, pos.target.y)
                 .stroke({
-                    color: this.select || this.highlight ? 0xffffff : 0x666666,
+                    color: this.select || this.highlight ? 0xffffff : 0x444444,
                     pixelLine: false,
                     width: this.select || this.highlight ? strokeWidth * 2 : strokeWidth /* * 2 */
                 });
