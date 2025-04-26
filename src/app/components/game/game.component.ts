@@ -70,7 +70,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   game!: Game;
 
-  private zoomScale: number = 0.5;
+  private zoomScale: number = 0.8;
   zoom: any = { scale: this.zoomScale, center: true };
   
 
