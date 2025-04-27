@@ -50,10 +50,10 @@ export class GameComponent implements OnInit, OnDestroy {
   graphData!: GraphData;
   highlightUser: string | undefined  = undefined;
   highlightUsersConnection: string | undefined = undefined;
-  selectUser: string | undefined = undefined;
-  clearUsersHighlight: boolean = false;
-  clearUserSelection: boolean = false;
-  clearConnectionsHighlight: boolean = false;
+  selectUser: string = '';
+  clearUsersHighlight: {clear: boolean} = {clear: false};
+  clearUserSelection: {clear: boolean} = {clear: false};
+  clearConnectionsHighlight: {clear: boolean} = {clear: false};
   graph!: Graph;
   addGraphNodes: Record<string, any> = {}
   addGraphEdges: ReadonlyArray<{
@@ -80,6 +80,8 @@ export class GameComponent implements OnInit, OnDestroy {
   private buildedFromUpdate: boolean = false;
   private heroSelected: boolean = false;
 
+  private nodesStorage: any = {};
+
   renderNode = this.createNodeRenderer();
   renderEdge = this.createEdgeRenderer();
 
@@ -90,6 +92,13 @@ export class GameComponent implements OnInit, OnDestroy {
     return 0;
   }
 
+  get heroId(): string {
+    if (this.game && this.game.hero) {
+      return this.game.hero;
+    }
+    return '';
+  } 
+
   constructor(
     private readonly gameService: GameService,
     private readonly graphService: GraphService
@@ -97,6 +106,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.graphLayoutSettings = this.graphService.layoutSettings;
   }
 
+  // MARK: INIT
   ngOnInit(): void {
     // update validity of link each 60s (controller has 2mins)
     this.linkValidityInterval = setInterval(() => {
@@ -113,11 +123,11 @@ export class GameComponent implements OnInit, OnDestroy {
         if (game && game.uuid) {
           if (this.game/*  && game.updated > this.game.updated */) {
             // sync graph with new game (posts, comments, reactions)
-            this.syncGraphWithGame(game);
+            this.updateExistingGame(game);
             // this.buildGraphDataFromGame(this.game);
             if (!this.buildedFromUpdate) {
               this.buildGraphDataFromGame(this.game);
-              // this.selectHero();
+              this.selectHero();
               console.log('build graph with relations.length', game.relations.length);
             }
             this.buildedFromUpdate = true;
@@ -149,10 +159,7 @@ export class GameComponent implements OnInit, OnDestroy {
     })
   }
 
-  getUserById(id: string): User | undefined {
-    return utils.getUserById(id, this.game.users);
-  }
-
+  // MARK: DESTROY
   ngOnDestroy(): void {
     // window.removeEventListener('beforeunload', this.notifyUsersAboutLeaving);
     this.gameMessageSub.unsubscribe();
@@ -162,9 +169,14 @@ export class GameComponent implements OnInit, OnDestroy {
     clearInterval(this.linkValidityInterval);
   }
 
-  requestGameControl(): void {
-    this.gameService.requestGameControl();
+  getUserById(id: string): User | undefined {
+    return utils.getUserById(id, this.game.users);
   }
+
+  // MARK: CONTROL LINK
+  // requestGameControl(): void {
+  //   this.gameService.requestGameControl();
+  // }
 
   getControllerLink(): string {
     const location = window.location;
@@ -179,17 +191,20 @@ export class GameComponent implements OnInit, OnDestroy {
     window.open(link, '_blank');
   }
 
+  
+
+  // MARK: GRAPH BUILD/SYNC
+
   graphUpdated(graph: Graph): void {
     if (!this.graph) console.log('graphInitialised', graph);
     if (this.graph) console.log('graphUpdated', graph);
     if (graph) this.graph = graph;
     if (this.game.hero) {
-      // console.log('graph updated -> se')
+      // console.log('graph updated -> select hero', this.game.hero);
       this.selectHero();
     }
     this.zoom = { scale: this.zoomScale - (this.nodesCount / 80), center: true };
   }
-
   private buildGraphDataFromGame(game: Game): void {
     // build user graph
     // console.log('game', game);
@@ -203,7 +218,7 @@ export class GameComponent implements OnInit, OnDestroy {
     }).catch((e: any) => console.error(e));
   }
 
-  private syncGraphWithGame(game: Game): void {
+  private updateExistingGame(game: Game): void {
     // TODO: update graph
     // ... add posts, mainly
     //
@@ -211,15 +226,20 @@ export class GameComponent implements OnInit, OnDestroy {
     // update game object
     this.gameService.updateGame(this.game, game);
   }
+
+  // MARK: GRAPH RENDERERS
   private createNodeRenderer() {
-    return ({ attributes, position }: any) => {
-      return new GraphNode(position, attributes);
+    return ({ node, attributes, position }: any) => {
+      const nodeGfx = new GraphNode(node, position, attributes);
+      this.nodesStorage[node] = nodeGfx;
+      // console.log('nodesStorage', this.nodesStorage);
+      return nodeGfx;
     };
   }
 
   private createEdgeRenderer() {
-    return ({attributes, targetSize}: any) => {
-      return new GraphEdge({source: {x: 1, y: 1}, target: {x: 1, y: 1}}, attributes, targetSize);
+    return ({edge, attributes, targetSize}: any) => {
+      return new GraphEdge(edge, {source: {x: 1, y: 1}, target: {x: 1, y: 1}}, attributes, targetSize);
     }
   }
 
@@ -230,44 +250,21 @@ export class GameComponent implements OnInit, OnDestroy {
         if (e.data && e.data.uuid) this.gameService.gameSubject.next(e.data); // TODO: update game, not replace
         break;
       case 'message':
-        this.socketCommandsHandler(e.data);
+        this.gameCommandsHandler(e.data);
         break;
       default:
         console.log('recieved socket event', e);
     }
   }
 
-  private socketCommandsHandler(c: SocketCommand): void {
+  private gameCommandsHandler(c: SocketCommand): void {
     // console.log('socketCommand', c);
     switch (c.command) {
       case 'highlight-graph-user':
         this.highlighGraphUser(c.data.userId, true);
         break;
       case 'highlight-graph-path':
-        const path = c.data.path;
-        this.clearConnectionsHighlight = true;
-        this.highlightUsersConnection = undefined;
-        let i = 0;
-        const highlightEdge = () => {
-          const source = path[i];
-          const target = path[i+1];
-          if (target && source) {
-            this.highlightUsersConnection = undefined;
-            // console.log('source----> surname: ', this.gameService.getUserById(source).surname);
-            // console.log('target----> surname: ', this.gameService.getUserById(target).surname);
-            this.graph.findEdge(source, target, (edge: string) => {
-              // console.log('FOUND EDGE', edge);
-              this.highlightUsersConnection = edge;
-              i++;
-              setTimeout(() => highlightEdge(), 10);
-            });
-          } else {
-            this.clearConnectionsHighlight = false;
-          }
-          
-        }
-        setTimeout(() => highlightEdge(), 10);
-        this.highlighGraphUser(path[path.length - 1]);
+        this.highlightGraphPath(c.data.path);
         break;
       case 'select-hero':
         this.gameService.setHero(c.data.userId);
@@ -316,12 +313,6 @@ export class GameComponent implements OnInit, OnDestroy {
                 // remove label and create again with different label
                 this.graph.dropEdge(edge);
                 this.addGraphEdges = [{source: post.uuid, target: reaction.author, attributes: { label: reaction.value, colors: { label: 0xdddddd} }}];
-                // const edgeLabel = this.graph.getEdgeAttribute(edge, 'label');
-                // this.graph.setEdgeAttribute(edge, 'label', `${reaction.value}`);
-                // // this.highlightUsersConnection = edge;
-                // this.addGraphEdges = [];
-                // rehighlight hero
-                // this.selectHero();
               }
             })
           }
@@ -333,14 +324,21 @@ export class GameComponent implements OnInit, OnDestroy {
         const task = c.data.task;
         const post = this.gameService.getPost(task.showPost);
         if (post) {
+          // clear path highlight
+          this.clearConnectionsHighlight = { clear: true };
+          // clear users highlight
+          this.clearUsersHighlight = { clear: true };
+          //
           const author = post.author;
           const node = {};
           (node as any)[post.uuid] = {x: 1, y: 1, type: 'post'}
           this.addGraphNodes = node;
           // create edges
           const edges = [];
+          // from author to post
           edges.push({source: author, target: post.uuid, attributes: {label: RelationType.Write, colors: { label: 0xdddddd} }});
           for (const readerId of task.showTo) {
+            // from post to readers
             edges.push({source: post.uuid, target: readerId, attributes: {label: RelationType.Get, colors: { label: 0xdddddd} }})
           }
           this.addGraphEdges = edges;
@@ -365,13 +363,14 @@ export class GameComponent implements OnInit, OnDestroy {
     return this.gameService.userIsFollowed(this.graph, userId);
   }
 
+  // MARK: GRAPH HIGHLIGHTING
   private highlighGraphUser(userId: string, withConnections: boolean = false): void {
-    this.clearUsersHighlight = true;
-    this.clearConnectionsHighlight = true;
+    if (!this.graph) return;
+    this.clearUsersHighlight = {clear: true};
+    this.clearConnectionsHighlight = {clear: true};
+    // console.log('highlightGraphUser', userId);
     setTimeout(() => {
       this.highlightUser = userId;
-      this.clearUsersHighlight = false;
-      this.clearConnectionsHighlight = false;
       if (withConnections) {
         const connections: string[] = [];
         this.graph.findEdge(userId, (edge: string, attributes: any) => {
@@ -391,35 +390,61 @@ export class GameComponent implements OnInit, OnDestroy {
     }, 10);
   }
 
+  private highlightGraphPath(path: string[]): void {
+    if (!this.graph) return;
+    this.clearConnectionsHighlight = {clear: true};
+    this.highlightUsersConnection = undefined;
+    // console.log('highlightGraphPath', path);
+    let i = 0;
+    const highlightEdge = () => {
+      const source = path[i];
+      const target = path[i+1];
+      if (target && source) {
+        this.highlightUsersConnection = undefined;
+        // console.log('source----> surname: ', this.gameService.getUserById(source).surname);
+        // console.log('target----> surname: ', this.gameService.getUserById(target).surname);
+        this.graph.findEdge(source, target, (edge: string) => {
+          // console.log('FOUND EDGE', edge);
+          this.highlightUsersConnection = edge;
+          i++;
+          setTimeout(() => highlightEdge(), 10);
+        });
+      } else {
+        // this.clearConnectionsHighlight = false;
+      }
+      
+    }
+    setTimeout(() => highlightEdge(), 10);
+    this.highlighGraphUser(path[path.length - 1]);
+  }
+
+  // MARK: GRAPH SELECT
+  private selectHero(): void {
+    if (!this.graph || !this.game) return;
+    if (this.heroSelected) return;
+    // console.log('selectHero', 'hero selected?', this.heroSelected);
+    if (this.nodesStorage[this.game.hero]) {
+      this.nodesStorage[this.game.hero].select = true;
+      this.heroSelected = true;
+    }
+  }
+
+  // MARK: GRAPH SNAP
   private snapToUser(userId: string): void {
+    if (!this.graph) return;
     console.log('snap to user', userId);
     this.snapToCenter = false;
     this.snapToNode = undefined;
     setTimeout(() => this.snapToNode = userId, 100);
   }
 
-  private selectHero(): void {
-    if (this.heroSelected) return;
-    // rehighlight hero
-    this.clearUserSelection = true;
-    this.clearUsersHighlight = true;
-    this.clearConnectionsHighlight = true;
-    this.selectUser = undefined;
-    setTimeout(() => {
-      this.selectUser = this.gameService.getHero().uuid;
-      this.clearUserSelection = false;
-      this.clearUsersHighlight = false;
-      this.clearConnectionsHighlight = false;
-      // this.heroSelected = true;
-    }, 1000);
+  log(key: any, value: any): void {
+    console.log(key, value);
   }
 
-  saveGame(): void {
-    // cannot save game from this point, only controllers can
-  }
-
-  
-
+  // saveGame(): void {
+  //   // cannot save game from this point, only controllers can
+  // }
   
   // CANNOT SEND SOCKET MESSAGE IF IM NOT ON CONTROL (ONLY CONTROLLER)
   // private sendSocketMessage(message: any): void {

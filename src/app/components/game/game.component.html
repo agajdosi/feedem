@@ -3,12 +3,12 @@
     <graph-viewer
         [graphData]="graphData"
         [animate]="true"
+        [interactive]="true"
         [zoom]="zoom"
         [highlightNode]="highlightUser"
         [highlightEdge]="highlightUsersConnection"
         [addNodes]="addGraphNodes"
         [addEdges]="addGraphEdges"
-        [selectNode]="selectUser"
         [clearNodesHighlight]="clearUsersHighlight"
         [clearNodesSelection]="clearUserSelection"
         [clearEdgesHighlight]="clearConnectionsHighlight"
@@ -19,6 +19,7 @@
         [edgeRenderer]="renderEdge"
         (graphInitialised)="graphUpdated($event)"
         (graphUpdated)="graphUpdated($event)"
+        (onNodeSelectChange)="log('nodeSelectChange', $event)"
     ></graph-viewer>
 }
 
