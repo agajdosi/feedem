@@ -7,12 +7,13 @@ export class GraphEdge extends EdgeWrapper {
     private lineInitialised: boolean = false;
 
     constructor(
+        edgeId: string,
         edgePosition: EdgePosition,
         attributes?: GraphEdgeAttributes,
         targetSize?: number,
         selfloop: boolean = false
     ){
-        super(edgePosition, attributes, targetSize, selfloop);
+        super(edgeId, edgePosition, attributes, targetSize, selfloop);
     }
 
     protected override initEdgeLine(g: Graphics): void {

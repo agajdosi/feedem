@@ -30,10 +30,11 @@ export class GraphNode extends NodeWrapper {
     }
 
     constructor(
+        nodeId: string,
         nodePosition: Point,
         attributes?: Partial<ExtendedGraphNodeAttributes>
     ) {
-        super(nodePosition, attributes);
+        super(nodeId, nodePosition, attributes);
         this.defaultNodeColors = this.customColors;
         // console.log('attributes', attributes);
         if (attributes && attributes.image) {
@@ -78,26 +79,22 @@ export class GraphNode extends NodeWrapper {
             } else {
                 g.parent.scale = 1;
             }
-            if (this.profilePicture) {
-                // const grayscale = new GrayscaleFilter();
-                // this.profilePicture.filters = this.select || this.highlight ? [] : [grayscale];
-                if (!this.userNodeInitialised) {
-                    this.userNodeContainer.width = g.parent.width;
-                    this.userNodeContainer.height = g.parent.height;
-                    this.profilePicture.width = (this.radius() * 2) + 10;
-                    this.profilePicture.height = (this.radius() * 2) + 10;
-                    this.profilePicture.x = (this.radius() + 5) * (-1);
-                    this.profilePicture.y = (this.radius() + 5) * (-1);
-                    g.parent.addChild(this.userNodeContainer);
-                    this.userNodeContainer.addChild(this.profilePicture);
-                    this.userNodeContainer.addChild(this.userNodeMask);
-                    this.userNodeContainer.mask = this.userNodeMask;
-                    this.userNodeMask.circle(0, 0, this.radius() + 5)
-                    .fill({
-                        color: this.defaultNodeColors.fill
-                    });
-                    this.userNodeInitialised = true; 
-                }
+            if (this.profilePicture && !this.userNodeInitialised) {
+                this.userNodeContainer.width = g.parent.width;
+                this.userNodeContainer.height = g.parent.height;
+                this.profilePicture.width = (this.radius() * 2) + 10;
+                this.profilePicture.height = (this.radius() * 2) + 10;
+                this.profilePicture.x = (this.radius() + 5) * (-1);
+                this.profilePicture.y = (this.radius() + 5) * (-1);
+                g.parent.addChild(this.userNodeContainer);
+                this.userNodeContainer.addChild(this.profilePicture);
+                this.userNodeContainer.addChild(this.userNodeMask);
+                this.userNodeContainer.mask = this.userNodeMask;
+                this.userNodeMask.circle(0, 0, this.radius() + 5)
+                .fill({
+                    color: this.defaultNodeColors.fill
+                });
+                this.userNodeInitialised = true; 
             }
         }
         // TODO: type comment, post
@@ -109,23 +106,12 @@ export class GraphNode extends NodeWrapper {
                     color: 0x000000,
                 });
             if (!this.postNodeInitialised) {
-
                 g.parent.addChild(this.postNodeSvg);
                 this.postNodeSvg.rect(0, 0, this.radius() / .9, this.radius() / .9)
                 .fill(0xdddddd);
-                // this.postNodeSvg.rotation = this.degrees_to_radians(45);
-                // this.postNodeSvg.y = g.y; 
-                this.postNodeSvg.pivot = {x: this.postNodeSvg.width / 2, y: this.postNodeSvg.height / 2}
-                // this.postNodeSvg.pivot = {x: g.x - g.width / 2, y: g.y - g.height / 2}
-                
-                // this.postNodeSvg.x -=1;
-                // this.postNodeSvg.y -=1;
-
+                this.postNodeSvg.pivot = {x: this.postNodeSvg.width / 2, y: this.postNodeSvg.height / 2};
                 this.postNodeInitialised = true;
             }
-            // this.postNodeSvg.x = g.x - (g.width / 4);
-            // this.postNodeSvg.y = g.y - (g.height / 4);
-            // this.postNodeSvg.scale = .9;
         }
         // COMMENT
         if (this.type && this.type === 'comment') {
@@ -139,20 +125,12 @@ export class GraphNode extends NodeWrapper {
                 .fill(0xdddddd);
                 this.commentNodeSvg.rotation = this.degrees_to_radians(45);
                 this.commentNodeSvg.pivot = {x: this.commentNodeSvg.width / 2, y: this.commentNodeSvg.height / 2}
-                
-                // this.commentNodeSvg.x -=1;
-                // this.commentNodeSvg.y -=1;
-
                 this.commentNodeInitialised = true;
             }
-            // this.commentNodeSvg.x = g.x - (g.width / 4);
-            // this.commentNodeSvg.y = g.y - (g.height / 4);
-            // this.commentNodeSvg.scale = .9;
         } 
     }
 
     override initLabelGraphics(t: Text): void {
-        // console.log('label?', this.attributes.label);
         t.text = this.attributes.label && this.attributes.label ? this.attributes.label : '';
         t.style = {
             fontSize: 20,
@@ -160,12 +138,8 @@ export class GraphNode extends NodeWrapper {
             fill: this.select ? this.defaultNodeColors.selection : (this.highlight ? this.defaultNodeColors.highlight : this.defaultNodeColors.label),
             align: 'center'
         }
-        // console.log('nodeContainer', nodeContainer);
-        // if (nodeContainer) {
         t.x = this.attributes.radius ? (this.attributes.radius + 20) : 10;
-        t.y = -(t.height / 2);
-        // }
-        
+        t.y = -(t.height / 2);        
     }
 
     private radius(): number {
