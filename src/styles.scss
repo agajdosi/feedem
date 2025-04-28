@@ -444,7 +444,7 @@ app-task {
     justify-content: center;
     margin-bottom: calc($space * 2);
     .task-description {
-        margin-bottom: calc($space * 2);
+        margin: calc($space / 3) 0 calc($space / 1) 0;
         h2 {
             margin-bottom: 0;
             text-align: center;

@@ -1,6 +1,9 @@
 @if(task) {
     @if(task.type === 'distributePost') {
-        <h3>Select Users to distribute post:</h3>
+        <div class="task-description">
+            <h2>Outbound Content Created</h2>
+            <div>Pick users to receive your Managed User's post.</div>
+        </div>
         @if (showTo.length && showTo.length >= 2) {
             <div class="controls">
                 <button (click)="distribute()" class="distribute">Send Post</button>
@@ -37,7 +40,7 @@
             </div>
         }
         <div class="controls">
-            <button (click)="notShowAny()" class="decline">Not Show Any</button>
+            <button (click)="notShowAny()" class="decline">Reject All Posts</button>
         </div>
     }
 }
