@@ -443,14 +443,21 @@ app-task {
     align-items: center;
     justify-content: center;
     margin-bottom: calc($space * 2);
-    .task-description {
-        margin: calc($space / 3) 0 calc($space / 1) 0;
-        h2 {
-            margin-bottom: 0;
-            text-align: center;
-        }
-        p {
-            margin-top: 0;
-        }
+}
+
+.task-description {
+    margin: calc($space / 3) 0 calc($space / 1) 0;
+    h1, h2 {
+        margin-bottom: 0;
+        text-align: center;
+    }
+    p {
+        margin-top: 0;
+    }
+}
+
+mat-icon {
+    &.cws90 {
+        transform: rotate(90deg);
     }
 }
