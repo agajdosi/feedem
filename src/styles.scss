@@ -159,6 +159,11 @@ app-controller {
         align-items: center;
     }
 
+    .warning {
+        margin-top: 30vh;
+        text-align: center;
+    }
+
     & > .controls {
         h2 { margin: 0;}
         position: fixed;

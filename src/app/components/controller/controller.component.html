@@ -45,9 +45,17 @@
     </div>
 }@else {
     <div class="controls">
-        <h2>Reconnect the game...</h2>
+        <mat-icon
+            aria-hidden="false"
+            aria-label="No Control"
+            fontIcon="link_off">
+        </mat-icon>
     </div>
-}
+    <div class="warning">
+        <h1>Control Permissions Lost</h1>
+        <p>Scan the QR code again to continue</p>
+    </div>
+    }
 
 
 <app-footer></app-footer>
