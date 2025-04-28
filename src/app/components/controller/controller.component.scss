@@ -3,7 +3,7 @@
 // https://github.com/tobiassjosten/SpinKit
 // thanks Tobias!
 
-@import '../../../styles.scss';
+@use '../../../styles.scss' as *;
 
 .spinner {
     width: 60px;
