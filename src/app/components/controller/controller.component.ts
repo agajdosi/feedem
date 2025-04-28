@@ -20,11 +20,10 @@ import { CountDownTimerService, TimerData } from '@tomaszatoo/ngx-timer';
 // graphology
 import Graph from 'graphology';
 import { GraphData } from '@tomaszatoo/graph-viewer';
-import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-controller',
-  imports: [ UserComponent, OnScreenComponent, TaskComponent, FooterComponent, MaterialModule ],
+  imports: [ UserComponent, OnScreenComponent, TaskComponent, MaterialModule ],
   templateUrl: './controller.component.html',
   styleUrl: './controller.component.scss'
 })
