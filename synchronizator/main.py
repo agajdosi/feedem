@@ -11,6 +11,7 @@ PRODUCTION = os.environ.get('PRODUCTION', 'false').lower() == 'true'
 SERVER_USERNAME = os.environ.get('SERVER_USERNAME', '')
 SERVER_PASSWORD = os.environ.get('SERVER_PASSWORD', '')
 GAME_SAVE_FILE = os.path.join(os.path.dirname(__file__), 'data/game_save.json')
+BUFFER_SIZE = int(os.environ.get('BUFFER_SIZE', 1)) # in MB
 
 subscribers: List[str] = []
 """List of SIDs of all connected clients which are just watching."""
@@ -86,7 +87,8 @@ sio = socketio.AsyncServer(
     async_mode='tornado',
     cors_allowed_origins="*",
     logger=DEBUG,
-    engineio_logger=DEBUG
+    engineio_logger=DEBUG,
+    max_http_buffer_size=BUFFER_SIZE * 1000 * 1000,
 )
 
 routes = [
