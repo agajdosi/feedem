@@ -7,6 +7,8 @@ import { Game, Reaction, Comment, Task, User, Relation, RelationType } from '../
 import { UserComponent } from '../user/user.component';
 import { OnScreenComponent } from '../on-screen/on-screen.component';
 import { TaskComponent } from '../task/task.component';
+// material
+import { MaterialModule } from '../../modules/material/material.module';
 // services
 import { SocketEvent, SocketCommand } from '../../services/socket/socket.service';
 import { GameService } from '../../services/game/game.service';
@@ -22,7 +24,7 @@ import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-controller',
-  imports: [ UserComponent, OnScreenComponent, TaskComponent, FooterComponent ],
+  imports: [ UserComponent, OnScreenComponent, TaskComponent, FooterComponent, MaterialModule ],
   templateUrl: './controller.component.html',
   styleUrl: './controller.component.scss'
 })

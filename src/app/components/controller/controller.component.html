@@ -4,7 +4,7 @@
             <h2>Choose the user to manage</h2>
         }
         @if(!isAnyOpenTask() && game.hero) {
-            Waiting for task...
+            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="schedule"></mat-icon> Waiting for task...
         }
         @if(countDownTimer) {
             <div class="time-to-play">{{countDownTimer.valueString}}</div>
