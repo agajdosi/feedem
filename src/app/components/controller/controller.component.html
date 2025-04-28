@@ -31,9 +31,8 @@
             <div class="warning">
                 <h2>Processing Network Activity</h2>
                 <p>Processing data. Awaiting nodes. Stand by.</p>
+                <div class="spinner"></div>
             </div>
-            <!-- <app-screensaver></app-screensaver> -->
-            <!-- TODO: SOME LOADER? -->
         }
         @if(game.hero) {
             @for(task of game.tasks; track task.uuid) {
