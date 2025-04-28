@@ -293,6 +293,8 @@ export class GameComponent implements OnInit, OnDestroy {
           this.addGraphEdges = edges;
           // rehighlight hero
           // this.selectHero();
+          // clear edge highlights
+          this.clearConnectionsHighlight = {clear: true};
         }
         
         
@@ -316,6 +318,8 @@ export class GameComponent implements OnInit, OnDestroy {
               }
             })
           }
+          // clear edge hightlights
+          this.clearConnectionsHighlight = {clear: true};
         }
         break;
       case 'task':
@@ -394,27 +398,28 @@ export class GameComponent implements OnInit, OnDestroy {
     if (!this.graph) return;
     this.clearConnectionsHighlight = {clear: true};
     this.highlightUsersConnection = undefined;
-    // console.log('highlightGraphPath', path);
-    let i = 0;
-    const highlightEdge = () => {
-      const source = path[i];
-      const target = path[i+1];
-      if (target && source) {
-        this.highlightUsersConnection = undefined;
-        // console.log('source----> surname: ', this.gameService.getUserById(source).surname);
-        // console.log('target----> surname: ', this.gameService.getUserById(target).surname);
-        this.graph.findEdge(source, target, (edge: string) => {
-          // console.log('FOUND EDGE', edge);
-          this.highlightUsersConnection = edge;
-          i++;
-          setTimeout(() => highlightEdge(), 10);
-        });
-      } else {
-        // this.clearConnectionsHighlight = false;
-      }
-      
+    // console.warn('highlightGraphPath', path);
+    let highlightInterval: any;
+    let edgeIndex: number = 0;
+    const highlightEdge = (edges: string[]) => {
+      this.highlightUsersConnection = edges[edgeIndex];
+      edgeIndex++;
+      if (edgeIndex === edges.length) clearInterval(highlightInterval); // 'comlete path highlighted'
     }
-    setTimeout(() => highlightEdge(), 10);
+    const edges: string[] = [];
+    for (let i = 0; i < path.length; i++) {
+      if (path[i + 1]) {
+        const source = path[i];
+        const target = path[i+1];
+        this.graph.findEdge(source, target, (edge: string) => {
+          edges.push(edge);
+          if (edges.length === path.length - 1) {
+            // console.log('EDGES FOUND', edges);
+            highlightInterval = setInterval(() => highlightEdge(edges), 10);
+          }
+        });
+      }
+    }
     this.highlighGraphUser(path[path.length - 1]);
   }
 
