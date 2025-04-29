@@ -1,9 +1,9 @@
 @if(game && canControl) {
     <div class="controls">
-        @if(!game.hero) {
-            <mat-icon fontIcon="group_search"></mat-icon>
-        }
-        @if(countDownTimer) {
+        <div class="controls-icon">
+            @if(!game.hero) {
+                <mat-icon fontIcon="group_search"></mat-icon>
+            }
             @if(!isAnyOpenTask() && game.hero) {
                 <mat-icon fontIcon="schedule"></mat-icon>
             }
@@ -13,11 +13,16 @@
             @else if(game.tasks[0].type === 'showPost') {
                 <mat-icon class="cws90" fontIcon="merge_type"></mat-icon>
             }
+        </div>
+
+        @if(pathToTarget.length >= 1) {
+            <div class="readers">{{usersOnPathNotification(pathToTarget)}}</div>
+        }
+
+        @if(countDownTimer) {
             <div class="time-to-play">{{countDownTimer.valueString}}</div>
         }
-        @if(pathToTarget.length >= 1) {
-            <div class="readers">{{pathToTarget.length ? pathToTarget.length - 1 : 0}} user targeted</div>
-        }
+        
     </div>
 
     <div class="content">

@@ -161,7 +161,8 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   getUserInvolved(postId: string): string {
     const path = this.getPostPath(postId);
-    return `${path.length - 1} User${path.length - 1 > 1 ? 's' : ''} on path`;
+    // return `${path.length - 1} User${path.length - 1 > 1 ? 's' : ''} on path`;
+    return this.gameService.usersOnPathNotification(path);
   }
 
   private completeTask(): void {
