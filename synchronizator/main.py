@@ -4,13 +4,13 @@ import tornado.web
 import socketio
 from typing import List, Any
 import json
-
+from datetime import datetime
 PORT = int(os.environ.get('TORNADO_PORT', 8888))
 DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 PRODUCTION = os.environ.get('PRODUCTION', 'false').lower() == 'true'
 SERVER_USERNAME = os.environ.get('SERVER_USERNAME', '')
 SERVER_PASSWORD = os.environ.get('SERVER_PASSWORD', '')
-GAME_SAVE_FILE = os.path.join(os.path.dirname(__file__), 'data/game_save.json')
+SAVE_FILEPATH = os.environ.get('SAVE_FILEPATH', os.path.join(os.path.dirname(__file__), 'data/game_save.json'))
 BUFFER_SIZE = int(os.environ.get('BUFFER_SIZE', 1)) # in MB
 
 subscribers: List[str] = []
@@ -23,29 +23,36 @@ game: dict[str, Any] = {}
 def load_game_state() -> dict[str, Any]:
     """Load game state from file if it exists."""
     try:
-        os.makedirs(os.path.dirname(GAME_SAVE_FILE), exist_ok=True)
-        if os.path.exists(GAME_SAVE_FILE):
-            with open(GAME_SAVE_FILE, 'r') as f:
+        os.makedirs(os.path.dirname(SAVE_FILEPATH), exist_ok=True)
+        if os.path.exists(SAVE_FILEPATH):
+            with open(SAVE_FILEPATH, 'r') as f:
                 loaded_game = json.load(f)
-                print(f"📂 Loaded game state from {GAME_SAVE_FILE}")
+                print(f"📂 Loaded game state from {SAVE_FILEPATH}")
                 return loaded_game
         else:
-            print(f"📂 No game state file found at {GAME_SAVE_FILE}")
+            print(f"📂 No game state file found at {SAVE_FILEPATH}")
             return dict()
     except Exception as e:
         print(f"❌ Error loading game state: {e}")
         return dict()
 
-def save_game_state(game: dict[str, Any]):
-    """Save current game state to file."""
+def save_game_state(game: dict[str, Any], filename: str = "") -> str:
+    """Save current game state to file. If filename is empty, use the default filename for current game file save.
+    If name is set make a backup next to the current game file."""
+    if filename == "":
+        file_path = SAVE_FILEPATH
+    else:
+        save_dir = os.path.dirname(SAVE_FILEPATH)
+        file_path = os.path.join(save_dir, filename)
     try:
-        with open(GAME_SAVE_FILE, 'w') as f:
+        with open(file_path, 'w') as f:
             json.dump(game, f, indent=2)
-        print(f"💾 Saved game state to {GAME_SAVE_FILE}")
+        print(f"💾 Saved game state to {file_path}")
+        return file_path
     except Exception as e:
-        print(f"❌ Error saving game state: {e}")
-
-
+        print(f"❌ Error saving game state to {file_path}: {e}")
+        return ""
+    
 class IndexHandler(tornado.web.RequestHandler):
     """Basic health check endpoint."""
     def get(self):
@@ -53,8 +60,31 @@ class IndexHandler(tornado.web.RequestHandler):
         self.write("OK")
 
 
+class BackupHandler(tornado.web.RequestHandler):
+    """Handler for backup the game data.
+    Request needs to be authenticated with username and password.
+    """
+    def get(self):
+        username = self.get_argument('username', '')
+        password = self.get_argument('password', '')
+        print(f"🔑 username={username}, password={password}, expected_username={SERVER_USERNAME}, expected_password={SERVER_PASSWORD}")
+        if username != SERVER_USERNAME or password != SERVER_PASSWORD:
+            print(f"-- ❌ failed to authenticate")
+            self.set_status(401)
+            self.write("Unauthorized")
+            return
+        print(f"-- ✅ authenticated")
+        global game
+        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        file_path = save_game_state(game, f"backup_{timestamp}.json")
+        self.set_status(200)
+        self.write(f"Successfully saved {file_path}<br><pre>{game}</pre>")
+
+
 class RestartHandler(tornado.web.RequestHandler):
-    """Handler for restarting the game."""
+    """Handler for restarting the game.
+    Request needs to be authenticated with username and password.
+    """
     async def get(self):
         username = self.get_argument('username', '')
         password = self.get_argument('password', '')
@@ -67,10 +97,15 @@ class RestartHandler(tornado.web.RequestHandler):
         print(f"-- ✅ authenticated")
         global game
         old_game = game
+        restart_filepath = save_game_state(game, f"restart_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json")
         game = {}
         save_game_state(game)
         await sio.emit('game', game)
-        self.write(f"<h1>⚰️ RIP Old Game:</h1><pre>{old_game}</pre>")
+        self.write(
+            f"<h1>⚰️ RIP Old Game</h1>"
+            f"<p>here rests the Old Game: {restart_filepath}</p>"
+            f"<pre>{old_game}</pre>"
+        )
 
 
 class DevHandler(tornado.web.RequestHandler):
@@ -94,6 +129,7 @@ sio = socketio.AsyncServer(
 routes = [
     (r'/', IndexHandler),
     (r'/restart', RestartHandler),
+    (r'/backup', BackupHandler),
     (r'/socket.io/', socketio.get_tornado_handler(sio)),
 ]
 if not PRODUCTION:
