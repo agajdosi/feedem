@@ -144,9 +144,24 @@ app-footer {
 qr-code {
     position: absolute;
     left: 50%;
-    bottom: $space;
+    bottom: calc($space * 5);
     transform: translateX(-50%);
     z-index: 1001;
+    animation: pulse 10s infinite;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    background-color: white;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    25% {
+        box-shadow: 0 0 0 800px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
 }
 
 graph-viewer {
