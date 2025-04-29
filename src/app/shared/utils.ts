@@ -138,10 +138,10 @@ export function getUserEmotionScores(user: User, views: View[]): Map<string, num
   // console.log('userViews', userViews);
   if (userViews.length === 0) {
     return new Map([
-      ['😁', 0],
-      ['😢', 0],
-      ['🤦‍♂️', 0],
-      ['😴', 0]
+      ['happy', 0],
+      ['sad', 0],
+      ['stupid', 0],
+      ['boring', 0]
     ]);
   }
 
@@ -160,10 +160,10 @@ export function getUserEmotionScores(user: User, views: View[]): Map<string, num
   });
 
   const avgScores = new Map<string, number>();
-  avgScores.set('😁', totalScores.joy / userViews.length);
-  avgScores.set('😢', totalScores.sad / userViews.length);
-  avgScores.set('🤦‍♂️', totalScores.stupid / userViews.length);
-  avgScores.set('😴', totalScores.boring / userViews.length);
+  avgScores.set('happy', totalScores.joy / userViews.length);
+  avgScores.set('sad', totalScores.sad / userViews.length);
+  avgScores.set('stupid', totalScores.stupid / userViews.length);
+  avgScores.set('boring', totalScores.boring / userViews.length);
 
   return avgScores;
 }
