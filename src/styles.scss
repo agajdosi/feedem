@@ -235,6 +235,17 @@ app-controller {
     &>.content {
         @extend .grayscale;
     }
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin-top: calc($space * 3);
+        button {
+            @extend .bot-font;
+        }
+    }
 }
 
 app-user {
