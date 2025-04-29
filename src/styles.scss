@@ -1,5 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
 
+@font-face {
+    font-family: 'Roboto';
+    src: url('/fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('/fonts/Roboto-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Red Hat Mono';
+    src: url('/fonts/RedHatMono-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Red Hat Mono';
+    src: url('/fonts/RedHatMono-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
 // MARK: VARIABLES
 $space: 1.5rem;
 $lightColor: #ddd; // rgb(3, 183, 138);
@@ -13,7 +45,7 @@ html,
 body {
     background-color: black;
     color: $lightColor;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: "Roboto", "Helvetica Neue", sans-serif;
     // font-weight: 300;
     width: 100%;
     height: 100%;
@@ -42,10 +74,11 @@ button {
 }
 
 .bot-font {
-    font-family: "Roboto Mono", monospace;
+    font-family: 'Red Hat Mono', monospace;
     font-optical-sizing: auto;
-    font-weight: 300;
+    font-weight: 100;
     font-style: normal;
+    color: pink;
 }
 
 // MARK: COMPONENTS
@@ -501,14 +534,17 @@ mat-icon {
 
 .task-description {
     margin: calc($space / 3) 0 calc($space / 1) 0;
-
     h1,
     h2 {
+        @extend .bot-font;
+        font-weight: 300;
+        font-size: 2.5rem;
         margin-bottom: 0;
         text-align: center;
     }
 
     p {
         margin-top: 0;
+        @extend .bot-font;
     }
 }
