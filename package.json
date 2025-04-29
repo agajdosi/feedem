@@ -6,6 +6,8 @@
     "start": "ng serve",
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
+    "deploy-ssg": "ng build --aot --configuration production --base-href /ssg/andreas-gajdosik/feed-em/ --output-path dist/ssg-feed-em/build/",
+    "push-ssg-dist": "cd dist/ssg-feed-em/ && git add -A && git commit -m \"rebuild_v$npm_package_version\" && git push && cd ../../",
     "test": "ng test",
     "vitest": "vitest",
     "vitest:coverage": "vitest run --coverage",
