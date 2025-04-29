@@ -31,7 +31,7 @@
     @if(task.type === 'showPost') {
         <div class="task-description">
             <h2>Inbound Content Detected</h2>
-            <div>Select a post to inject into your Managed User's feed.</div>
+            <div>Select a post to inject into Managed User's feed.</div>
         </div>
         @for(post of posts; track post.uuid) {
             <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
