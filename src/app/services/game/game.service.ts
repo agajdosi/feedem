@@ -295,6 +295,10 @@ export class GameService {
     return shuffled.slice(0, Math.min(n, nonHeroUsers.length));
   }
 
+  usersOnPathNotification(path: string[]): string {
+    return `${path.length && path.length >= 1 ? path.length - 1 : 0} User${path.length >= 2 ? 's' : ''} on path`;
+  }
+
   // MARK: POST
 
   getPost(postId: string): Post {

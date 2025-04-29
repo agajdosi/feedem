@@ -315,6 +315,10 @@ export class ControllerComponent implements OnInit, OnDestroy {
     });
   }
 
+  usersOnPathNotification(path: string[]): string {
+    return this.gameService.usersOnPathNotification(path);
+  }
+
   // userConnections(userId: string): string[] {
   //   if (!this.socialGraph.nodes().length) return [];
   //   const neighbours = this.socialGraph.outNeighbors(userId);
