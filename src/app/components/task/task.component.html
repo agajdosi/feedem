@@ -35,7 +35,7 @@
         </div>
         @for(post of posts; track post.uuid) {
             <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
-                <p>{{getUserInvolved(post.uuid)}}</p>
+                <p class="bot-font">{{getUserInvolved(post.uuid)}}</p>
                 <app-post [post]="post"></app-post>
             </div>
         }

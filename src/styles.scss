@@ -177,6 +177,7 @@ app-controller {
     .warning {
         margin-top: 30vh;
         text-align: center;
+        @extend .bot-font;
     }
 
     &>.controls {
@@ -195,6 +196,8 @@ app-controller {
         padding: calc($space /2);
         background-color: black;
         z-index: 999999;
+
+        @extend .bot-font;
     }
 
     &>.content {
@@ -210,6 +213,8 @@ app-user {
     // margin: $space;
     margin-bottom: $space;
     margin-top: 2px;
+
+    @extend .bot-font;
 
     &.highlight {
         border: 1px solid $lightColor;
@@ -345,6 +350,7 @@ app-post {
 
 app-footer {
     #score {
+        @extend .bot-font;
         display: flex;
         flex-direction: row;
         justify-content: flex-start; //space-between;
