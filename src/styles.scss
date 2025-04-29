@@ -180,8 +180,8 @@ app-feed {
         app-post {
             border-top: 1px dashed $lightColor;
             padding-top: calc($space / 2);
-            margin-top: calc($space / 2);
-
+            margin-top: 0;
+            margin-bottom: calc($space * 0.75);
             &:first-child {
                 border-top: none;
             }
@@ -250,7 +250,7 @@ app-controller {
     app-post {
         border: 1px solid $lightColor;
         padding: 0.75rem;
-        margin: 0 0 3rem 0;
+        margin: 0 0 1.5rem 0;
         .reactions {
             display: none;
         }

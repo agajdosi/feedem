@@ -37,6 +37,10 @@ export class PostComponent implements OnInit {
     
   }
 
+  hasReactions(): boolean {
+    return this.game.reactions.some(reaction => reaction.parent === this.post.uuid);
+  }
+
   getReactionsByType(reactionType: string): Reaction[] {
     return this.game.reactions.filter(
       reaction => reaction.parent === this.post.uuid && reaction.value === reactionType
