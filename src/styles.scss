@@ -87,6 +87,10 @@ app-game {
         @extend .grayscale;     
     }
 
+    app-graph {
+        overflow: hidden;
+    }
+
     
 }
 
@@ -128,8 +132,8 @@ app-feed {
     .feed-content {
         @extend .grayscale;
         background-color: rgba(black, .5);
-        height: 100%;
-        overflow-y: auto;
+        // height: 100%;
+        // overflow-y: none;
 
         app-post {
             border-top: 1px dashed $lightColor;
