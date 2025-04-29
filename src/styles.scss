@@ -1,5 +1,38 @@
 /* You can add global styles to this file, and also import other style files */
 
+@font-face {
+    font-family: 'Roboto';
+    src: url('/fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('/fonts/Roboto-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Red Hat Mono';
+    src: url('/fonts/RedHatMono-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Red Hat Mono';
+    src: url('/fonts/RedHatMono-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+// MARK: VARIABLES
 $space: 1.5rem;
 $lightColor: #ddd; // rgb(3, 183, 138);
 $secondaryColor: #666;
@@ -12,7 +45,8 @@ html,
 body {
     background-color: black;
     color: $lightColor;
-    font-family: 'Arial', sans-serif;
+    font-family: "Roboto", "Helvetica Neue", sans-serif;
+    // font-weight: 300;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -38,6 +72,15 @@ button {
         color: black;
     }
 }
+
+.bot-font {
+    font-family: 'Red Hat Mono', monospace;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+}
+
+// MARK: COMPONENTS
 
 app-main-menu {
     display: flex;
@@ -84,14 +127,12 @@ app-game {
         // height: 100%;
         left: 0;
         top: 0;
-        @extend .grayscale;     
+        @extend .grayscale;
     }
 
     app-graph {
         overflow: hidden;
     }
-
-    
 }
 
 app-footer {
@@ -103,9 +144,24 @@ app-footer {
 qr-code {
     position: absolute;
     left: 50%;
-    bottom: $space;
+    bottom: calc($space * 5);
     transform: translateX(-50%);
     z-index: 1001;
+    animation: pulse 10s infinite;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    background-color: white;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    25% {
+        box-shadow: 0 0 0 800px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
 }
 
 graph-viewer {
@@ -129,6 +185,7 @@ app-feed {
     display: block;
     overflow: hidden;
     background-color: rgba(black, .85);
+
     .feed-content {
         @extend .grayscale;
         background-color: rgba(black, .5);
@@ -138,7 +195,8 @@ app-feed {
         app-post {
             border-top: 1px dashed $lightColor;
             padding-top: calc($space / 2);
-            margin-top: calc($space / 2);
+            margin-top: 0;
+            margin-bottom: calc($space * 0.75);
             &:first-child {
                 border-top: none;
             }
@@ -166,10 +224,14 @@ app-controller {
     .warning {
         margin-top: 30vh;
         text-align: center;
+        @extend .bot-font;
     }
 
-    & > .controls {
-        h2 { margin: 0;}
+    &>.controls {
+        h2 {
+            margin: 0;
+        }
+
         position: fixed;
         display: flex;
         justify-content: space-between;
@@ -181,10 +243,32 @@ app-controller {
         padding: calc($space /2);
         background-color: black;
         z-index: 999999;
+
+        @extend .bot-font;
     }
 
-    & > .content {
+    &>.content {
         @extend .grayscale;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        margin-top: calc($space * 3);
+        button {
+            @extend .bot-font;
+        }
+    }
+
+    app-post {
+        border: 1px solid $lightColor;
+        padding: 0.75rem;
+        margin: 0 0 1.5rem 0;
+        .reactions {
+            display: none;
+        }
     }
 }
 
@@ -206,24 +290,37 @@ app-user {
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+
         .name {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             justify-content: space-between;
+
             .user-profile-picture {
                 margin-left: calc($space / 5);
             }
+        }
+
+        h2 {
+            margin-bottom: 0;
+        }
+
+        .moving-text {
+            @extend .bot-font;
+            max-width: 80%;
         }
     }
 
     .user-details {
         display: flex;
         flex-direction: row;
-        & > p {
+
+        &>p {
             padding-right: calc($space / 4);
             margin-right: calc($space / 4);
             border-right: 1px solid $lightColor;
+
             &:last-child {
                 margin-right: 0;
                 padding-right: 0;
@@ -239,24 +336,28 @@ app-user {
     }
 
     .traits {
+        @extend .bot-font;
         .trait {
             padding: calc($space / 4);
             margin-bottom: calc($space / 4);
-            border: 1px solid $lightColor; 
+            border: 1px solid $lightColor;
         }
     }
+
     .connections {
         padding: calc($space / 4);
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
-        & > div {
+
+        &>div {
             margin-right: calc($space / 2);
         }
     }
 
     .analytics {
+        @extend .bot-font;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -264,12 +365,17 @@ app-user {
         margin-top: calc($space / 2);
         border-top: 1px solid $lightColor;
         padding-top: calc($space / 2);
+
         .statistics {
             display: flex;
             width: 100%;
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
+        }
+
+        .psychoanalysis {
+            margin-top: calc($space / 3);
         }
     }
 }
@@ -278,25 +384,30 @@ app-user {
 app-post {
     display: block;
     margin: $space calc($space / 2);
+
     .post-header {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
         margin-bottom: calc($space / 2);
-        & > div {
+
+        &>div {
             margin-right: calc($space / 2);
         }
     }
+
     .post-right {
         h3 {
             margin: 0;
         }
+
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         justify-content: flex-end;
     }
+
     .reactions {
         padding: calc($space / 3) 0 calc($space / 3) 0;
         display: flex;
@@ -319,15 +430,18 @@ app-post {
 
 app-footer {
     #score {
+        @extend .bot-font;
         display: flex;
         flex-direction: row;
         justify-content: flex-start; //space-between;
         padding: calc($space / 4);
         align-items: center;
         background-color: black;
+
         #engagement {
             padding-right: 0.5rem;
         }
+
         #lifes,
         #limit {
             padding: 0 0.5rem;
@@ -340,16 +454,19 @@ app-comment {
     padding-left: calc($space/1.5);
     border-left: 1px solid $lightColor;
     padding-top: calc($space / 2);
+
     .comment-header {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
         margin-bottom: calc($space / 3);
-        & > div {
+
+        &>div {
             margin-right: calc($space / 2);
         }
     }
+
     h4 {
         margin: 0;
     }
@@ -359,15 +476,55 @@ app-on-screen {
     display: block;
 }
 
+app-screensaver {
+    @extend .bot-font;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    font-size: 2rem;
+
+    #titles {
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+
+
+app-task {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: calc($space * 2);
+}
+
+
+
+mat-icon {
+    &.cws90 {
+        transform: rotate(90deg);
+    }
+}
+
+// MARK: GENERAL
 .user-profile-picture {
     overflow: hidden;
     border-radius: 50%;
     width: calc(3 * $space);
     height: calc(3 * $space);
+
     // border: 3px solid black;    
     &.dashed {
         outline: 3px dashed $lightColor;
-        outline-offset: 3px;        
+        outline-offset: 3px;
     }
 
     img {
@@ -376,14 +533,14 @@ app-on-screen {
     }
 }
 
-.blender {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    mix-blend-mode: multiply;
-}
+// .blender {
+//     position: absolute;
+//     width: 100%;
+//     height: 100%;
+//     top: 0;
+//     left: 0;
+//     mix-blend-mode: multiply;
+// }
 
 .user-profile-picture-medium {
     @extend .user-profile-picture;
@@ -407,10 +564,12 @@ app-on-screen {
     display: flex;
     flex-direction: column;
 }
+
 .row {
     display: flex;
     flex-direction: row;
 }
+
 .spacer {
     flex-grow: 1;
 }
@@ -420,48 +579,14 @@ app-on-screen {
     // filter: grayscale(100%);
 }
 
-app-screensaver {
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    font-size: 2rem;
-    #titles {
-        position: absolute;
-        top: 35%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-}
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-
-app-task {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: calc($space * 2);
-}
-
 .task-description {
     margin: calc($space / 3) 0 calc($space / 1) 0;
+    text-align: center;
+    @extend .bot-font;
     h1, h2 {
+        font-weight: 300;
+        font-size: 2.5rem;
         margin-bottom: 0;
-        text-align: center;
-    }
-    p {
-        margin-top: 0;
-    }
-}
 
-mat-icon {
-    &.cws90 {
-        transform: rotate(90deg);
     }
 }

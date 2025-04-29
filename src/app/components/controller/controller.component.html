@@ -1,3 +1,5 @@
+<!-- TODO: clean this a little bit, feels super chaotic and messy -->
+ 
 @if(game && canControl) {
     <div class="controls">
         <div class="controls-icon">
@@ -26,10 +28,10 @@
     </div>
 
     <div class="content">
-        @if(!game.hero) {
+        @if(!game.hero) { <!-- TODO: actually this is kind of a task, right? -->
             <div class="task-description">
                 <h1>Managed User Selection</h1>
-                <p>You will manage their inbound and outbound content.</p>
+                <div>You will manage their inbound and outbound content.</div>
             </div>
         }
         @if(!isAnyOpenTask() && game.hero) {

@@ -914,19 +914,19 @@ describe('getUserEmotionScores', () => {
 
   it('should return zero scores for all emotions when user has no views', () => {
     const scores = getUserEmotionScores(mockUser, []);
-    expect(scores.get('😁')).toBe(0);
-    expect(scores.get('😢')).toBe(0);
-    expect(scores.get('🤦‍♂️')).toBe(0);
-    expect(scores.get('😴')).toBe(0);
+    expect(scores.get('happy')).toBe(0);
+    expect(scores.get('sad')).toBe(0);
+    expect(scores.get('stupid')).toBe(0);
+    expect(scores.get('boring')).toBe(0);
   });
 
   it('should calculate correct average scores for user\'s views', () => {
     const scores = getUserEmotionScores(mockUser, mockViews);
     // Average of two views for user1
-    expect(scores.get('😁')).toBe((0.8 + 0.6) / 2);
-    expect(scores.get('😢')).toBe((1.0 + 1.0) / 2);
-    expect(scores.get('🤦‍♂️')).toBe((0.2 + 0.4) / 2);
-    expect(scores.get('😴')).toBe((0.3 + 0.1) / 2);
+    expect(scores.get('happy')).toBe((0.8 + 0.6) / 2);
+    expect(scores.get('sad')).toBe((1.0 + 1.0) / 2);
+    expect(scores.get('stupid')).toBe((0.2 + 0.4) / 2);
+    expect(scores.get('boring')).toBe((0.3 + 0.1) / 2);
   });
 
   it('should not count views from other users', () => {

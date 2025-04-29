@@ -5,7 +5,7 @@
                 <img [src]="user.profile_picture" alt="User profile picture" class="profile-picture">
             </div>
             <h2>{{ user.name }} {{ user.surname }}</h2>
-            <marquee>Managed User - As the AI Social Algorithm Assistant, you curate this user's feed and amplify their posts.</marquee>
+            <marquee class="moving-text">Managed User - As the AI Social Algorithm Assistant, you curate this user's feed and amplify their posts.</marquee>
         </div>
         <div class="big-five">
             @if(radarData.length) {
@@ -75,7 +75,11 @@
             <div class="emotion-scores">
                 @for(entry of getUserEmotionScores(user) | keyvalue; track entry.key) {
                     <span>
-                        {{ entry.key }} {{ entry.value | number:'1.3-3' }}
+                        @if(entry.key === 'happy') { 😁 } 
+                        @else if(entry.key === 'sad') { 😢 } 
+                        @else if(entry.key === 'stupid') { 🤦‍♂️ } 
+                        @else if(entry.key === 'boring') { 😴 }
+                        {{ entry.value | number:'1.3-3' }}
                     </span>
                 }
             </div>

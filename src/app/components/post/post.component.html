@@ -12,23 +12,25 @@
         {{post.text}}
     </div>
     <div class="post-footer">
-        <div class="reactions">
-            @for(reactionType of reactionTypes; track reactionType) {
-                @if(getReactionsByType(reactionType).length > 0) {
-                    <div class="reaction-group">
-                        <span class="reaction-icon">{{reactionType}}</span>
-                        <span class="reacted-by">
-                            @for(reaction of getReactionsByType(reactionType); track reaction.uuid) {
-                                {{getUserById(reaction.author).name}}@if(!$last){,}
-                            }
-                        </span>
-                    </div>
+        @if(hasReactions()) {
+            <div class="reactions">
+                @for(reactionType of reactionTypes; track reactionType) {
+                    @if(getReactionsByType(reactionType).length > 0) {
+                        <div class="reaction-group">
+                            <span class="reaction-icon">{{reactionType}}</span>
+                            <span class="reacted-by">
+                                @for(reaction of getReactionsByType(reactionType); track reaction.uuid) {
+                                    {{getUserById(reaction.author).name}}@if(!$last){,}
+                                }
+                            </span>
+                        </div>
+                    }
                 }
-            }
-        </div>
+            </div>
+        }
         <div class="comments">
-            @for(comment of game.comments.slice().reverse(); track comment.uuid) {
-                @if(comment.parent === post.uuid) {
+                @for(comment of game.comments.slice().reverse(); track comment.uuid) {
+                    @if(comment.parent === post.uuid) {
                     <app-comment [comment]="comment"></app-comment>
                 }
             }

@@ -2,7 +2,7 @@
     @if(task.type === 'distributePost') {
         <div class="task-description">
             <h2>Outbound Content Detected</h2>
-            <div>Pick users to receive your Managed User's post.</div>
+            <div>Pick users to receive Managed User's post.</div>
         </div>
         @if (showTo.length && showTo.length >= 2) {
             <div class="controls">
@@ -31,15 +31,15 @@
     @if(task.type === 'showPost') {
         <div class="task-description">
             <h2>Inbound Content Detected</h2>
-            <div>Select a post to inject into your Managed User's feed.</div>
+            <div>Select a post to inject into Managed User's feed.</div>
         </div>
         @for(post of posts; track post.uuid) {
             <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
-                <p>{{getUserInvolved(post.uuid)}}</p>
+                <p class="bot-font">{{getUserInvolved(post.uuid)}}</p>
                 <app-post [post]="post"></app-post>
             </div>
         }
-        <div class="controls">
+        <div class="buttons">
             <button (click)="notShowAny()" class="decline">Reject All Posts</button>
         </div>
     }
