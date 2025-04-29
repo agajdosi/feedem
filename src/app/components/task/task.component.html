@@ -1,6 +1,9 @@
 @if(task) {
     @if(task.type === 'distributePost') {
-        <h3>Select Users to distribute post:</h3>
+        <div class="task-description">
+            <h2>Outbound Content Detected</h2>
+            <div>Pick users to receive your Managed User's post.</div>
+        </div>
         @if (showTo.length && showTo.length >= 2) {
             <div class="controls">
                 <button (click)="distribute()" class="distribute">Send Post</button>
@@ -26,9 +29,9 @@
     }
 
     @if(task.type === 'showPost') {
-        <h3>Select a post to show to your hero:</h3>
-        <div class="controls">
-            <button (click)="notShowAny()" class="decline">Not Show Any</button>
+        <div class="task-description">
+            <h2>Inbound Content Detected</h2>
+            <div>Select a post to inject into your Managed User's feed.</div>
         </div>
         @for(post of posts; track post.uuid) {
             <div class="post-selection" [class.selected]="selectedPostId === post.uuid" (click)="selectPost(post.uuid)">
@@ -36,5 +39,8 @@
                 <app-post [post]="post"></app-post>
             </div>
         }
+        <div class="controls">
+            <button (click)="notShowAny()" class="decline">Reject All Posts</button>
+        </div>
     }
 }

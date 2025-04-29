@@ -1,12 +1,18 @@
 @if(game && canControl) {
     <div class="controls">
         @if(!game.hero) {
-            <h2>Choose the user to manage</h2>
-        }
-        @if(!isAnyOpenTask() && game.hero) {
-            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="schedule"></mat-icon> Waiting for task...
+            <mat-icon fontIcon="group_search"></mat-icon>
         }
         @if(countDownTimer) {
+            @if(!isAnyOpenTask() && game.hero) {
+                <mat-icon fontIcon="schedule"></mat-icon>
+            }
+            @else if(game.tasks[0].type === 'distributePost') {
+                <mat-icon class="cws90" fontIcon="call_split"></mat-icon>
+            }
+            @else if(game.tasks[0].type === 'showPost') {
+                <mat-icon class="cws90" fontIcon="merge_type"></mat-icon>
+            }
             <div class="time-to-play">{{countDownTimer.valueString}}</div>
         }
         @if(pathToTarget.length >= 1) {
@@ -15,9 +21,18 @@
     </div>
 
     <div class="content">
+        @if(!game.hero) {
+            <div class="task-description">
+                <h1>Managed User Selection</h1>
+                <p>You will manage their inbound and outbound content.</p>
+            </div>
+        }
         @if(!isAnyOpenTask() && game.hero) {
-            <!-- <app-screensaver></app-screensaver> -->
-            <!-- TODO: SOME LOADER? -->
+            <div class="warning">
+                <h2>Processing Network Activity</h2>
+                <p>Processing data. Awaiting nodes. Stand by.</p>
+                <div class="spinner"></div>
+            </div>
         }
         @if(game.hero) {
             @for(task of game.tasks; track task.uuid) {
@@ -28,7 +43,6 @@
                         (pathToTarget)="onPathToTarget($event)"
                     ></app-task>
                 }
-        
             }
         }@else {
             @for(hero of usersByNeighbours(); track hero.uuid) {
@@ -45,9 +59,10 @@
     </div>
 }@else {
     <div class="controls">
-        <h2>Reconnect the game...</h2>
+        <mat-icon fontIcon="link_off"></mat-icon>
+    </div>
+    <div class="warning">
+        <h1>Control Permissions Lost</h1>
+        <p>Scan the QR code again to continue.</p>
     </div>
 }
-
-
-<app-footer></app-footer>

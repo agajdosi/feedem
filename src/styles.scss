@@ -145,12 +145,24 @@ app-feed {
 app-controller {
     display: block;
     width: 100%;
-    // height: 100%;
     overflow: auto;
     padding-bottom: calc($space * 10);
     font-size: large;
     padding-top: $space;
     position: relative;
+
+    .content {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .warning {
+        margin-top: 30vh;
+        text-align: center;
+    }
 
     & > .controls {
         h2 { margin: 0;}
@@ -422,3 +434,30 @@ app-screensaver {
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+app-task {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: calc($space * 2);
+}
+
+.task-description {
+    margin: calc($space / 3) 0 calc($space / 1) 0;
+    h1, h2 {
+        margin-bottom: 0;
+        text-align: center;
+    }
+    p {
+        margin-top: 0;
+    }
+}
+
+mat-icon {
+    &.cws90 {
+        transform: rotate(90deg);
+    }
+}
