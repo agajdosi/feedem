@@ -246,6 +246,15 @@ app-controller {
             @extend .bot-font;
         }
     }
+
+    app-post {
+        border: 1px solid $lightColor;
+        padding: 0.75rem;
+        margin: 0 0 3rem 0;
+        .reactions {
+            display: none;
+        }
+    }
 }
 
 app-user {
