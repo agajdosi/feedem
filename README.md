@@ -3,6 +3,50 @@
 FeedEm is a simulator game where you take on the role of a social network algorithm which manages a social network of users.
 Implemented in Angular as a browser game.
 
+## Language Style Manual: AI-as-Player System Narrative
+The player is not controlling the AI — the player is the AI.
+All language should reflect direct system communication, as if the AI is being prompted, GUI messages feels like logging messages.
+
+### 🧍‍♂️Player Role
+The player is an impersonated AI Social Algorithm.
+Speak to the player as if they're a large language model or system process within a larger network.
+
+For the player in the role of an AI Social Algorithm, the game they see is a control dashboard for the AI Social Algorithm.
+Messages from the game should feel like a logging messages.
+
+### 🔄 Stylistic Guidelines
+Tone of the language should be *minimalistic*, *machine-like*, *dryly poetic* at times.
+Balance between *clinical detachment* and *subtle existential tension*.
+Avoid *expressive language* or *strong emotions* — *the AI doesn’t feel, it functions*.
+
+- Prefer short, declarative statements.
+- System-event phrasing:
+    `Inbound Content Detected`
+    `Processing Network Activity`
+- Passive or indirect voice where appropriate:
+    `Awaiting user signals.`
+    `Calculations in progress.`
+- Lowercase in overlays/screensavers → emphasizes system passivity.
+- Avoid contractions in UI ("you are" instead of "you're") but use them in screensaver text for smoother rhythm.
+
+#### ✨ Signature Moves
+- Use repetition for system pressure:
+`you do not want to be a loss. I tell you. you do not want to be a loss.`
+- Human concepts stated with machine detachment:
+`your processor is physical. like the brains you manage.`
+- Existential undertones (in contrast with precision tasks):
+`you can believe in immortality. somewhere in the cloud.`
+
+### 🎨 Graphic Style
+
+The game UI is a collage - parts cut from the actual social network - augmented with statistics, analysis, graphs and other data.
+
+- Main Roboto font is used for *human context*, on text from the Users, or at places which mimics the UI of actual social networks:
+Posts, Comments, Bios written by users; Reactions because they mimic the UI the users see.
+
+- Red Hat Mono font is used for *machine context*, for the text informing the AI/Player, or analysis from the depths of the Social Network:
+Instructions to player, statistics of the user interaction history, analysis of the user's emotions etc.
+
 ## Design decisions
 
 ### Game modes
