@@ -251,6 +251,8 @@ export class GameService {
     const authors = this.getRandomNonHeroUsers(2);
     let posts: Post[] = [];
     for (const author of authors) {
+      const skip = Math.random()*1000*60*60; // 0-1hour, TODO: make this a bit more random
+      this.increaseFictionalTime(skip);
       const recentActivity: string = describeRecentActivity(author, this.game.posts, this.game.comments, this.game.reactions);
       const post = await this.llmsService.generatePost(author, recentActivity, this.getFictionalTime());
       this.game.posts.unshift(post);
