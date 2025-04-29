@@ -181,7 +181,8 @@ export class GameComponent implements OnInit, OnDestroy {
   getControllerLink(): string {
     const location = window.location;
     const myGameId = this.gameService.gameId;
-    const link = `${location.protocol}//${location.host}/controller?from=${myGameId}&valid=${this.linkValidFrom}`;
+    console.log('getControllerLink location', location);
+    const link = `${location.href.replace('game', 'controller')}?from=${myGameId}&valid=${this.linkValidFrom}`;
     // console.log(link);
     return link;
   }
