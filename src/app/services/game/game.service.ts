@@ -80,7 +80,7 @@ export class GameService {
       }
     });
     // get initial game json
-    const initialGameSub = this.http.get<Game>('./initial-game.json').subscribe({
+    const initialGameSub = this.http.get<Game>('/initial-game.json').subscribe({
       next: (g: Game) => {
         // console.log('initial game', g);
         if (!this.game && g && g.uuid) {
