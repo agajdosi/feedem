@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist/feed-em
+          path: dist
 
   release:
     runs-on: ubuntu-latest
@@ -41,13 +41,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
-          path: dist/feed-em/**/*
+          path: dist
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          files: dist/feed-em/**/*
+          files: dist/**/*
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
