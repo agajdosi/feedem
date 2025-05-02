@@ -42,12 +42,17 @@ jobs:
         with:
           name: dist
           path: dist
+        
+      - name: Zip build artifacts with version
+        run: |
+            mkdir -p packaged
+            zip -r packaged/feed-em-${{ github.ref_name }}.zip dist/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          files: dist/**/*
+          files: packaged/feed-em-${{ github.ref_name }}.zip
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
