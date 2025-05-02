@@ -21,7 +21,15 @@ describe('describeRelationship', () => {
             shortTerm: '',
             shortRelevancy: 0,
             longTerm: ''
-        }
+        },
+        big_five: {
+            openness: 0.5,
+            conscientiousness: 0.5,
+            extraversion: 0.5,
+            agreeableness: 0.5,
+            neuroticism: 0.5
+        },
+        dialect: 'en-US'
     };
 
     const mockUser2: User = {
@@ -42,7 +50,15 @@ describe('describeRelationship', () => {
             shortTerm: '',
             shortRelevancy: 0,
             longTerm: ''
-        }
+        },
+        big_five: {
+            openness: 0.5,
+            conscientiousness: 0.5,
+            extraversion: 0.5,
+            agreeableness: 0.5,
+            neuroticism: 0.5
+        },
+        dialect: 'en-US'
     };
 
     it('should return message when there are no relations', () => {
@@ -116,7 +132,15 @@ describe('postToText', () => {
                 shortTerm: '',
                 shortRelevancy: 0,
                 longTerm: ''
-            }
+            },
+            big_five: {
+                openness: 0.5,
+                conscientiousness: 0.5,
+                extraversion: 0.5,
+                agreeableness: 0.5,
+                neuroticism: 0.5
+            },
+            dialect: 'en-US'
         },
         {
             uuid: 'user2',
@@ -136,7 +160,15 @@ describe('postToText', () => {
                 shortTerm: '',
                 shortRelevancy: 0,
                 longTerm: ''
-            }
+            },
+            big_five: {
+                openness: 0.5,
+                conscientiousness: 0.5,
+                extraversion: 0.5,
+                agreeableness: 0.5,
+                neuroticism: 0.5
+            },
+            dialect: 'en-US'
         }
     ];
 
@@ -145,7 +177,8 @@ describe('postToText', () => {
         author: 'user1',
         text: 'Hello world!',
         reasoning: 'Just saying hi',
-        created: Date.now()
+        f_created: Date.now(),
+        r_created: Date.now()
     };
 
     const mockComments: Comment[] = [
@@ -154,14 +187,18 @@ describe('postToText', () => {
             parent: 'post1',
             parent_type: CommentParentType.Post,
             author: 'user2',
-            text: 'Great post!'
+            text: 'Great post!',
+            f_created: Date.now(),
+            r_created: Date.now()
         },
         {
             uuid: 'comment2',
             parent: 'post1',
             parent_type: CommentParentType.Post,
             author: 'user1',
-            text: 'Thanks!'
+            text: 'Thanks!',
+            f_created: Date.now(),
+            r_created: Date.now()
         }
     ];
 
@@ -214,7 +251,9 @@ describe('postToText', () => {
                 parent: 'post1',
                 parent_type: CommentParentType.Post,
                 author: 'nonexistent',
-                text: 'This should be skipped'
+                text: 'This should be skipped',
+                f_created: Date.now(),
+                r_created: Date.now()
             }
         ];
         const result = postToText(mockPost, commentsWithMissingAuthor, [], mockUsers);
@@ -241,7 +280,8 @@ describe('postToText', () => {
             author: 'user2',
             text: 'Another post',
             reasoning: 'Different post',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         };
 
         const commentsOnOtherPost: Comment[] = [
@@ -250,7 +290,9 @@ describe('postToText', () => {
                 parent: 'post2',
                 parent_type: CommentParentType.Post,
                 author: 'user1',
-                text: 'Comment on other post'
+                text: 'Comment on other post',
+                f_created: Date.now(),
+                r_created: Date.now()
             }
         ];
 
@@ -265,7 +307,8 @@ describe('postToText', () => {
             author: 'user2',
             text: 'Another post',
             reasoning: 'Different post',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         };
 
         const reactionsOnOtherPost: Reaction[] = [
@@ -325,7 +368,15 @@ describe('describeInteractions', () => {
             shortTerm: '',
             shortRelevancy: 0,
             longTerm: ''
-        }
+        },
+        big_five: {
+            openness: 0.5,
+            conscientiousness: 0.5,
+            extraversion: 0.5,
+            agreeableness: 0.5,
+            neuroticism: 0.5
+        },
+        dialect: 'en-US'
     };
 
     const mockThatUser: User = {
@@ -346,7 +397,15 @@ describe('describeInteractions', () => {
             shortTerm: '',
             shortRelevancy: 0,
             longTerm: ''
-        }
+        },
+        big_five: {
+            openness: 0.5,
+            conscientiousness: 0.5,
+            extraversion: 0.5,
+            agreeableness: 0.5,
+            neuroticism: 0.5
+        },
+        dialect: 'en-US'
     };
 
     const mockPosts: Post[] = [
@@ -355,28 +414,32 @@ describe('describeInteractions', () => {
             author: 'user2', // Bob's post
             text: 'Hello everyone!',
             reasoning: 'Greeting',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         },
         {
             uuid: 'post2',
             author: 'user1', // Alice's post
             text: 'Working on a new project',
             reasoning: 'Status update',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         },
         {
             uuid: 'post3',
             author: 'user1', // Alice's post
             text: 'This is not for Bob.',
             reasoning: 'Design update',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         },
         {
             uuid: 'post4',
             author: 'user2', // Bob's post
             text: 'This is not for Alice.',
             reasoning: 'Design update',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         }
     ];
 
@@ -407,7 +470,9 @@ describe('describeInteractions', () => {
             parent: 'post2', // Bob commented on Alice's post
             parent_type: CommentParentType.Post,
             author: 'user2',
-            text: 'Sounds interesting!'
+            text: 'Sounds interesting!',
+            f_created: Date.now(),
+            r_created: Date.now()
         }
     ];
 
@@ -455,7 +520,9 @@ describe('describeInteractions', () => {
                 parent: 'post2',
                 parent_type: CommentParentType.Post,
                 author: 'user2',
-                text: 'Keep up the good work!'
+                text: 'Keep up the good work!',
+                f_created: Date.now(),
+                r_created: Date.now()
             }
         ];
         const result = describeInteractions(mockThisUser, mockThatUser, [], mockPosts, multipleInteractions, mockReactions);
@@ -507,7 +574,44 @@ describe('describeRecentActivity', () => {
             shortTerm: '',
             shortRelevancy: 0,
             longTerm: ''
-        }
+        },
+        big_five: {
+            openness: 0.5,
+            conscientiousness: 0.5,
+            extraversion: 0.5,
+            agreeableness: 0.5,
+            neuroticism: 0.5
+        },
+        dialect: 'en-US'
+    };
+
+    const testUser2: User = {
+        uuid: 'user2',
+        name: 'Jane',
+        surname: 'Doe',
+        gender: 'female',
+        age: 25,
+        occupation: 'developer',
+        location: { city: 'New York', country: 'USA' },
+        residence: { city: 'New York', country: 'USA' },
+        hometown: { city: 'Boston', country: 'USA' },
+        bio: 'Software developer',
+        traits: ['friendly', 'hardworking'],
+        profile_picture: 'jane.jpg',
+        role: 'user',
+        memory: {
+            shortTerm: '',
+            shortRelevancy: 0,
+            longTerm: ''
+        },
+        big_five: {
+            openness: 0.5,
+            conscientiousness: 0.5,
+            extraversion: 0.5,
+            agreeableness: 0.5,
+            neuroticism: 0.5
+        },
+        dialect: 'en-US'
     };
 
     const testPosts: Post[] = [
@@ -516,14 +620,16 @@ describe('describeRecentActivity', () => {
             author: 'user1',
             text: 'First post',
             reasoning: 'Just sharing thoughts',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         },
         {
             uuid: 'post2',
             author: 'user1',
             text: 'Second post',
             reasoning: 'Another update',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         }
     ];
 
@@ -533,7 +639,9 @@ describe('describeRecentActivity', () => {
             author: 'user1',
             parent: 'post1',
             parent_type: CommentParentType.Post,
-            text: 'First comment'
+            text: 'First comment',
+            f_created: Date.now(),
+            r_created: Date.now()
         }
     ];
 
@@ -548,19 +656,19 @@ describe('describeRecentActivity', () => {
     ];
 
     it('should return empty description when user has no activity', () => {
-        const result = describeRecentActivity(testUser, [], [], []);
+        const result = describeRecentActivity(testUser, [], [testUser], [], []);
         expect(result).toContain('# Recent posts by John Doe:');
         expect(result).toContain('# Recent posts where John Doe has commented:');
     });
 
     it('should describe user\'s recent posts', () => {
-        const result = describeRecentActivity(testUser, testPosts, [], []);
+        const result = describeRecentActivity(testUser, testPosts, [testUser], [], []);
         expect(result).toContain('First post');
         expect(result).toContain('Second post');
     });
 
     it('should describe posts where user has commented', () => {
-        const result = describeRecentActivity(testUser, testPosts, testComments, []);
+        const result = describeRecentActivity(testUser, testPosts, [testUser, testUser2], testComments, []);
         expect(result).toContain('First comment');
     });
 
@@ -570,10 +678,11 @@ describe('describeRecentActivity', () => {
             author: 'user1',
             text: `Post ${i}`,
             reasoning: 'Test post',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         }));
         
-        const result = describeRecentActivity(testUser, manyPosts, [], [], 5);
+        const result = describeRecentActivity(testUser, manyPosts, [testUser, testUser2], [], [], 5);
         const postCount = (result.match(/Post by John Doe:/g) || []).length;
         expect(postCount).toBe(5);
     });
@@ -585,7 +694,8 @@ describe('describeRecentActivity', () => {
             author: 'user1',
             text: `Post ${i}`,
             reasoning: 'Test post',
-            created: Date.now()
+            f_created: Date.now(),
+            r_created: Date.now()
         }));
 
         // Create 2 comments under each post
@@ -595,12 +705,14 @@ describe('describeRecentActivity', () => {
                 author: 'user1',
                 parent: post.uuid,
                 parent_type: CommentParentType.Post,
-                text: `Comment ${postIndex}-${commentIndex}`
+                text: `Comment ${postIndex}-${commentIndex}`,
+                f_created: Date.now(),
+                r_created: Date.now()
             }))
         );
         
         // With limitComments=3, we should only see the first 3 posts in the comments section
-        const result = describeRecentActivity(testUser, manyPosts, manyComments, [], 10, 3);
+        const result = describeRecentActivity(testUser, manyPosts, [testUser, testUser2], manyComments, [], 10, 3);
         
         // Split the result into sections
         const sections = result.split('\n\n# Recent posts where');
@@ -626,7 +738,7 @@ describe('describeRecentActivity', () => {
     });
 
     it('should include reactions in the description', () => {
-        const result = describeRecentActivity(testUser, testPosts, testComments, testReactions);
+        const result = describeRecentActivity(testUser, testPosts, [testUser, testUser2], testComments, testReactions);
         expect(result).toContain(React.Like);
     });
 });
