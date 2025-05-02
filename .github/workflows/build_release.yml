@@ -41,11 +41,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
-          path: dist/feed-em
+          path: dist/feed-em/**/*
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
+          files: dist/feed-em/**/*
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
