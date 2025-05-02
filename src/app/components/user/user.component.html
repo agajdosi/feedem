@@ -5,7 +5,9 @@
                 <img [src]="user.profile_picture" alt="User profile picture" class="profile-picture">
             </div>
             <h2>{{ user.name }} {{ user.surname }}</h2>
-            <marquee class="moving-text">Managed User - As the AI Social Algorithm Assistant, you curate this user's feed and amplify their posts.</marquee>
+            @if(isHero) {
+                <marquee class="moving-text">Managed User - As the AI Social Algorithm Assistant, you curate this user's feed and amplify their posts.</marquee>
+            }
         </div>
         <div class="big-five">
             @if(radarData.length) {
