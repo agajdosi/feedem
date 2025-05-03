@@ -302,7 +302,8 @@ export class LlmsService {
     ];
     for (const trait of traits) {
       if (newBigFive[trait] !== undefined) {
-        finalBigFive[trait] = (user.big_five[trait] * q + newBigFive[trait]) / (q + 1);
+        const clampedValue = Math.max(0, Math.min(1, newBigFive[trait]));
+        finalBigFive[trait] = (user.big_five[trait] * q + clampedValue) / (q + 1);
       } else {
         finalBigFive[trait] = user.big_five[trait];
       }
@@ -353,7 +354,8 @@ export class LlmsService {
     ];
     for (const trait of traits) {
       if (newPlutchik[trait] !== undefined) {
-        finalPlutchik[trait] = (user.plutchik[trait] * q + newPlutchik[trait]) / (q + 1);
+        const clampedValue = Math.max(-1, Math.min(1, newPlutchik[trait]));
+        finalPlutchik[trait] = (user.plutchik[trait] * q + clampedValue) / (q + 1);
       } else {
         finalPlutchik[trait] = user.plutchik[trait];
       }
@@ -401,7 +403,8 @@ export class LlmsService {
     ];
     for (const trait of traits) {
       if (newRussell[trait] !== undefined) {
-        finalRussell[trait] = (user.russell[trait] * q + newRussell[trait]) / (q + 1);
+        const clampedValue = Math.max(-1, Math.min(1, newRussell[trait]));
+        finalRussell[trait] = (user.russell[trait] * q + clampedValue) / (q + 1);
       } else {
         finalRussell[trait] = user.russell[trait];
       }
