@@ -46,11 +46,16 @@ export interface User {
     profile_picture: string,
     role: string,
     memory: Memory,
-    big_five: BigFive,
     dialect: string,
+    // Psychological stats
+    big_five: BigFive,
+    plutchik: PlutchikEmotions,
+    russell: RussellCircumplex,
 }
 
-/* BigFive quantify users' psychological profile (numbers are floats 0-1) */
+/** BigFive aka OCEAN model quantifies users' psychological profile in 5 dimensions.
+ * https://en.wikipedia.org/wiki/Big_Five_personality_traits
+ */
 export interface BigFive {
     openness: number,
     conscientiousness: number,
@@ -59,13 +64,19 @@ export interface BigFive {
     neuroticism: number
 }
 
+/** Plutchik's psychological model quantifies emotions around 4 axes.
+ * https://en.wikipedia.org/wiki/Emotion_classification#Plutchik's_wheel_of_emotions
+ */
 export interface PlutchikEmotions {
-    joy_sadness: number,
-    anger_fear: number,
-    trust_disgust: number,
-    surprise_anticipation: number,
+    joy_sadness: number, // 1 to -1, 1 is joy, -1 is sadness
+    anger_fear: number, // 1 to -1, 1 is anger, -1 is fear
+    trust_disgust: number, // 1 to -1, 1 is trust, -1 is disgust
+    surprise_anticipation: number, // 1 to -1, 1 is surprise, -1 is anticipation
 }
 
+/** Russell's Circumplex model quantifies emotions around 2 axes.
+ * https://en.wikipedia.org/wiki/Emotion_classification#Circumplex_model
+ */
 export interface RussellCircumplex {
     valence: number, // -1-1, 1 is pleasant, -1 is unpleasant
     arousal: number, // -1-1, 1 is activated, -1 is deactivated, calm
