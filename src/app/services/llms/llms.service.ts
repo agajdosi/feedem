@@ -257,6 +257,7 @@ export class LlmsService {
 
   // TODO: FINALIZE THIS
   async recalculateBigFive(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<BigFive> {
+    const q = 2; // old value has 2x weight
     const genURL = `${environment.aigenburgAPI}/generate`;
     const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
     const body = JSON.stringify({
@@ -284,14 +285,34 @@ export class LlmsService {
       throw new Error('Invalid response format from API');
     }
 
-    const bigfive = parsedData.choices[0].message.content;
-    console.log('🧠 recalculateBigFive <- response:', bigfive);
-    const parsedBigFive = JSON.parse(bigfive) as BigFive;
-    return parsedBigFive; // TODO: maybe add some averaging here?
+    const newBigFive = JSON.parse(parsedData.choices[0].message.content) as BigFive;
+    let finalBigFive: BigFive = {
+      openness: 0,
+      conscientiousness: 0,
+      extraversion: 0,
+      agreeableness: 0,
+      neuroticism: 0
+    };
+    const traits: (keyof BigFive)[] = [
+      'openness',
+      'conscientiousness',
+      'extraversion',
+      'agreeableness',
+      'neuroticism'
+    ];
+    for (const trait of traits) {
+      if (newBigFive[trait] !== undefined) {
+        finalBigFive[trait] = (user.big_five[trait] * q + newBigFive[trait]) / (q + 1);
+      } else {
+        finalBigFive[trait] = user.big_five[trait];
+      }
+    }
+    return finalBigFive;
   }
 
 
   async recalculatePlutchikEmotions(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<PlutchikEmotions> {
+    const q = 2; // old value has 2x weight
     const genURL = `${environment.aigenburgAPI}/generate`;
     const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
     const body = JSON.stringify({
@@ -306,26 +327,42 @@ export class LlmsService {
         posts_context: posts_context,
       }
     })
-
     const response = await fetch(genURL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: body,
     })
-
     const data = await response.json();
     const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
     if (!parsedData?.choices?.[0]?.message?.content) {
       throw new Error('Invalid response format from API');
     }
 
-    const plutchik = parsedData.choices[0].message.content;
-    console.log('🧠 recalculatePlutchikEmotions <- response:', plutchik);
-    const parsedPlutchik = JSON.parse(plutchik) as PlutchikEmotions;
-    return parsedPlutchik;
+    const newPlutchik = JSON.parse(parsedData.choices[0].message.content) as PlutchikEmotions;
+    let finalPlutchik: PlutchikEmotions = {
+      joy_sadness: 0,
+      anger_fear: 0,
+      trust_disgust: 0,
+      surprise_anticipation: 0
+    };
+    const traits: (keyof PlutchikEmotions)[] = [
+      'joy_sadness',
+      'anger_fear',
+      'trust_disgust',
+      'surprise_anticipation'
+    ];
+    for (const trait of traits) {
+      if (newPlutchik[trait] !== undefined) {
+        finalPlutchik[trait] = (user.plutchik[trait] * q + newPlutchik[trait]) / (q + 1);
+      } else {
+        finalPlutchik[trait] = user.plutchik[trait];
+      }
+    }
+    return finalPlutchik;
   }
 
   async recalculateRussellCircumplex(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<RussellCircumplex> {
+    const q = 2; // old value has 2x weight
     const genURL = `${environment.aigenburgAPI}/generate`;
     const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
     const body = JSON.stringify({
@@ -353,10 +390,23 @@ export class LlmsService {
       throw new Error('Invalid response format from API');
     }
 
-    const russell = parsedData.choices[0].message.content;
-    console.log('🧠 recalculateRussellCircumplex <- response:', russell);
-    const parsedRussell = JSON.parse(russell) as RussellCircumplex;
-    return parsedRussell;
+    const newRussell = JSON.parse(parsedData.choices[0].message.content) as RussellCircumplex;
+    let finalRussell: RussellCircumplex = {
+      valence: 0,
+      arousal: 0
+    };
+    const traits: (keyof RussellCircumplex)[] = [
+      'valence',
+      'arousal'
+    ];
+    for (const trait of traits) {
+      if (newRussell[trait] !== undefined) {
+        finalRussell[trait] = (user.russell[trait] * q + newRussell[trait]) / (q + 1);
+      } else {
+        finalRussell[trait] = user.russell[trait];
+      }
+    }
+    return finalRussell;
   }
 
   /** TOTAL DUMMY!
