@@ -59,6 +59,18 @@ export interface BigFive {
     neuroticism: number
 }
 
+export interface PlutchikEmotions {
+    joy_sadness: number,
+    anger_fear: number,
+    trust_disgust: number,
+    surprise_anticipation: number,
+}
+
+export interface RussellCircumplex {
+    valence: number, // -1-1, 1 is pleasant, -1 is unpleasant
+    arousal: number, // -1-1, 1 is activated, -1 is deactivated, calm
+}
+
 // TODO: add support for mountains, lakes, rivers, etc. not just cities. add name and type of location.
 export interface Location {
     city: string,

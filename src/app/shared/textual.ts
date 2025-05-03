@@ -135,6 +135,7 @@ export function postToText(post: Post, comments: Comment[], reactions: Reaction[
 export function describeRecentActivity(
     user: User,
     posts: Post[],
+    users: User[], // needed for postToText()
     comments: Comment[],
     reactions: Reaction[],
     limitPosts: number = 10,
@@ -145,7 +146,7 @@ export function describeRecentActivity(
 
     let description = `# Recent posts by ${user.name} ${user.surname}:\n`;
     for (const post of recentPosts) {
-        const postText = postToText(post, comments, reactions, [user]);
+        const postText = postToText(post, comments, reactions, users);
         description += `${postText}\n\n`;
     }
 
@@ -163,7 +164,7 @@ export function describeRecentActivity(
         // Filter comments to only show those for this specific post
         const postComments = comments.filter(comment => comment.parent === post.uuid);
         const postReactions = reactions.filter(reaction => reaction.parent === post.uuid);
-        const postText = postToText(post, postComments, postReactions, [user]);
+        const postText = postToText(post, postComments, postReactions, users);
         description += `${postText}\n\n`;
     }
 
