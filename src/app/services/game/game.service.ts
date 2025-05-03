@@ -246,10 +246,6 @@ export class GameService {
     const plutchik: PlutchikEmotions = await this.llmsService.recalculatePlutchikEmotions(hero, all_users, all_posts, all_comments, all_reactions);
     const russell: RussellCircumplex = await this.llmsService.recalculateRussellCircumplex(hero, all_users, all_posts, all_comments, all_reactions);
   
-    console.log('🧠 psychologicalUpdates -> bigFive:', bigFive);
-    console.log('🧠 psychologicalUpdates -> plutchik:', plutchik);
-    console.log('🧠 psychologicalUpdates -> russell:', russell);
-
     hero.big_five = bigFive;
     hero.plutchik = plutchik;
     hero.russell = russell;
