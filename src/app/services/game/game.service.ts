@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { User, Post, Game , Reaction, TaskType, Task, Relation, RelationType, Comment} from '../../models/game';
+import { Injectable } from '@angular/core';
+import { User, Post, Game , Reaction, TaskType, Task, Relation, RelationType, Comment, BigFive, PlutchikEmotions, RussellCircumplex } from '../../models/game';
 import { LlmsService } from '../llms/llms.service';
 // http client
 import { HttpClient } from '@angular/common/http';
@@ -203,6 +203,9 @@ export class GameService {
       }
     }
 
+    // PSYCHO UPDATES
+    await this.psychologicalUpdates();
+
     // GENERATE NEW TASK
     const skip = 1+ 7*Math.random()*1000*60*60; // 1-8hours, TODO: make this a bit more random
     this.increaseFictionalTime(skip);
@@ -226,6 +229,25 @@ export class GameService {
       // this.onTask.next(taskDone);
     // }
     this.gameSubject.next(this.game);
+  }
+
+  /** Update psychological stats of the Hero user.
+   * TODO: Update the other users too.
+   * TODO: Make the update async.
+  */
+  async psychologicalUpdates(): Promise<void> {
+    const hero = this.getHero();
+    const all_users = this.game.users;
+    const all_posts = this.game.posts;
+    const all_comments = this.game.comments;
+    const all_reactions = this.game.reactions;
+    const bigFive: BigFive = await this.llmsService.recalculateBigFive(hero, all_users, all_posts, all_comments, all_reactions);
+    const plutchik: PlutchikEmotions = await this.llmsService.recalculatePlutchikEmotions(hero, all_users, all_posts, all_comments, all_reactions);
+    const russell: RussellCircumplex = await this.llmsService.recalculateRussellCircumplex(hero, all_users, all_posts, all_comments, all_reactions);
+  
+    hero.big_five = bigFive;
+    hero.plutchik = plutchik;
+    hero.russell = russell;
   }
 
   async createTaskDistributePost(): Promise<Task> {

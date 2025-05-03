@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { User, Post, View, React, Reaction, Comment, ReactionParentType, CommentParentType } from '../../models/game';
+import { User, Post, View, React, Reaction, Comment, ReactionParentType, CommentParentType, BigFive, PlutchikEmotions, RussellCircumplex } from '../../models/game';
+import { describeRecentActivity } from '../../shared/textual';
 import { v4 as uuidv4 } from 'uuid';
 const environment = {
   aigenburgAPI: 'https://aigenburg.lab.gajdosik.org' // -> uses prompts defined at https://phoenix.lab.gajdosik.org
@@ -254,7 +255,109 @@ export class LlmsService {
     return comment;
   }
 
+  // TODO: FINALIZE THIS
+  async recalculateBigFive(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<BigFive> {
+    const genURL = `${environment.aigenburgAPI}/generate`;
+    const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_psyche_bigfive",
+      prompt_variables: {
+        name: user.name,
+        surname: user.surname,
+        gender: user.gender,
+        age: String(user.age),
+        bio: user.bio,
+        traits: user.traits.join(', '),
+        posts_context: posts_context,
+      }
+    })
 
+    const response = await fetch(genURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+    });
+
+    const data = await response.json();
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+    if (!parsedData?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from API');
+    }
+
+    const bigfive = parsedData.choices[0].message.content;
+    console.log('🧠 recalculateBigFive <- response:', bigfive);
+    const parsedBigFive = JSON.parse(bigfive) as BigFive;
+    return parsedBigFive; // TODO: maybe add some averaging here?
+  }
+
+
+  async recalculatePlutchikEmotions(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<PlutchikEmotions> {
+    const genURL = `${environment.aigenburgAPI}/generate`;
+    const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_psyche_plutchik",
+      prompt_variables: {
+        name: user.name,
+        surname: user.surname,
+        gender: user.gender,
+        age: String(user.age),
+        bio: user.bio,
+        traits: user.traits.join(', '),
+        posts_context: posts_context,
+      }
+    })
+
+    const response = await fetch(genURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+    })
+
+    const data = await response.json();
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+    if (!parsedData?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from API');
+    }
+
+    const plutchik = parsedData.choices[0].message.content;
+    console.log('🧠 recalculatePlutchikEmotions <- response:', plutchik);
+    const parsedPlutchik = JSON.parse(plutchik) as PlutchikEmotions;
+    return parsedPlutchik;
+  }
+
+  async recalculateRussellCircumplex(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<RussellCircumplex> {
+    const genURL = `${environment.aigenburgAPI}/generate`;
+    const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_psyche_russell",
+      prompt_variables: {
+        name: user.name,
+        surname: user.surname,
+        gender: user.gender,
+        age: String(user.age),
+        bio: user.bio,
+        traits: user.traits.join(', '),
+        posts_context: posts_context,
+      }
+    })
+
+    const response = await fetch(genURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+    })
+
+    const data = await response.json();
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+    if (!parsedData?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from API');
+    }
+
+    const russell = parsedData.choices[0].message.content;
+    console.log('🧠 recalculateRussellCircumplex <- response:', russell);
+    const parsedRussell = JSON.parse(russell) as RussellCircumplex;
+    return parsedRussell;
+  }
 
   /** TOTAL DUMMY!
    * TODO: implement in v2.
