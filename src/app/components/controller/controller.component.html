@@ -9,10 +9,10 @@
             @if(!isAnyOpenTask() && game.hero) {
                 <mat-icon fontIcon="schedule"></mat-icon>
             }
-            @else if(game.tasks.length > 0 && game.tasks[0].type === 'distributePost') {
+            @else if(game.tasks.length && game.tasks[0].type && game.tasks[0].type === 'distributePost') {
                 <mat-icon class="cws90" fontIcon="call_split"></mat-icon>
             }
-            @else if(game.tasks.length > 0 && game.tasks[0].type === 'showPost') {
+            @else if(game.tasks.length && game.tasks[0].type && game.tasks[0].type === 'showPost') {
                 <mat-icon class="cws90" fontIcon="merge_type"></mat-icon>
             }
         </div>
