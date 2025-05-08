@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { User, Post, View, React, Reaction, Comment, ReactionParentType, CommentParentType } from '../../models/game';
+import { User, Post, View, React, Reaction, Comment, ReactionParentType, CommentParentType, BigFive, PlutchikEmotions, RussellCircumplex } from '../../models/game';
+import { describeRecentActivity } from '../../shared/textual';
 import { v4 as uuidv4 } from 'uuid';
 const environment = {
   aigenburgAPI: 'https://aigenburg.lab.gajdosik.org' // -> uses prompts defined at https://phoenix.lab.gajdosik.org
@@ -254,7 +255,162 @@ export class LlmsService {
     return comment;
   }
 
+  // TODO: FINALIZE THIS
+  async recalculateBigFive(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<BigFive> {
+    const q = 2; // old value has 2x weight
+    const genURL = `${environment.aigenburgAPI}/generate`;
+    const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_psyche_bigfive",
+      prompt_variables: {
+        name: user.name,
+        surname: user.surname,
+        gender: user.gender,
+        age: String(user.age),
+        bio: user.bio,
+        traits: user.traits.join(', '),
+        posts_context: posts_context,
+      }
+    })
 
+    const response = await fetch(genURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+    });
+
+    const data = await response.json();
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+    if (!parsedData?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from API');
+    }
+
+    const newBigFive = JSON.parse(parsedData.choices[0].message.content) as BigFive;
+    let finalBigFive: BigFive = {
+      openness: 0,
+      conscientiousness: 0,
+      extraversion: 0,
+      agreeableness: 0,
+      neuroticism: 0
+    };
+    const traits: (keyof BigFive)[] = [
+      'openness',
+      'conscientiousness',
+      'extraversion',
+      'agreeableness',
+      'neuroticism'
+    ];
+    for (const trait of traits) {
+      if (newBigFive[trait] !== undefined) {
+        const clampedValue = Math.max(0, Math.min(1, newBigFive[trait]));
+        finalBigFive[trait] = (user.big_five[trait] * q + clampedValue) / (q + 1);
+      } else {
+        finalBigFive[trait] = user.big_five[trait];
+      }
+    }
+    return finalBigFive;
+  }
+
+
+  async recalculatePlutchikEmotions(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<PlutchikEmotions> {
+    const q = 2; // old value has 2x weight
+    const genURL = `${environment.aigenburgAPI}/generate`;
+    const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_psyche_plutchik",
+      prompt_variables: {
+        name: user.name,
+        surname: user.surname,
+        gender: user.gender,
+        age: String(user.age),
+        bio: user.bio,
+        traits: user.traits.join(', '),
+        posts_context: posts_context,
+      }
+    })
+    const response = await fetch(genURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+    })
+    const data = await response.json();
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+    if (!parsedData?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from API');
+    }
+
+    const newPlutchik = JSON.parse(parsedData.choices[0].message.content) as PlutchikEmotions;
+    let finalPlutchik: PlutchikEmotions = {
+      joy_sadness: 0,
+      anger_fear: 0,
+      trust_disgust: 0,
+      surprise_anticipation: 0
+    };
+    const traits: (keyof PlutchikEmotions)[] = [
+      'joy_sadness',
+      'anger_fear',
+      'trust_disgust',
+      'surprise_anticipation'
+    ];
+    for (const trait of traits) {
+      if (newPlutchik[trait] !== undefined) {
+        const clampedValue = Math.max(-1, Math.min(1, newPlutchik[trait]));
+        finalPlutchik[trait] = (user.plutchik[trait] * q + clampedValue) / (q + 1);
+      } else {
+        finalPlutchik[trait] = user.plutchik[trait];
+      }
+    }
+    return finalPlutchik;
+  }
+
+  async recalculateRussellCircumplex(user: User, all_users: User[], all_posts: Post[], all_comments: Comment[], all_reactions: Reaction[]): Promise<RussellCircumplex> {
+    const q = 2; // old value has 2x weight
+    const genURL = `${environment.aigenburgAPI}/generate`;
+    const posts_context = describeRecentActivity(user, all_posts, all_users, all_comments, all_reactions);
+    const body = JSON.stringify({
+      prompt_identifier: "feedem_psyche_russell",
+      prompt_variables: {
+        name: user.name,
+        surname: user.surname,
+        gender: user.gender,
+        age: String(user.age),
+        bio: user.bio,
+        traits: user.traits.join(', '),
+        posts_context: posts_context,
+      }
+    })
+
+    const response = await fetch(genURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+    })
+
+    const data = await response.json();
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+    if (!parsedData?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from API');
+    }
+
+    const newRussell = JSON.parse(parsedData.choices[0].message.content) as RussellCircumplex;
+    let finalRussell: RussellCircumplex = {
+      valence: 0,
+      arousal: 0
+    };
+    const traits: (keyof RussellCircumplex)[] = [
+      'valence',
+      'arousal'
+    ];
+    for (const trait of traits) {
+      if (newRussell[trait] !== undefined) {
+        const clampedValue = Math.max(-1, Math.min(1, newRussell[trait]));
+        finalRussell[trait] = (user.russell[trait] * q + clampedValue) / (q + 1);
+      } else {
+        finalRussell[trait] = user.russell[trait];
+      }
+    }
+    return finalRussell;
+  }
 
   /** TOTAL DUMMY!
    * TODO: implement in v2.

@@ -85,6 +85,28 @@
                     </span>
                 }
             </div>
+            <div>
+                bigfive:
+                <div>
+                    <span>O={{ user.big_five.openness | number:'1.3-3' }} </span>
+                    <span>C={{ user.big_five.conscientiousness | number:'1.3-3' }} </span>
+                    <span>E={{ user.big_five.extraversion | number:'1.3-3' }} </span>
+                    <span>A={{ user.big_five.agreeableness | number:'1.3-3' }} </span>
+                    <span>N={{ user.big_five.neuroticism | number:'1.3-3' }} </span>
+                </div>
+                plutchik:
+                <div>
+                    <span>joy_sadness={{ user.plutchik.joy_sadness | number:'1.3-3' }} </span>
+                    <span>anger_fear={{ user.plutchik.anger_fear | number:'1.3-3' }} </span>
+                    <span>trust_disgust={{ user.plutchik.trust_disgust | number:'1.3-3' }} </span>
+                    <span>surprise_anticipation={{ user.plutchik.surprise_anticipation | number:'1.3-3' }} </span>
+                </div>
+                russell:
+                <div>
+                    <span>valence={{ user.russell.valence | number:'1.3-3' }} </span>
+                    <span>arousal={{ user.russell.arousal | number:'1.3-3' }} </span>
+                </div>
+            </div>
         </div>
     </div>
     

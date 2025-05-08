@@ -171,6 +171,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.gameService.nextTask(this.task);
     this.notifyPeers();
     // BUG: DON'T KNOW WHY, BUT HERE THE NOTIFICATION ABOUT TASK WORKS FOR THE GAME, NOR IN GAME.SERVICE
+    // ANDY: Seems like bug, psychological updates are not fetched to the game UI
     this.gameService.createPostRelations(this.task);
     this.gameService.onTask.next(this.task);
   }

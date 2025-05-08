@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { User, Post, Game , Reaction, TaskType, Task, Relation, RelationType, Comment} from '../../models/game';
+import { Injectable } from '@angular/core';
+import { User, Post, Game , Reaction, TaskType, Task, Relation, RelationType, Comment, BigFive, PlutchikEmotions, RussellCircumplex } from '../../models/game';
 import { LlmsService } from '../llms/llms.service';
 // http client
 import { HttpClient } from '@angular/common/http';
@@ -203,6 +203,9 @@ export class GameService {
       }
     }
 
+    // PSYCHO UPDATES
+    await this.psychologicalUpdates();
+
     // GENERATE NEW TASK
     const skip = 1+ 7*Math.random()*1000*60*60; // 1-8hours, TODO: make this a bit more random
     this.increaseFictionalTime(skip);
@@ -214,8 +217,6 @@ export class GameService {
       task = await this.createTaskShowPost();
     }
 
-    
-  
     this.game.tasks.unshift(task);
 
     // MARK: BUG
@@ -225,7 +226,30 @@ export class GameService {
       // this.createPostRelations(taskDone);
       // this.onTask.next(taskDone);
     // }
+    // Andy: Looks like this does nothing. At least for the users' psychological updates - they are updated once next task is clicked.
     this.gameSubject.next(this.game);
+  }
+
+  /** Update psychological stats of the Hero user.
+   * TODO: Update the other users too.
+   * TODO: Make the update async.
+  */
+  async psychologicalUpdates(): Promise<void> {
+    const hero = this.getHero();
+    const all_users = this.game.users;
+    const all_posts = this.game.posts;
+    const all_comments = this.game.comments;
+    const all_reactions = this.game.reactions;
+
+    const bigFivePromise: Promise<BigFive> = this.llmsService.recalculateBigFive(hero, all_users, all_posts, all_comments, all_reactions);
+    const plutchikPromise: Promise<PlutchikEmotions> = this.llmsService.recalculatePlutchikEmotions(hero, all_users, all_posts, all_comments, all_reactions);
+    const russellPromise: Promise<RussellCircumplex> = this.llmsService.recalculateRussellCircumplex(hero, all_users, all_posts, all_comments, all_reactions);
+    const [bigFive, plutchik, russell] = await Promise.all([bigFivePromise, plutchikPromise, russellPromise]);
+
+    // Andy: Is this enough?
+    hero.big_five = bigFive;
+    hero.plutchik = plutchik;
+    hero.russell = russell;
   }
 
   async createTaskDistributePost(): Promise<Task> {
