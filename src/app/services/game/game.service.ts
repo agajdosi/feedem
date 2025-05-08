@@ -217,8 +217,6 @@ export class GameService {
       task = await this.createTaskShowPost();
     }
 
-    
-  
     this.game.tasks.unshift(task);
 
     // MARK: BUG
@@ -228,6 +226,7 @@ export class GameService {
       // this.createPostRelations(taskDone);
       // this.onTask.next(taskDone);
     // }
+    // Andy: Looks like this does nothing. At least for the users' psychological updates - they are updated once next task is clicked.
     this.gameSubject.next(this.game);
   }
 
@@ -247,6 +246,7 @@ export class GameService {
     const russellPromise: Promise<RussellCircumplex> = this.llmsService.recalculateRussellCircumplex(hero, all_users, all_posts, all_comments, all_reactions);
     const [bigFive, plutchik, russell] = await Promise.all([bigFivePromise, plutchikPromise, russellPromise]);
 
+    // Andy: Is this enough?
     hero.big_five = bigFive;
     hero.plutchik = plutchik;
     hero.russell = russell;
