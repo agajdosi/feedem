@@ -42,6 +42,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.6,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -78,6 +88,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.3,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -116,6 +136,16 @@
                 "extraversion": 0.7,
                 "agreeableness": 0.4,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -154,6 +184,16 @@
                 "extraversion": 0.5,
                 "agreeableness": 0.4,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -194,6 +234,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.6,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -232,6 +282,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.3,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -273,6 +333,16 @@
                 "extraversion": 0.5,
                 "agreeableness": 0.8,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -313,6 +383,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.8,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -350,6 +430,16 @@
                 "extraversion": 0.7,
                 "agreeableness": 0.1,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -388,6 +478,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.6,
                 "neuroticism": 0.6
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -426,6 +526,16 @@
                 "extraversion": 0.5,
                 "agreeableness": 0.1,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -463,6 +573,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.6,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -501,6 +621,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.8,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -539,6 +669,16 @@
                 "extraversion": 0.5,
                 "agreeableness": 0.8,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -578,6 +718,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.3,
                 "neuroticism": 0.6
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -617,6 +767,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.6,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -654,6 +814,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.3,
                 "neuroticism": 0.9
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -691,6 +861,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 1.0,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -728,6 +908,16 @@
                 "extraversion": 0.5,
                 "agreeableness": 0.8,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -764,6 +954,16 @@
                 "extraversion": 0.3,
                 "agreeableness": 0.3,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         },
         {
@@ -801,6 +1001,16 @@
                 "extraversion": 0.5,
                 "agreeableness": 0.6,
                 "neuroticism": 0.3
+            },
+            "plutchik": {
+                "joy_sadness": 0,
+                "anger_fear": 0,
+                "trust_disgust": 0,
+                "surprise_anticipation": 0
+            },
+            "russell": {
+                "valence": 0,
+                "arousal": 0
             }
         }
     ],
