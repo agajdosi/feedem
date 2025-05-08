@@ -242,10 +242,11 @@ export class GameService {
     const all_comments = this.game.comments;
     const all_reactions = this.game.reactions;
 
-    const bigFive: BigFive = await this.llmsService.recalculateBigFive(hero, all_users, all_posts, all_comments, all_reactions);
-    const plutchik: PlutchikEmotions = await this.llmsService.recalculatePlutchikEmotions(hero, all_users, all_posts, all_comments, all_reactions);
-    const russell: RussellCircumplex = await this.llmsService.recalculateRussellCircumplex(hero, all_users, all_posts, all_comments, all_reactions);
-  
+    const bigFivePromise: Promise<BigFive> = this.llmsService.recalculateBigFive(hero, all_users, all_posts, all_comments, all_reactions);
+    const plutchikPromise: Promise<PlutchikEmotions> = this.llmsService.recalculatePlutchikEmotions(hero, all_users, all_posts, all_comments, all_reactions);
+    const russellPromise: Promise<RussellCircumplex> = this.llmsService.recalculateRussellCircumplex(hero, all_users, all_posts, all_comments, all_reactions);
+    const [bigFive, plutchik, russell] = await Promise.all([bigFivePromise, plutchikPromise, russellPromise]);
+
     hero.big_five = bigFive;
     hero.plutchik = plutchik;
     hero.russell = russell;
