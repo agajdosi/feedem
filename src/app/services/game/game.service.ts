@@ -190,7 +190,7 @@ export class GameService {
           console.log(`ℹ️ ${user.name} ${user.surname} did not react`);
         }
 
-        const comment = await this.llmsService.decideComment(view, user, post, this.getFictionalTime());
+        const comment = await this.llmsService.decideComment(view, user, post, reaction, this.getFictionalTime());
         if (comment) {
           this.game.comments.unshift(comment);
           this.onComment.next(comment);

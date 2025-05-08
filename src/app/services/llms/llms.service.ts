@@ -185,13 +185,13 @@ export class LlmsService {
   /**
    * Decide whether the user will comment on the post they have just seen.
    */
-  async decideComment(view: View, user: User, post: Post, ftime: number): Promise<Comment | null> {
+  async decideComment(view: View, user: User, post: Post, reaction: Reaction|null, ftime: number): Promise<Comment | null> {
     const roll = Math.random();
     if (roll > view.commentUrge) {
       return null;
     }
 
-    const comment = await this.generateCommentUnderPost(user, post, view, ftime);
+    const comment = await this.generateCommentUnderPost(user, post, view, reaction, ftime);
     return comment;
   }
 
@@ -199,8 +199,10 @@ export class LlmsService {
   /** Generate a comment by user under a post, based on the previously generated reflection and rating of the post by the user. 
    * TODO: provide info if Reaction was done by the user or not. Actually provide also info about other users reactions.
   */
-  async generateCommentUnderPost(user: User, post: Post, view: View, ftime: number): Promise<Comment> {
+  async generateCommentUnderPost(user: User, post: Post, view: View, reaction: Reaction|null, ftime: number): Promise<Comment> {
     const genURL  = `${environment.aigenburgAPI}/generate`;
+    const reactionText = reaction ? reaction.value : 'no reaction';
+
     // 1. REFLECT - think about the post
     const body = JSON.stringify({
       prompt_identifier: "feedem_generate_comment",
@@ -210,6 +212,7 @@ export class LlmsService {
         author_surname: post.author,
         post_text: post.text,
         reasoning: view._reasoning,
+        reaction: reactionText,
         dialect: user.dialect,
         traits: user.traits.join(', '),
         timestring: new Date(ftime).toISOString(),
