@@ -185,21 +185,21 @@ export class LlmsService {
   /**
    * Decide whether the user will comment on the post they have just seen.
    */
-  async decideComment(view: View, user: User, post: Post, reaction: Reaction|null, ftime: number): Promise<Comment | null> {
+  async decideComment(view: View, user: User, reaction: Reaction|null, post: Post, post_author: User, ftime: number): Promise<Comment | null> {
     const roll = Math.random();
     if (roll > view.commentUrge) {
       return null;
     }
 
-    const comment = await this.generateCommentUnderPost(user, post, view, reaction, ftime);
+    const comment = await this.generateCommentUnderPost(view, user, reaction, post, post_author, ftime);
     return comment;
   }
 
 
   /** Generate a comment by user under a post, based on the previously generated reflection and rating of the post by the user. 
-   * TODO: provide info if Reaction was done by the user or not. Actually provide also info about other users reactions.
+  LLM is provided with the previous reaction of the user, so the comment is more likely to be aligned with the reaction.
   */
-  async generateCommentUnderPost(user: User, post: Post, view: View, reaction: Reaction|null, ftime: number): Promise<Comment> {
+  async generateCommentUnderPost(view: View, user: User, reaction: Reaction|null, post: Post, post_author: User, ftime: number): Promise<Comment> {
     const genURL  = `${environment.aigenburgAPI}/generate`;
     const reactionText = reaction ? reaction.value : 'no reaction';
 
@@ -208,8 +208,8 @@ export class LlmsService {
       prompt_identifier: "feedem_generate_comment",
       prompt_variables: {
         user_bio: user.bio,
-        author_name: post.author,
-        author_surname: post.author,
+        author_name: post_author.name,
+        author_surname: post_author.surname,
         post_text: post.text,
         reasoning: view._reasoning,
         reaction: reactionText,
